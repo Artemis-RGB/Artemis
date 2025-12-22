@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -56,7 +57,7 @@ public partial class PropertiesViewModel : ActivatableViewModelBase
         _layerEffectService = layerEffectService;
         _cachedPropertyViewModels = new Dictionary<LayerPropertyGroup, PropertyGroupViewModel>();
 
-        PropertyGroupViewModels = new ObservableCollection<PropertyGroupViewModel>();
+        PropertyGroupViewModels = [];
         PlaybackViewModel = playbackViewModel;
         TimelineViewModel = layerPropertyVmFactory.TimelineViewModel(PropertyGroupViewModels);
         AddEffect = ReactiveCommand.CreateFromTask(ExecuteAddEffect);
@@ -134,7 +135,7 @@ public partial class PropertiesViewModel : ActivatableViewModelBase
             return;
         }
 
-        ObservableCollection<PropertyGroupViewModel> viewModels = new();
+        ObservableCollection<PropertyGroupViewModel> viewModels = [];
         if (profileElement is Layer layer)
         {
             // Add base VMs

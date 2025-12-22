@@ -9,7 +9,7 @@ internal class M0024NodeProviders : IStorageMigration
     public void Apply(LiteRepository repository)
     {
         ILiteCollection<BsonDocument> categoryCollection = repository.Database.GetCollection("ProfileCategoryEntity");
-        List<BsonDocument> categoriesToUpdate = new();
+        List<BsonDocument> categoriesToUpdate = [];
         foreach (BsonDocument profileCategoryBson in categoryCollection.FindAll())
         {
             BsonArray? profiles = profileCategoryBson["ProfileConfigurations"]?.AsArray;
@@ -24,7 +24,7 @@ internal class M0024NodeProviders : IStorageMigration
         categoryCollection.Update(categoriesToUpdate);
 
         ILiteCollection<BsonDocument> collection = repository.Database.GetCollection("ProfileEntity");
-        List<BsonDocument> profilesToUpdate = new();
+        List<BsonDocument> profilesToUpdate = [];
         foreach (BsonDocument profileBson in collection.FindAll())
         {
             BsonArray? folders = profileBson["Folders"]?.AsArray;

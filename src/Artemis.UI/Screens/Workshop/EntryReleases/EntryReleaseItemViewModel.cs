@@ -1,4 +1,7 @@
-﻿using System.Reactive.Disposables;
+﻿using System;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using Artemis.UI.Extensions;
 using Artemis.UI.Shared;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Models;
@@ -12,8 +15,10 @@ public partial class EntryReleaseItemViewModel : ActivatableViewModelBase
 {
     private readonly IWorkshopService _workshopService;
     private readonly IEntryDetails _entry;
+    
     [Notify] private bool _isCurrentVersion;
-
+    [Notify] private string? _incompatibilityReason;
+    
     public EntryReleaseItemViewModel(IWorkshopService workshopService, IEntryDetails entry, IRelease release)
     {
         _workshopService = workshopService;
@@ -32,6 +37,7 @@ public partial class EntryReleaseItemViewModel : ActivatableViewModelBase
             }).DisposeWith(d);
 
             IsCurrentVersion = _workshopService.GetInstalledEntry(_entry.Id)?.ReleaseId == Release.Id;
+            IncompatibilityReason = !Release.IsCompatible() ? $"Requires Artemis v{Version.FromLong(Release.MinimumVersion!.Value)} or later" : null;
         });
     }
 

@@ -10,5 +10,5 @@ public class PropertyEntity
     public bool KeyframesEnabled { get; set; }
 
     public DataBindingEntity? DataBinding { get; set; }
-    public List<KeyframeEntity> KeyframeEntities { get; set; } = new();
+    public List<KeyframeEntity> KeyframeEntities { get; set; } = [];
 }

@@ -23,7 +23,7 @@ public static class ContainerExtensions
     /// <param name="container">The builder building the current container</param>
     public static void RegisterUI(this IContainer container)
     {
-        Assembly[] thisAssembly = {typeof(ContainerExtensions).Assembly};
+        Assembly[] thisAssembly = [typeof(ContainerExtensions).Assembly];
         
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<ViewModelBase>(), setup: Setup.With(preventDisposal: true));
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IToolViewModel>() && type.IsInterface, setup: Setup.With(preventDisposal: true));

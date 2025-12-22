@@ -78,7 +78,7 @@ public class PluginFeatureInfo : IPrerequisitesSubject
     public PluginFeature? Instance { get; internal set; }
 
     /// <inheritdoc />
-    public List<PluginPrerequisite> Prerequisites { get; } = new();
+    public List<PluginPrerequisite> Prerequisites { get; } = [];
 
     /// <inheritdoc />
     public IEnumerable<PluginPrerequisite> PlatformPrerequisites => Prerequisites.Where(p => p.AppliesToPlatform());

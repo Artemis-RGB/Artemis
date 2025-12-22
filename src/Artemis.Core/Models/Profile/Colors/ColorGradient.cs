@@ -14,7 +14,7 @@ namespace Artemis.Core;
 public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionChanged
 {
     private static readonly SKColor[] FAST_LED_RAINBOW =
-    {
+    [
         new(0xFFFF0000), // Red
         new(0xFFFF9900), // Orange
         new(0xFFFFFF00), // Yellow
@@ -24,11 +24,11 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         new(0xFF9E22FF), // Purple
         new(0xFFFF34AE), // Pink
         new(0xFFFF0000) // and back to Red
-    };
+    ];
 
     private readonly List<ColorGradientStop> _stops;
-    private SKColor[] _colors = Array.Empty<SKColor>();
-    private float[] _positions = Array.Empty<float>();
+    private SKColor[] _colors = [];
+    private float[] _positions = [];
     private bool _dirty = true;
     private bool _updating;
 
@@ -51,7 +51,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// </summary>
     public ColorGradient()
     {
-        _stops = new List<ColorGradientStop>();
+        _stops = [];
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// <param name="colorGradient">The color gradient to copy</param>
     public ColorGradient(ColorGradient? colorGradient)
     {
-        _stops = new List<ColorGradientStop>();
+        _stops = [];
         if (colorGradient == null)
             return;
 
@@ -79,7 +79,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// <param name="stops">The stops to copy</param>
     public ColorGradient(List<ColorGradientStop> stops)
     {
-        _stops = new List<ColorGradientStop>();
+        _stops = [];
         foreach (ColorGradientStop colorGradientStop in stops)
         {
             ColorGradientStop stop = new(colorGradientStop.Color, colorGradientStop.Position);
@@ -104,7 +104,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         if (timesToRepeat == 0 && !seamless)
             return Colors;
 
-        List<SKColor> result = new();
+        List<SKColor> result = [];
         if (timesToRepeat == 0)
             result = this.Select(c => c.Color).ToList();
         else
@@ -132,7 +132,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         if (timesToRepeat == 0 && seamless)
             return Positions;
 
-        List<float> result = new();
+        List<float> result = [];
         if (timesToRepeat == 0)
         {
             result = this.Select(c => c.Position).ToList();
@@ -456,7 +456,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// </summary>
     public static ColorGradient GetUnicornBarf()
     {
-        ColorGradient gradient = new();
+        ColorGradient gradient = [];
         for (int index = 0; index < FAST_LED_RAINBOW.Length; index++)
         {
             SKColor skColor = FAST_LED_RAINBOW[index];
@@ -473,7 +473,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// <param name="stops">The amount of stops to add</param>
     public static ColorGradient GetRandom(int stops)
     {
-        ColorGradient gradient = new();
+        ColorGradient gradient = [];
         gradient.Randomize(stops);
         return gradient;
     }

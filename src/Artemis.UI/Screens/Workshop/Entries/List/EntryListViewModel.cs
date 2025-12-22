@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +30,7 @@ public partial class EntryListViewModel : RoutableScreen
     [Notify] private bool _initializing = true;
     [Notify] private bool _fetchingMore;
     [Notify] private int _entriesPerFetch;
-    [Notify] private bool _includeDefaultEntries;
+    [Notify] private bool _includeDefaultEntries = true;
     [Notify] private Vector _scrollOffset;
 
     protected EntryListViewModel(EntryType entryType,
@@ -135,19 +135,19 @@ public partial class EntryListViewModel : RoutableScreen
     {
         // Sort by created at
         if (InputViewModel.SortBy == 1)
-            return new[] {new EntrySortInput {CreatedAt = SortEnumType.Desc}};
+            return [new EntrySortInput {CreatedAt = SortEnumType.Desc}];
 
         // Sort by downloads
         if (InputViewModel.SortBy == 2)
-            return new[] {new EntrySortInput {Downloads = SortEnumType.Desc}};
+            return [new EntrySortInput {Downloads = SortEnumType.Desc}];
 
 
         // Sort by latest release, then by created at
-        return new[]
-        {
+        return
+        [
             new EntrySortInput {LatestRelease = new ReleaseSortInput {CreatedAt = SortEnumType.Desc}},
             new EntrySortInput {CreatedAt = SortEnumType.Desc}
-        };
+        ];
     }
 
     private void Reset()

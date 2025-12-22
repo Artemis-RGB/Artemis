@@ -1,7 +1,6 @@
 using System;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.Threading;
 
 namespace Artemis.UI.Screens.Plugins;

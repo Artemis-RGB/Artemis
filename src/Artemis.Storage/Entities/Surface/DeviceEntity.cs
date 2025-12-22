@@ -7,9 +7,9 @@ public class DeviceEntity
 {
     public DeviceEntity()
     {
-        InputIdentifiers = new List<DeviceInputIdentifierEntity>();
-        InputMappings = new List<InputMappingEntity>();
-        Categories = new List<int>();
+        InputIdentifiers = [];
+        InputMappings = [];
+        Categories = [];
     }
 
     [MaxLength(512)]

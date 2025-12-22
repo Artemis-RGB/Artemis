@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services;
-using Artemis.UI.DryIoc.Factories;
-using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Screens.Workshop.LayoutFinder;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Shared.Services;
 using DryIoc;
-using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
 

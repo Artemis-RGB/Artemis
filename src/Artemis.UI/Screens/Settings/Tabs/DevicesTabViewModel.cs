@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -31,7 +31,7 @@ public class DevicesTabViewModel : RoutableScreen
         _windowService = windowService;
         _deviceVmFactory = deviceVmFactory;
 
-        Devices = new ObservableCollection<DeviceSettingsViewModel>();
+        Devices = [];
         this.WhenActivated(disposables =>
         {
             GetDevices();

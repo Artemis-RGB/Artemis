@@ -6,7 +6,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Shared;
 
@@ -20,7 +19,7 @@ public partial class EnumComboBox : UserControl
     /// </summary>
     public static readonly StyledProperty<object?> ValueProperty = AvaloniaProperty.Register<EnumComboBox, object?>(nameof(Value), defaultBindingMode: BindingMode.TwoWay);
 
-    private readonly ObservableCollection<EnumComboBoxItem> _currentValues = new();
+    private readonly ObservableCollection<EnumComboBoxItem> _currentValues = [];
     private Type? _currentType;
 
     /// <summary>

@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -18,8 +18,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using Artemis.UI.Shared.Services.ProfileEditor.Commands;
-using Avalonia;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
 
@@ -88,7 +87,7 @@ public abstract partial class TreeItemViewModel : ActivatableViewModelBase
     public bool IsFocused => _isFocused?.Value ?? false;
 
     public TreeItemViewModel? Parent { get; set; }
-    public ObservableCollection<TreeItemViewModel> Children { get; } = new();
+    public ObservableCollection<TreeItemViewModel> Children { get; } = [];
 
     public ReactiveCommand<Unit, Unit> AddLayer { get; }
     public ReactiveCommand<Unit, Unit> AddFolder { get; }

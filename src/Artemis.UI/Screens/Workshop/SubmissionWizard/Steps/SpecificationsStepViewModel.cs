@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using Artemis.UI.Extensions;
-using Artemis.UI.Screens.Workshop.Entries;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Plugin;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;

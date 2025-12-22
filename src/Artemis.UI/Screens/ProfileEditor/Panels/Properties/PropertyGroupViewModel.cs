@@ -10,7 +10,6 @@ using Artemis.UI.DryIoc.Factories;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
 using Artemis.UI.Screens.ProfileEditor.Properties.Tree;
-using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.PropertyInput;
 using DynamicData;
 using DynamicData.Binding;
@@ -84,7 +83,7 @@ public partial class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
     public List<ILayerPropertyKeyframe> GetAllKeyframes(bool expandedOnly)
     {
-        List<ILayerPropertyKeyframe> result = new();
+        List<ILayerPropertyKeyframe> result = [];
         if (expandedOnly && !IsExpanded)
             return result;
 
@@ -101,7 +100,7 @@ public partial class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
     public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
     {
-        List<ITimelineKeyframeViewModel> result = new();
+        List<ITimelineKeyframeViewModel> result = [];
         if (expandedOnly && !IsExpanded)
             return result;
 
@@ -118,7 +117,7 @@ public partial class PropertyGroupViewModel : PropertyViewModelBase, IDisposable
 
     private void PopulateChildren()
     {
-        Children = new ObservableCollection<PropertyViewModelBase>();
+        Children = [];
 
         // Get all properties and property groups and create VMs for them
         // The group has methods for getting this without reflection but then we lose the order of the properties as they are defined on the group

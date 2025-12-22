@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Routing;
 using Artemis.UI.Shared.Routing;
 using ReactiveUI;
 using System;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using PropertyChanged.SourceGenerator;
 
@@ -22,12 +22,12 @@ public partial class EntriesViewModel : RoutableHostScreen<RoutableScreen>
     {
         _router = router;
 
-        Tabs = new ObservableCollection<RouteViewModel>
-        {
-            new("Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
-            new("Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
-            new("Plugins", "workshop/entries/plugins", "workshop/entries/plugins"),
-        };
+        Tabs =
+        [
+            new RouteViewModel("Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
+            new RouteViewModel("Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
+            new RouteViewModel("Plugins", "workshop/entries/plugins", "workshop/entries/plugins")
+        ];
 
         this.WhenActivated(d =>
         {

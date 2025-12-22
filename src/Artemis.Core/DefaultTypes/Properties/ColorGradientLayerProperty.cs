@@ -6,7 +6,7 @@ public class ColorGradientLayerProperty : LayerProperty<ColorGradient>
     internal ColorGradientLayerProperty()
     {
         KeyframesSupported = false;
-        DefaultValue = new ColorGradient();
+        DefaultValue = [];
     }
 
     /// <summary>

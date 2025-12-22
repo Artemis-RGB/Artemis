@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.Device;
 using Artemis.UI.Screens.Device.Layout;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
@@ -28,7 +27,7 @@ public class DeviceLayoutService : IDeviceLayoutService
         _deviceService = deviceService;
         _mainWindowService = mainWindowService;
         _windowService = windowService;
-        _ignoredDevices = new List<ArtemisDevice>();
+        _ignoredDevices = [];
 
         deviceService.DeviceAdded += RgbServiceOnDeviceAdded;
         mainWindowService.MainWindowOpened += WindowServiceOnMainWindowOpened;

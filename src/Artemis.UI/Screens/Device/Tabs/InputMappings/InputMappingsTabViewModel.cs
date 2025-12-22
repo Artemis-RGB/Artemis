@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
@@ -31,7 +32,7 @@ public partial class InputMappingsTabViewModel : ActivatableViewModelBase
 
         Device = device;
         DisplayName = "Input Mappings";
-        InputMappings = new ObservableCollection<ArtemisInputMapping>();
+        InputMappings = [];
         DeleteMapping = ReactiveCommand.Create<ArtemisInputMapping>(ExecuteDeleteMapping);
         
         this.WhenActivated(d =>

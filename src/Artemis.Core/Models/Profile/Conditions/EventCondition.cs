@@ -34,7 +34,7 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         _entity = new EventConditionEntity();
         _displayName = profileElement.GetType().Name;
         _startNode = new EventConditionEventStartNode {X = -300};
-        _script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile, new List<DefaultNode> {_startNode});
+        _script = new NodeScript<bool>($"Activate {_displayName}", $"Whether or not the event should activate the {_displayName}", ProfileElement.Profile, [_startNode]);
     }
 
     internal EventCondition(EventConditionEntity entity, RenderProfileElement profileElement)
@@ -288,8 +288,8 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         string name = $"Activate {_displayName}";
         string description = $"Whether or not the event should activate the {_displayName}";
         Script = _entity.Script != null
-            ? new NodeScript<bool>(name, description, _entity.Script, ProfileElement.Profile, new List<DefaultNode> {_startNode})
-            : new NodeScript<bool>(name, description, ProfileElement.Profile, new List<DefaultNode> {_startNode});
+            ? new NodeScript<bool>(name, description, _entity.Script, ProfileElement.Profile, [_startNode])
+            : new NodeScript<bool>(name, description, ProfileElement.Profile, [_startNode]);
     }
 
     /// <inheritdoc />

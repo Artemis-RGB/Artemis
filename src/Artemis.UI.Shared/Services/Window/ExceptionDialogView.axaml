@@ -22,9 +22,7 @@
 
         <StackPanel Grid.Row="2" Margin="20">
             <TextBlock Classes="h3">Awww :(</TextBlock>
-            <TextBlock>
-                It looks like Artemis ran into an unhandled exception. If this keeps happening feel free to hit us up on Discord.
-            </TextBlock>
+            <TextBlock Text="{CompiledBinding Message}"/>
         </StackPanel>
 
         <Grid Grid.Row="3" ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
@@ -42,7 +40,7 @@
             </TextBlock>
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="15">
                 <Button Command="{CompiledBinding CopyException}" Classes="AppBarButton" Width="150" Margin="0 0 5 0">
-                    Copy exception
+                    Copy error
                 </Button>
                 <Button Command="{CompiledBinding Close}" Width="150" Margin="5 0 0 0">
                     Close

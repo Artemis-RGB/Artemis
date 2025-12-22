@@ -24,22 +24,32 @@
             <Button Command="{CompiledBinding Browse}" Margin="0 20">Browse file</Button>
         </StackPanel>
         <Border Grid.Row="1" Classes="card" ClipToBounds="True" IsVisible="{CompiledBinding SelectedPlugin, Converter={x:Static ObjectConverters.IsNotNull}}">
-            <Grid RowDefinitions="30,30,30,30,Auto" ColumnDefinitions="200,Auto">
-                <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold">Path</TextBlock>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{CompiledBinding Path}"></TextBlock>
-                
-                <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="SemiBold">Name</TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Name}"></TextBlock>
-
-                <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="SemiBold">Description</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Description}"></TextBlock>
-                
-                <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="SemiBold">Main entry point</TextBlock>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Main}"></TextBlock>
-                
-                <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="SemiBold">Version</TextBlock>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Version}"></TextBlock>
-            </Grid>
+            <StackPanel Orientation="Vertical" Spacing="5">
+                <Grid ColumnDefinitions="200,*">
+                    <TextBlock Grid.Column="0" FontWeight="SemiBold">Path</TextBlock>
+                    <TextBlock Grid.Column="1" Text="{CompiledBinding Path}" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+                <Grid ColumnDefinitions="200,*">
+                    <TextBlock Grid.Column="0" FontWeight="SemiBold">Name</TextBlock>
+                    <TextBlock Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Name}" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+                <Grid ColumnDefinitions="200,*">
+                    <TextBlock Grid.Column="0" FontWeight="SemiBold">Description</TextBlock>
+                    <TextBlock Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Description}" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+                <Grid ColumnDefinitions="200,*">
+                    <TextBlock Grid.Column="0" FontWeight="SemiBold">Main entry point</TextBlock>
+                    <TextBlock Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Main}" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+                <Grid ColumnDefinitions="200,*">
+                    <TextBlock Grid.Column="0" FontWeight="SemiBold">Version</TextBlock>
+                    <TextBlock Grid.Column="1" Text="{CompiledBinding SelectedPlugin.Version}" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+                <Grid ColumnDefinitions="200,*" IsVisible="{CompiledBinding SelectedPlugin.MinimumVersion, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <TextBlock Grid.Column="0" FontWeight="SemiBold">Min. Artemis version</TextBlock>
+                    <TextBlock Grid.Column="1" Text="{CompiledBinding SelectedPlugin.MinimumVersion}" TextWrapping="Wrap"></TextBlock>
+                </Grid>
+            </StackPanel>
         </Border>
     </Grid>
 

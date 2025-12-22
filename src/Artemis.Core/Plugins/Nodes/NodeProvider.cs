@@ -18,7 +18,7 @@ public abstract class NodeProvider : PluginFeature
     /// </summary>
     public NodeProvider()
     {
-        _nodeDescriptors = new List<NodeData>();
+        _nodeDescriptors = [];
         NodeDescriptors = new ReadOnlyCollection<NodeData>(_nodeDescriptors);
         Disabled += OnDisabled;
     }

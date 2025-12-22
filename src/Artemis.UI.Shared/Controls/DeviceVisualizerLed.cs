@@ -105,11 +105,11 @@ internal class DeviceVisualizerLed
             Geometry geometry = Geometry.Parse(Led.RgbLed.ShapeData);
             geometry.Transform = new TransformGroup
             {
-                Children = new Transforms
-                {
+                Children =
+                [
                     new ScaleTransform(width, height),
                     new TranslateTransform(Led.RgbLed.Location.X + deflateAmount / 2, Led.RgbLed.Location.Y + deflateAmount / 2)
-                }
+                ]
             };
             DisplayGeometry = geometry;
         }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +32,7 @@ public partial class AccountTabViewModel : RoutableScreen
     [Notify(Setter.Private)] private string? _name;
     [Notify(Setter.Private)] private string? _email;
     [Notify(Setter.Private)] private string? _avatarUrl;
-    [Notify(Setter.Private)] private ObservableCollection<PersonalAccessToken> _personalAccessTokens = new();
+    [Notify(Setter.Private)] private ObservableCollection<PersonalAccessToken> _personalAccessTokens = [];
 
     public AccountTabViewModel(IWindowService windowService, IAuthenticationService authenticationService, IUserManagementService userManagementService)
     {

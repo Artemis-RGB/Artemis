@@ -14,7 +14,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using DryIoc;
 using HotAvalonia;
 using ReactiveUI;
@@ -52,7 +52,7 @@ public class App : Application
         if (_container == null)
             throw new InvalidOperationException("Container is null");
         
-        _applicationStateManager = new ApplicationStateManager(_container, desktop.Args ?? Array.Empty<string>());
+        _applicationStateManager = new ApplicationStateManager(_container, desktop.Args ?? []);
         _suspensionManager = new SuspensionManager(_container);
         ArtemisBootstrapper.Initialize();
         RegisterProviders(_container);

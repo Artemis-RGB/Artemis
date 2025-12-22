@@ -30,7 +30,7 @@ public static class EnumUtilities
         if (!t.IsEnum)
             throw new ArgumentException($"{t} must be an enum type");
 
-        return Enum.GetValues(t).Cast<Enum>().Select(e => (e, e.Humanize())).ToList();
+        return Enum.GetValues(t).Cast<Enum>().Select(e => (e, HumanizeValue(e))).ToList();
     }
 
     /// <summary>
@@ -40,6 +40,6 @@ public static class EnumUtilities
     /// <returns>A humanized string describing the given value</returns>
     public static string HumanizeValue(Enum value)
     {
-        return value.Humanize();
+        return value.ToString().Humanize();
     }
 }

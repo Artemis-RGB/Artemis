@@ -1,6 +1,5 @@
 ﻿using Artemis.UI.Screens.ProfileEditor.MenuBar;
 using Artemis.UI.Screens.Root;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 
 namespace Artemis.UI.Screens.ProfileEditor;

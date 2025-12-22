@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -59,7 +60,7 @@ public partial class PerformanceDebugViewModel : ActivatableViewModelBase
         });
     }
 
-    public ObservableCollection<PerformanceDebugPluginViewModel> Items { get; } = new();
+    public ObservableCollection<PerformanceDebugPluginViewModel> Items { get; } = [];
     
     private void HandleActivation()
     {

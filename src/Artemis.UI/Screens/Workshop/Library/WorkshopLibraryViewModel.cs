@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Routing;
 using Artemis.UI.Shared.Routing;
 using ReactiveUI;
 using System;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using PropertyChanged.SourceGenerator;
 
@@ -23,11 +23,11 @@ public partial class WorkshopLibraryViewModel : RoutableHostScreen<RoutableScree
     {
         _router = router;
 
-        Tabs = new ObservableCollection<RouteViewModel>
-        {
-            new("Installed", "workshop/library/installed"),
-            new("Submissions", "workshop/library/submissions")
-        };
+        Tabs =
+        [
+            new RouteViewModel("Installed", "workshop/library/installed"),
+            new RouteViewModel("Submissions", "workshop/library/submissions")
+        ];
 
         this.WhenActivated(d =>
         {

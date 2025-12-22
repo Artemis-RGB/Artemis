@@ -1,11 +1,5 @@
 ﻿using System.Reactive;
-using Artemis.UI.Shared;
 using ReactiveUI;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Artemis.Core;
-using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services;
 
 namespace Artemis.UI.Screens.StartupWizard.Steps;

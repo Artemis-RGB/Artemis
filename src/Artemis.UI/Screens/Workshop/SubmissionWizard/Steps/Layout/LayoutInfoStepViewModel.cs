@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Screens.Workshop.Layout;
@@ -20,7 +20,7 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
     private readonly Func<ArtemisLayout, LayoutInfoViewModel> _getLayoutInfoViewModel;
     private ArtemisLayout? _layout;
     [Notify(Setter.Private)] private bool _isKeyboardLayout;
-    [Notify] private ObservableCollection<LayoutInfoViewModel> _layoutInfo = new();
+    [Notify] private ObservableCollection<LayoutInfoViewModel> _layoutInfo = [];
     [Notify] private KeyboardLayoutType _physicalLayout;
 
     public LayoutInfoStepViewModel(Func<ArtemisLayout, LayoutInfoViewModel> getLayoutInfoViewModel)
@@ -94,7 +94,7 @@ public partial class LayoutInfoStepViewModel : SubmissionViewModel
                 ? $"{layoutEntrySource.Layout.RgbLayout.Vendor} {layoutEntrySource.Layout.RgbLayout.Type} device layout"
                 : $"{layoutEntrySource.Layout.RgbLayout.Type} device layout";
         
-        State.Categories = new List<long> {8}; // Device category, yes this could change but why would it
+        State.Categories = [8]; // Device category, yes this could change but why would it
         if (State.EntryId == null)
             State.ChangeScreen<SpecificationsStepViewModel>();
         else

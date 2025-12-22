@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.UI.Screens.Debugger.DataModel;
 using Artemis.UI.Screens.Debugger.Logs;
 using Artemis.UI.Screens.Debugger.Performance;
@@ -20,7 +21,7 @@ public partial class DebugViewModel : ActivatableViewModelBase, IScreen
 
     public DebugViewModel(IDebugService debugService, RenderDebugViewModel render, DataModelDebugViewModel dataModel, PerformanceDebugViewModel performance, RoutingDebugViewModel routing, WorkshopDebugViewModel workshop, LogsDebugViewModel logs)
     {
-        Items = new ObservableCollection<ViewModelBase> {render, dataModel, performance, routing, workshop, logs};
+        Items = [render, dataModel, performance, routing, workshop, logs];
         _selectedItem = render;
 
         this.WhenActivated(d => Disposable.Create(debugService.ClearDebugger).DisposeWith(d));

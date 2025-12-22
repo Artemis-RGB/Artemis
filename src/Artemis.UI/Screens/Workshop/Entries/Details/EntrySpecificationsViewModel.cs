@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.UI.Extensions;
@@ -13,7 +12,6 @@ using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Services;
 using Avalonia.Media.Imaging;
-using AvaloniaEdit.Document;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Binding;
@@ -78,8 +76,8 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
 
     public ReactiveCommand<Unit, Unit> SelectIcon { get; }
 
-    public ObservableCollection<CategoryViewModel> Categories { get; } = new();
-    public ObservableCollection<string> Tags { get; } = new();
+    public ObservableCollection<CategoryViewModel> Categories { get; } = [];
+    public ObservableCollection<string> Tags { get; } = [];
     public ReadOnlyObservableCollection<long> SelectedCategories { get; }
 
     public bool CategoriesValid => _categoriesValid.Value;
@@ -87,7 +85,7 @@ public partial class EntrySpecificationsViewModel : ValidatableViewModelBase
     public bool DescriptionValid => _descriptionValid.Value;
     public bool IsAdministrator { get; }
 
-    public List<long> PreselectedCategories { get; set; } = new();
+    public List<long> PreselectedCategories { get; set; } = [];
     public EntryType EntryType { get; set; }
 
     private async Task ExecuteSelectIcon()

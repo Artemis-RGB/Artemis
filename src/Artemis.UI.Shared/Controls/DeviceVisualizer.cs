@@ -34,13 +34,13 @@ public class DeviceVisualizer : Control
     private RenderTargetBitmap? _deviceImage;
     private ArtemisDevice? _oldDevice;
     private bool _loading;
-    private Color[] _previousState = Array.Empty<Color>();
+    private Color[] _previousState = [];
     
     /// <inheritdoc />
     public DeviceVisualizer()
     {
         _renderService = UI.Locator.Resolve<IRenderService>();
-        _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
+        _deviceVisualizerLeds = [];
 
         PointerReleased += OnPointerReleased;
         PropertyChanged += OnPropertyChanged;

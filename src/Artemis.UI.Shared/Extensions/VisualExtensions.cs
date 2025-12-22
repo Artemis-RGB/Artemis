@@ -18,7 +18,7 @@ public static class VisualExtensions
     /// <returns>A recursive list of all visual children of type <typeparamref name="T" />.</returns>
     public static List<T> GetVisualChildrenOfType<T>(this Visual root)
     {
-        List<T> result = new();
+        List<T> result = [];
 
         List<Visual>? visualChildren = root.GetVisualChildren()?.ToList();
         if (visualChildren == null || !visualChildren.Any())
@@ -43,7 +43,7 @@ public static class VisualExtensions
     /// <returns>A recursive list of all visual children with a data context of type <typeparamref name="T" />.</returns>
     public static List<T> GetVisualChildrenOfDataContextType<T>(this Visual root)
     {
-        List<T> result = new();
+        List<T> result = [];
 
         List<Visual>? visualChildren = root.GetVisualChildren()?.ToList();
         if (visualChildren == null || !visualChildren.Any())

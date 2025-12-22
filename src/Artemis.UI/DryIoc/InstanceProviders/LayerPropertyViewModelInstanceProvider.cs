@@ -28,7 +28,7 @@ public class PropertyVmFactory : IPropertyVmFactory
             throw new ArtemisUIException("Could not find the LayerProperty type");
 
         Type? genericType = typeof(TimelinePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
-        return (ITimelinePropertyViewModel)_container.Resolve(genericType, new object[] { layerProperty, propertyViewModel });
+        return (ITimelinePropertyViewModel)_container.Resolve(genericType, [layerProperty, propertyViewModel]);
     }
 
     public ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, PropertyViewModel propertyViewModel)
@@ -42,6 +42,6 @@ public class PropertyVmFactory : IPropertyVmFactory
 
         Type? genericType = typeof(TreePropertyViewModel<>).MakeGenericType(layerPropertyType.GetGenericArguments());
 
-        return (ITreePropertyViewModel)_container.Resolve(genericType, new object[] { layerProperty, propertyViewModel });
+        return (ITreePropertyViewModel)_container.Resolve(genericType, [layerProperty, propertyViewModel]);
     }
 }

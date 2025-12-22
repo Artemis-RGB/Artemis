@@ -27,7 +27,7 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
         Path = "";
         Entity = new DataModelPathEntity();
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = [];
 
         Save();
         Initialize();
@@ -45,7 +45,7 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
         Path = path ?? throw new ArgumentNullException(nameof(path));
         Entity = new DataModelPathEntity();
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = [];
 
         Save();
         Initialize();
@@ -65,7 +65,7 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
         Path = dataModelPath.Path;
         Entity = new DataModelPathEntity();
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = [];
 
         Save();
         Initialize();
@@ -81,7 +81,7 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
         Path = entity.Path;
         Entity = entity;
 
-        _segments = new LinkedList<DataModelPathSegment>();
+        _segments = [];
 
         Load();
         Initialize();

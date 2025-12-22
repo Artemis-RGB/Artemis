@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <OutputPath>bin/</OutputPath>
         <Platforms>x64</Platforms>
@@ -34,16 +34,5 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Screens\StartupWizard\Steps\WorkshopUnreachableStepView.axaml.cs">
-        <DependentUpon>WorkshopUnreachableStepView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Screens\Profiles\" />
     </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using System.Reactive.Disposables.Fluent;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.UI.Routing;
@@ -21,15 +20,15 @@ public partial class SettingsViewModel : RoutableHostScreen<RoutableScreen>, IMa
     public SettingsViewModel(IRouter router)
     {
         _router = router;
-        SettingTabs = new ObservableCollection<RouteViewModel>
-        {
-            new("General", "settings/general"),
-            new("Plugins", "settings/plugins"),
-            new("Devices", "settings/devices"),
-            new("Releases", "settings/releases"),
-            new("Account", "settings/account"),
-            new("About", "settings/about"),
-        };
+        SettingTabs =
+        [
+            new RouteViewModel("General", "settings/general"),
+            new RouteViewModel("Plugins", "settings/plugins"),
+            new RouteViewModel("Devices", "settings/devices"),
+            new RouteViewModel("Releases", "settings/releases"),
+            new RouteViewModel("Account", "settings/account"),
+            new RouteViewModel("About", "settings/about")
+        ];
         
         // Navigate on tab change
         this.WhenActivated(d =>  this.WhenAnyValue(vm => vm.SelectedTab)

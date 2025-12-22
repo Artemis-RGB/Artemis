@@ -3,8 +3,7 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Artemis.UI.Screens.ProfileEditor.VisualEditor.Visualizers;
 

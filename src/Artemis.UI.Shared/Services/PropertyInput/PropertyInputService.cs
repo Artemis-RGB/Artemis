@@ -15,7 +15,7 @@ internal class PropertyInputService : IPropertyInputService
     public PropertyInputService(IContainer container)
     {
         _container = container;
-        _registeredPropertyEditors = new List<PropertyInputRegistration>();
+        _registeredPropertyEditors = [];
         RegisteredPropertyEditors = new ReadOnlyCollection<PropertyInputRegistration>(_registeredPropertyEditors);
     }
 
@@ -113,6 +113,6 @@ internal class PropertyInputService : IPropertyInputService
         // ReSharper disable once InconsistentlySynchronizedField
         // When you've just spent the last 2 hours trying to figure out a deadlock and reach this line, I'm so, so sorry. I thought this would be fine.
         IContainer container = registration?.Plugin.Container ?? _container;
-        return (PropertyInputViewModel<T>) container.Resolve(viewModelType, args: new object[] { layerProperty });
+        return (PropertyInputViewModel<T>) container.Resolve(viewModelType, args: [layerProperty]);
     }
 }

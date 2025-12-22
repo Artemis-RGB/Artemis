@@ -21,7 +21,7 @@ public abstract class RenderProfileElement : ProfileElement
 
     internal RenderProfileElement(ProfileElement parent, Profile profile) : base(profile)
     {
-        _layerEffects = new List<BaseLayerEffect>();
+        _layerEffects = [];
         _displayCondition = new AlwaysOnCondition(this);
         Timeline = new Timeline();
         LayerEffects = new ReadOnlyCollection<BaseLayerEffect>(_layerEffects);

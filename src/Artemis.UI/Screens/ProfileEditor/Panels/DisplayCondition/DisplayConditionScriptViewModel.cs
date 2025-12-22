@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.DryIoc.Factories;
@@ -24,14 +24,14 @@ public class DisplayConditionScriptViewModel : ActivatableViewModelBase
         _profileEditorService = profileEditorService;
         _conditionVmFactory = conditionVmFactory;
 
-        ConditionTypeViewModels = new ObservableCollection<ConditionTypeViewModel>
-        {
-            new("Always", "The element is always active.", typeof(AlwaysOnCondition)),
-            new("Once", "The element is shown once until its timeline is finished.", typeof(PlayOnceCondition)),
-            new("Conditional", "The element is activated when the provided visual script ends in true.", typeof(StaticCondition)),
-            new("On event", "The element is activated when the selected event fires.\r\n" +
-                            "Events that contain data can conditionally trigger the layer using a visual script.", typeof(EventCondition))
-        };
+        ConditionTypeViewModels =
+        [
+            new ConditionTypeViewModel("Always", "The element is always active.", typeof(AlwaysOnCondition)),
+            new ConditionTypeViewModel("Once", "The element is shown once until its timeline is finished.", typeof(PlayOnceCondition)),
+            new ConditionTypeViewModel("Conditional", "The element is activated when the provided visual script ends in true.", typeof(StaticCondition)),
+            new ConditionTypeViewModel("On event", "The element is activated when the selected event fires.\r\n" +
+                                                   "Events that contain data can conditionally trigger the layer using a visual script.", typeof(EventCondition))
+        ];
 
         this.WhenActivated(d =>
         {

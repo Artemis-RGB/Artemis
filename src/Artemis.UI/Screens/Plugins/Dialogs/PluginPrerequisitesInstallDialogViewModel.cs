@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -12,7 +12,6 @@ using Artemis.UI.Screens.Plugins.Prerequisites;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Avalonia.Threading;
-using FluentAvalonia.Core;
 using FluentAvalonia.UI.Controls;
 using PropertyChanged.SourceGenerator;
 using ReactiveUI;
@@ -34,7 +33,7 @@ public partial class PluginPrerequisitesInstallDialogViewModel : ContentDialogVi
 
     public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory)
     {
-        Prerequisites = new ObservableCollection<PluginPrerequisiteViewModel>();
+        Prerequisites = [];
         foreach (PluginPrerequisite prerequisite in subjects.SelectMany(prerequisitesSubject => prerequisitesSubject.PlatformPrerequisites))
             Prerequisites.Add(prerequisitesVmFactory.PluginPrerequisiteViewModel(prerequisite, false));
         Install = ReactiveCommand.Create(ExecuteInstall, this.WhenAnyValue(vm => vm.CanInstall));

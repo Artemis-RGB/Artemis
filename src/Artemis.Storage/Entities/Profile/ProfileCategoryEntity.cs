@@ -16,5 +16,5 @@ public class ProfileCategoryEntity
     public bool IsSuspended { get; set; }
     public int Order { get; set; }
 
-    public List<ProfileContainerEntity> ProfileConfigurations { get; set; } = new();
+    public List<ProfileContainerEntity> ProfileConfigurations { get; set; } = [];
 }

@@ -79,6 +79,7 @@ fragment entryDetails on Entry {
 fragment release on Release {
     id
     version
+    minimumVersion
     downloadSize
     md5Hash
     createdAt

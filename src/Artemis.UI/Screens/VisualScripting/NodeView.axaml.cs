@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.VisualScripting;
@@ -49,7 +48,7 @@ public partial class NodeView : ReactiveUserControl<NodeViewModel>
         }
         else
         {
-            ViewModel.NodeScriptViewModel.UpdateNodeSelection(new List<NodeViewModel> {ViewModel}, e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
+            ViewModel.NodeScriptViewModel.UpdateNodeSelection([ViewModel], e.KeyModifiers.HasFlag(KeyModifiers.Shift), e.KeyModifiers.HasFlag(KeyModifiers.Control));
             ViewModel.NodeScriptViewModel.FinishNodeSelection();
         }
 
@@ -68,7 +67,7 @@ public partial class NodeView : ReactiveUserControl<NodeViewModel>
 
             if (!ViewModel.IsSelected)
             {
-                ViewModel.NodeScriptViewModel.UpdateNodeSelection(new List<NodeViewModel> {ViewModel}, false, false);
+                ViewModel.NodeScriptViewModel.UpdateNodeSelection([ViewModel], false, false);
                 ViewModel.NodeScriptViewModel.FinishNodeSelection();
             }
 

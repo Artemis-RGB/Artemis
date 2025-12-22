@@ -12,7 +12,7 @@ internal class SurfaceArrangementType
         SurfaceArrangement = surfaceArrangement;
         DeviceType = deviceType;
         ZIndex = zIndex;
-        Configurations = new List<SurfaceArrangementConfiguration>();
+        Configurations = [];
     }
 
     public SurfaceArrangement SurfaceArrangement { get; }

@@ -54,7 +54,7 @@ public static class ContainerExtensions
 
         // Bind plugin service interfaces, DryIoc expects at least one match when calling RegisterMany so ensure there is something to register first
         if (plugin.Assembly != null && plugin.Assembly.GetTypes().Any(t => t.IsAssignableTo<IPluginService>()))
-            container.RegisterMany(new[] {plugin.Assembly}, type => type.IsAssignableTo<IPluginService>(), Reuse.Singleton, ifAlreadyRegistered: IfAlreadyRegistered.Keep);
+            container.RegisterMany([plugin.Assembly], type => type.IsAssignableTo<IPluginService>(), Reuse.Singleton, ifAlreadyRegistered: IfAlreadyRegistered.Keep);
     }
 
     private static bool HasAccessToProtectedService(Request request)

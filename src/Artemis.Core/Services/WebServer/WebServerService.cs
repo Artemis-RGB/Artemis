@@ -12,7 +12,6 @@ using GenHTTP.Api.Protocol;
 using GenHTTP.Engine.Internal;
 using GenHTTP.Modules.Conversion;
 using GenHTTP.Modules.Conversion.Serializers;
-using GenHTTP.Modules.ErrorHandling;
 using GenHTTP.Modules.Layouting;
 using GenHTTP.Modules.Layouting.Provider;
 using GenHTTP.Modules.Practices;
@@ -43,7 +42,7 @@ internal class WebServerService : IWebServerService, IDisposable
     {
         _logger = logger;
         _coreService = coreService;
-        _controllers = new List<WebApiControllerRegistration>();
+        _controllers = [];
 
         _webServerEnabledSetting = settingsService.GetSetting("WebServer.Enabled", true);
         _webServerRemoteAccessSetting = settingsService.GetSetting("WebServer.RemoteAccess", false);

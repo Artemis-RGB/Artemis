@@ -9,7 +9,7 @@ internal class M0023LayoutProviders : IStorageMigration
     public void Apply(LiteRepository repository)
     {
         ILiteCollection<BsonDocument> deviceEntities = repository.Database.GetCollection("DeviceEntity");
-        List<BsonDocument> toUpdate = new();
+        List<BsonDocument> toUpdate = [];
 
         foreach (BsonDocument bsonDocument in deviceEntities.FindAll())
         {

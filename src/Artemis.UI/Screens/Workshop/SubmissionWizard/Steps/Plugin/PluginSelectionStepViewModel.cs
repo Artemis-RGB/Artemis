@@ -6,7 +6,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Profile;
 using Artemis.UI.Shared.Services;
 using Artemis.WebClient.Workshop.Handlers.UploadHandlers;
 using PropertyChanged.SourceGenerator;

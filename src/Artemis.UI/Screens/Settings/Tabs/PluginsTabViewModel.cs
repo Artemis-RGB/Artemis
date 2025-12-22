@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -12,7 +13,7 @@ using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using DynamicData;
 using DynamicData.Binding;
 using PropertyChanged.SourceGenerator;
@@ -28,7 +29,8 @@ public partial class PluginsTabViewModel : RoutableScreen
     private readonly IWindowService _windowService;
     [Notify] private string? _searchPluginInput;
 
-    public PluginsTabViewModel(IRouter router, IPluginManagementService pluginManagementService, INotificationService notificationService, IWindowService windowService, ISettingsVmFactory settingsVmFactory)
+    public PluginsTabViewModel(IRouter router, IPluginManagementService pluginManagementService, INotificationService notificationService, IWindowService windowService,
+        ISettingsVmFactory settingsVmFactory)
     {
         _router = router;
         _pluginManagementService = pluginManagementService;
@@ -37,12 +39,12 @@ public partial class PluginsTabViewModel : RoutableScreen
 
         DisplayName = "Plugins";
 
-        SourceList<Plugin> plugins = new();
-        IObservable<Func<Plugin, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
+        SourceList<PluginInfo> pluginInfos = new();
+        IObservable<Func<PluginInfo, bool>> pluginFilter = this.WhenAnyValue(vm => vm.SearchPluginInput).Throttle(TimeSpan.FromMilliseconds(100)).Select(CreatePredicate);
 
-        plugins.Connect()
+        pluginInfos.Connect()
             .Filter(pluginFilter)
-            .Sort(SortExpressionComparer<Plugin>.Ascending(p => p.Info.Name))
+            .Sort(SortExpressionComparer<PluginInfo>.Ascending(p => p.Name))
             .Transform(settingsVmFactory.PluginSettingsViewModel)
             .ObserveOn(AvaloniaScheduler.Instance)
             .Bind(out ReadOnlyObservableCollection<PluginSettingsViewModel> pluginViewModels)
@@ -51,21 +53,28 @@ public partial class PluginsTabViewModel : RoutableScreen
 
         this.WhenActivated(d =>
         {
-            plugins.AddRange(_pluginManagementService.GetAllPlugins());
+            pluginInfos.AddRange(_pluginManagementService.GetAllPluginInfo());
             Observable.FromEventPattern<PluginEventArgs>(x => _pluginManagementService.PluginLoaded += x, x => _pluginManagementService.PluginLoaded -= x)
-                .Subscribe(a => plugins.Add(a.EventArgs.Plugin))
+                .Subscribe(a =>
+                {
+                    pluginInfos.Edit(l =>
+                    {
+                        if (!l.Contains(a.EventArgs.Plugin.Info))
+                            l.Add(a.EventArgs.Plugin.Info);
+                    });
+                })
                 .DisposeWith(d);
             Observable.FromEventPattern<PluginEventArgs>(x => _pluginManagementService.PluginUnloaded += x, x => _pluginManagementService.PluginUnloaded -= x)
-                .Subscribe(a => plugins.Remove(a.EventArgs.Plugin))
+                .Subscribe(a => pluginInfos.Remove(a.EventArgs.Plugin.Info))
                 .DisposeWith(d);
-            Disposable.Create(() => plugins.Clear()).DisposeWith(d);
+            Disposable.Create(() => pluginInfos.Clear()).DisposeWith(d);
         });
         ImportPlugin = ReactiveCommand.CreateFromTask(ExecuteImportPlugin);
     }
 
     public ReadOnlyObservableCollection<PluginSettingsViewModel> Plugins { get; }
     public ReactiveCommand<Unit, Unit> ImportPlugin { get; }
-    
+
     public void OpenUrl(string url)
     {
         Utilities.OpenUrl(url);
@@ -107,12 +116,12 @@ public partial class PluginsTabViewModel : RoutableScreen
         }
     }
 
-    private Func<Plugin, bool> CreatePredicate(string? text)
+    private Func<PluginInfo, bool> CreatePredicate(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return _ => true;
 
-        return data => data.Info.MatchesSearch(text) || data.Features.Any(f => f.MatchesSearch(text));
+        return data => data.MatchesSearch(text) || (data.Plugin != null && data.Plugin.Features.Any(f => f.MatchesSearch(text)));
     }
 
     public async Task GetMorePlugins()

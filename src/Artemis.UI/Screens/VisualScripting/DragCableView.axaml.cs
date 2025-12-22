@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Avalonia;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.VisualScripting;
@@ -34,21 +32,21 @@ public partial class DragCableView : ReactiveUserControl<DragCableViewModel>
         
         PathGeometry geometry = new()
         {
-            Figures = new PathFigures()
+            Figures = []
         };
         PathFigure pathFigure = new()
         {
             StartPoint = ViewModel.FromPoint,
             IsClosed = false,
-            Segments = new PathSegments
-            {
+            Segments =
+            [
                 new BezierSegment
                 {
                     Point1 = new Point(ViewModel.FromPoint.X + CABLE_OFFSET, ViewModel.FromPoint.Y),
                     Point2 = new Point(ViewModel.ToPoint.X - CABLE_OFFSET, ViewModel.ToPoint.Y),
                     Point3 = new Point(ViewModel.ToPoint.X, ViewModel.ToPoint.Y)
                 }
-            }
+            ]
         };
         geometry.Figures.Add(pathFigure);
         CablePath.Data = geometry;

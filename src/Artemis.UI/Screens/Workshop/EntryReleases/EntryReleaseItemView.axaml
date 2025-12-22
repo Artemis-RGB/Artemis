@@ -30,5 +30,6 @@
             </TextBlock>
         </StackPanel>
         <avalonia:MaterialIcon Classes="status-icon" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Kind="CheckCircle" ToolTip.Tip="Current version" IsVisible="{CompiledBinding IsCurrentVersion}" />
+        <avalonia:MaterialIcon Classes="status-icon" Foreground="#DAA520" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Kind="Alert" ToolTip.Tip="{CompiledBinding IncompatibilityReason}" IsVisible="{CompiledBinding IncompatibilityReason, Converter={x:Static ObjectConverters.IsNotNull}}" />
     </Grid>
 </UserControl>

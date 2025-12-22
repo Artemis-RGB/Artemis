@@ -1,9 +1,6 @@
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Extensions;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.Threading;
 using ReactiveUI;
 

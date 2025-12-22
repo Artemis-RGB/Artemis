@@ -10,7 +10,7 @@
              x:DataType="plugins:PluginViewModel">
     <Grid RowDefinitions="*,Auto">
         <Grid Grid.Row="0" RowDefinitions="Auto,Auto,*" ColumnDefinitions="80,*, Auto">
-            <shared:ArtemisIcon Icon="{CompiledBinding Plugin.Info.ResolvedIcon}"
+            <shared:ArtemisIcon Icon="{CompiledBinding PluginInfo.ResolvedIcon}"
                                 Width="48"
                                 Height="48"
                                 Margin="0 5 0 0"
@@ -19,8 +19,8 @@
                                 VerticalAlignment="Top" />
 
             <TextBlock Grid.Column="1" Grid.Row="0" Classes="no-margin">
-                <Run Classes="h5" Text="{CompiledBinding Plugin.Info.Name}"/>
-                <Run Classes="subtitle" Text="{CompiledBinding Plugin.Info.Version}"/>
+                <Run Classes="h5" Text="{CompiledBinding PluginInfo.Name}"/>
+                <Run Classes="subtitle" Text="{CompiledBinding PluginInfo.Version}"/>
             </TextBlock>
 
             <ItemsControl Grid.Column="2" Grid.Row="0" IsVisible="{CompiledBinding Platforms.Count}" ItemsSource="{CompiledBinding Platforms}" HorizontalAlignment="Right">
@@ -35,15 +35,15 @@
                        Grid.ColumnSpan="2"
                        Grid.Row="1"
                        Classes="subtitle"
-                       Text="{CompiledBinding Plugin.Info.Author}"
-                       IsVisible="{CompiledBinding Plugin.Info.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                       Text="{CompiledBinding PluginInfo.Author}"
+                       IsVisible="{CompiledBinding PluginInfo.Author, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
             <TextBlock Grid.Column="1"
                        Grid.ColumnSpan="2"
                        Grid.Row="2"
                        TextWrapping="Wrap"
                        Margin="0 5"
-                       Text="{CompiledBinding Plugin.Info.Description}" />
+                       Text="{CompiledBinding PluginInfo.Description}" />
         </Grid>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
@@ -93,21 +93,21 @@
                     <avalonia:MaterialIcon Kind="Cog" />
                 </HyperlinkButton>
                 <HyperlinkButton Classes="icon-button icon-button-large"
-                                          IsVisible="{CompiledBinding Plugin.Info.HelpPage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                          NavigateUri="{CompiledBinding Plugin.Info.HelpPage}"
-                                          ToolTip.Tip="{CompiledBinding Plugin.Info.HelpPage}">
+                                          IsVisible="{CompiledBinding PluginInfo.HelpPage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding PluginInfo.HelpPage}"
+                                          ToolTip.Tip="{CompiledBinding PluginInfo.HelpPage}">
                     <avalonia:MaterialIcon Kind="Quiz" />
                 </HyperlinkButton>
                 <HyperlinkButton Classes="icon-button icon-button-large"
-                                          IsVisible="{CompiledBinding Plugin.Info.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                          NavigateUri="{CompiledBinding Plugin.Info.Website}"
-                                          ToolTip.Tip="{CompiledBinding Plugin.Info.Website}">
+                                          IsVisible="{CompiledBinding PluginInfo.Website, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding PluginInfo.Website}"
+                                          ToolTip.Tip="{CompiledBinding PluginInfo.Website}">
                     <avalonia:MaterialIcon Kind="Web" />
                 </HyperlinkButton>
                 <HyperlinkButton Classes="icon-button icon-button-large"
-                                          IsVisible="{CompiledBinding Plugin.Info.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                          NavigateUri="{CompiledBinding Plugin.Info.Repository}"
-                                          ToolTip.Tip="{CompiledBinding Plugin.Info.Repository}">
+                                          IsVisible="{CompiledBinding PluginInfo.Repository, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                          NavigateUri="{CompiledBinding PluginInfo.Repository}"
+                                          ToolTip.Tip="{CompiledBinding PluginInfo.Repository}">
                     <avalonia:MaterialIcon Kind="Git" />
                 </HyperlinkButton>
             </StackPanel>
@@ -118,13 +118,13 @@
                       HorizontalAlignment="Right"
                       IsVisible="{CompiledBinding !Enabling}"
                       IsChecked="{CompiledBinding IsEnabled, Mode=OneWay}"
-                      IsEnabled="{CompiledBinding Plugin.Info.IsCompatible}">
+                      IsEnabled="{CompiledBinding CanEnablePlugin}">
                 <StackPanel x:Name="EnableText" Orientation="Horizontal">
                     <TextBlock>Enable plugin</TextBlock>
                     <avalonia:MaterialIcon Kind="ShieldHalfFull"
                                            Margin="5 0 0 0"
                                            ToolTip.Tip="Plugin requires admin rights"
-                                           IsVisible="{CompiledBinding Plugin.Info.RequiresAdmin}" />
+                                           IsVisible="{CompiledBinding PluginInfo.RequiresAdmin}" />
                 </StackPanel>
             </CheckBox>
 

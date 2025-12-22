@@ -1,8 +1,7 @@
 using System;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.UI.Shared.Routing;
-using Avalonia.ReactiveUI;
-using Avalonia.Threading;
+using ReactiveUI.Avalonia;
 using ReactiveUI;
 
 namespace Artemis.UI.Screens.Root;

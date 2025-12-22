@@ -8,7 +8,7 @@ namespace Artemis.Core.DryIoc.Factories;
 
 internal class PluginSettingsFactory : IPluginSettingsFactory
 {
-    private static readonly List<PluginSettings> PluginSettings = new();
+    private static readonly List<PluginSettings> PluginSettings = [];
     private readonly IPluginManagementService _pluginManagementService;
     private readonly IPluginRepository _pluginRepository;
 

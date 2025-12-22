@@ -23,7 +23,7 @@ public sealed class Profile : ProfileElement
         ProfileEntity = profileEntity;
         EntityId = profileEntity.Id;
 
-        Exceptions = new List<Exception>();
+        Exceptions = [];
 
         Load();
     }

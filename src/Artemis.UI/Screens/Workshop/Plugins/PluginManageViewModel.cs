@@ -44,6 +44,12 @@ public partial class PluginManageViewModel : RoutableScreen<WorkshopDetailParame
         await _router.GoUp();
     }
 
+    public void ViewLoadException()
+    {
+        if (PluginViewModel?.PluginInfo.LoadException != null)
+            _windowService.ShowExceptionDialog("Plugin failed to load", PluginViewModel.PluginInfo.LoadException);
+    }
+
     /// <inheritdoc />
     public override async Task OnNavigating(WorkshopDetailParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
@@ -59,8 +65,8 @@ public partial class PluginManageViewModel : RoutableScreen<WorkshopDetailParame
             return;
         }
 
-        Plugin? plugin = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginId);
-        if (plugin == null)
+        PluginInfo? pluginInfo = _pluginManagementService.GetAllPluginInfo().FirstOrDefault(p => p.Guid == pluginId);
+        if (pluginInfo == null)
         {
             // TODO: Fix cancelling without this workaround, currently navigation is stopped but the page still opens
             Dispatcher.UIThread.InvokeAsync(async () =>
@@ -71,8 +77,8 @@ public partial class PluginManageViewModel : RoutableScreen<WorkshopDetailParame
             return;
         }
 
-        PluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
-        PluginFeatures = new ObservableCollection<PluginFeatureViewModel>(plugin.Features.Select(f => _settingsVmFactory.PluginFeatureViewModel(f, false)));
+        PluginViewModel = _settingsVmFactory.PluginViewModel(pluginInfo, ReactiveCommand.Create(() => { }));
+        PluginFeatures = new ObservableCollection<PluginFeatureViewModel>(pluginInfo.Plugin?.Features.Select(f => _settingsVmFactory.PluginFeatureViewModel(f, false)) ?? []);
 
         // If additional arguments were provided and it is a boolean, auto-enable the plugin
         if (args.Options.AdditionalArguments is true)

@@ -21,10 +21,10 @@ internal sealed class Win32VkContext : VkContext
         (GraphicsFamily, PresentFamily) = FindQueueFamilies();
 
         DeviceQueueCreateInfo[] queueInfos =
-        {
-            new() {QueueFamilyIndex = GraphicsFamily, QueuePriorities = new[] {1f}},
-            new() {QueueFamilyIndex = PresentFamily, QueuePriorities = new[] {1f}}
-        };
+        [
+            new() {QueueFamilyIndex = GraphicsFamily, QueuePriorities = [1f]},
+            new() {QueueFamilyIndex = PresentFamily, QueuePriorities = [1f]}
+        ];
         Device = PhysicalDevice.CreateDevice(queueInfos, null, null);
         GraphicsQueue = Device.GetQueue(GraphicsFamily, 0);
         PresentQueue = Device.GetQueue(PresentFamily, 0);

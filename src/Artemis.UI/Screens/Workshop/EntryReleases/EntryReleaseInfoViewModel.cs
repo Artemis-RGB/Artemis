@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Workshop.EntryReleases.Dialogs;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
@@ -37,6 +39,7 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
     [Notify] private bool _isCurrentVersion;
     [Notify] private bool _installationInProgress;
     [Notify] private bool _inDetailsScreen;
+    [Notify] private string? _incompatibilityReason;
 
     private CancellationTokenSource? _cts;
 
@@ -66,9 +69,11 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
             }).DisposeWith(d);
 
             IsCurrentVersion = Release != null && _workshopService.GetInstalledEntry(Release.Entry.Id)?.ReleaseId == Release.Id;
+            IncompatibilityReason = Release != null && !Release.IsCompatible() ? $"Requires Artemis v{Version.FromLong(Release.MinimumVersion!.Value)} or later" : null;
         });
 
         this.WhenAnyValue(vm => vm.Release).Subscribe(r => IsCurrentVersion = r != null && _workshopService.GetInstalledEntry(r.Entry.Id)?.ReleaseId == r.Id);
+        this.WhenAnyValue(vm => vm.Release).Subscribe(r => IncompatibilityReason = r != null && !r.IsCompatible() ? $"Requires Artemis v{Version.FromLong(r.MinimumVersion!.Value)} or later" : null);
 
         InDetailsScreen = true;
     }
@@ -130,7 +135,17 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
             }
             else if (!_cts.IsCancellationRequested)
             {
-                _notificationService.CreateNotification().WithTitle("Installation failed").WithMessage(result.Message).WithSeverity(NotificationSeverity.Error).Show();
+                if (result.Exception != null)
+                {
+                    // Not taking the fall on this one :')
+                    _windowService.ShowExceptionDialog(
+                        "Failed to install workshop entry",
+                        result.Exception,
+                        "Make sure the entry is compatible with this version of Artemis or reach out to the author for support."
+                    );
+                }
+                else
+                    await _windowService.ShowConfirmContentDialog("Failed to install workshop entry", result.Message ?? "Unknown error", "Close", null);
             }
         }
         catch (Exception e)

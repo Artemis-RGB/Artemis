@@ -1,6 +1,5 @@
 ﻿using Artemis.Core;
 using Artemis.WebClient.Workshop.Models;
-using Artemis.WebClient.Workshop.Services;
 
 namespace Artemis.WebClient.Workshop.Handlers.InstallationHandlers;
 
@@ -15,6 +14,11 @@ public class EntryInstallResult
     /// Gets a message describing the result of the installation.
     /// </summary>
     public string? Message { get; private set; }
+
+    /// <summary>
+    /// Gets an exception thrown during the installation process, if any.
+    /// </summary>
+    public Exception? Exception { get; private set; }
 
     /// <summary>
     /// Gets the entry that was installed, if any.
@@ -33,6 +37,16 @@ public class EntryInstallResult
         {
             IsSuccess = false,
             Message = message
+        };
+    }
+    
+    public static EntryInstallResult FromException(Exception exception)
+    {
+        return new EntryInstallResult
+        {
+            IsSuccess = false,
+            Message = exception.Message,
+            Exception = exception
         };
     }
 

@@ -14,7 +14,7 @@ public class PerformanceDebugPluginViewModel : ViewModelBase
 
     public Plugin Plugin { get; }
 
-    public ObservableCollection<PerformanceDebugProfilerViewModel> Profilers { get; } = new();
+    public ObservableCollection<PerformanceDebugProfilerViewModel> Profilers { get; } = [];
 
     public void Update()
     {

@@ -3,7 +3,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Events;
 using Avalonia;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 
 namespace Artemis.UI.Screens.Device;
 

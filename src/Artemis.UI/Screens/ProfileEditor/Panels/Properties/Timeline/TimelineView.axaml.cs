@@ -5,8 +5,7 @@ using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Extensions;
 using Avalonia;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.VisualTree;
 
 namespace Artemis.UI.Screens.ProfileEditor.Properties.Timeline;

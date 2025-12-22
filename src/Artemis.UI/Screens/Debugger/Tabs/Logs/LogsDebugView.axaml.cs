@@ -1,10 +1,6 @@
-using System;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.Threading;
-using ReactiveUI;
-using Serilog;
 
 namespace Artemis.UI.Screens.Debugger.Logs;
 

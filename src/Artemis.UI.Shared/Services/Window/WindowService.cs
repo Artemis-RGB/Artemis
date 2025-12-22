@@ -125,7 +125,7 @@ internal class WindowService : IWindowService
         return await window.ShowDialog<TResult>(parent);
     }
 
-    public void ShowExceptionDialog(string title, Exception exception)
+    public void ShowExceptionDialog(string title, Exception exception, string? customMessage = null)
     {
         if (_exceptionDialogOpen)
             return;
@@ -136,7 +136,7 @@ internal class WindowService : IWindowService
         {
             try
             {
-                await ShowDialogAsync(new ExceptionDialogViewModel(title, exception, _container.Resolve<INotificationService>()));
+                await ShowDialogAsync(new ExceptionDialogViewModel(title, exception, customMessage, _container.Resolve<INotificationService>()));
             }
             finally
             {

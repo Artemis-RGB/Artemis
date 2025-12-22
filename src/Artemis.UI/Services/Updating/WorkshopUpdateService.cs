@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Extensions;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
 using Artemis.WebClient.Workshop;
@@ -68,6 +69,12 @@ public class WorkshopUpdateService : IWorkshopUpdateService
                 return false;
             if (latestRelease.Id == installedEntry.ReleaseId)
                 return false;
+
+            if (!latestRelease.IsCompatible())
+            {
+                _logger.Information("Skipping auto-update of entry {Entry} because it requires a newer version of Artemis ({RequiredVersion})", entry, latestRelease.MinimumVersion);
+                return false;
+            }
 
             _logger.Information("Auto-updating entry {Entry} to version {Version}", entry, latestRelease.Version);
             EntryInstallResult updateResult = await _workshopService.InstallEntry(entry, latestRelease, new Progress<StreamProgress>(), CancellationToken.None);

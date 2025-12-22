@@ -90,11 +90,11 @@
             <!-- Install state -->
             <StackPanel Grid.Column="2" Grid.Row="1" Margin="0 0 4 0" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="{CompiledBinding IsInstalled}">
                 <TextBlock TextAlignment="Right" IsVisible="{CompiledBinding !UpdateAvailable}">
-                    <avalonia:MaterialIcon Kind="CheckCircle" Foreground="{DynamicResource SystemAccentColorLight1}" Width="20" Height="20" />
+                    <avalonia:MaterialIcon Kind="CheckCircle" Foreground="{DynamicResource SystemAccentColorLight1}" Width="20" Height="20" Margin="0 0 0 -4"/>
                     <Run>installed</Run>
                 </TextBlock>
                 <TextBlock TextAlignment="Right" IsVisible="{CompiledBinding UpdateAvailable}">
-                    <avalonia:MaterialIcon Kind="Update" Foreground="{DynamicResource SystemAccentColorLight1}" Width="20" Height="20" />
+                    <avalonia:MaterialIcon Kind="Update" Foreground="{DynamicResource SystemAccentColorLight1}" Width="20" Height="20" Margin="0 0 0 -4"/>
                     <Run>update available</Run>
                 </TextBlock>
             </StackPanel>

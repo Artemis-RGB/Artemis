@@ -15,7 +15,7 @@ namespace Artemis.Core.Modules;
 public abstract class DataModel
 {
     private const StringComparison PathsStringComparison = StringComparison.OrdinalIgnoreCase;
-    private readonly List<DataModelPath> _activePaths = new();
+    private readonly List<DataModelPath> _activePaths = [];
     private readonly HashSet<string> _activePathsHashSet = new(StringComparer.FromComparison(PathsStringComparison));
     private readonly Dictionary<string, DynamicChild> _dynamicChildren = new();
 

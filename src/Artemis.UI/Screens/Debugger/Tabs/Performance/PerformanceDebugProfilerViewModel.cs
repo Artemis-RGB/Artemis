@@ -14,7 +14,7 @@ public class PerformanceDebugProfilerViewModel : ViewModelBase
 
     public Profiler Profiler { get; }
 
-    public ObservableCollection<PerformanceDebugMeasurementViewModel> Measurements { get; } = new();
+    public ObservableCollection<PerformanceDebugMeasurementViewModel> Measurements { get; } = [];
 
     public void Update()
     {

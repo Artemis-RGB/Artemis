@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -11,7 +11,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Builders;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
@@ -28,7 +28,7 @@ public partial class SidebarViewModel : ActivatableViewModelBase
     private readonly IRouter _router;
     private readonly IWindowService _windowService;
     private bool _updating;
-    [Notify] private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new(new ObservableCollection<SidebarCategoryViewModel>());
+    [Notify] private ReadOnlyObservableCollection<SidebarCategoryViewModel> _sidebarCategories = new([]);
     [Notify] private SidebarScreenViewModel? _selectedScreen;
 
     public SidebarViewModel(IRouter router, IProfileService profileService, IWindowService windowService, ISidebarVmFactory sidebarVmFactory)
@@ -36,20 +36,19 @@ public partial class SidebarViewModel : ActivatableViewModelBase
         _router = router;
         _windowService = windowService;
 
-        SidebarScreen = new SidebarScreenViewModel(MaterialIconKind.Abacus, ROOT_SCREEN, "", null, new ObservableCollection<SidebarScreenViewModel>()
-        {
-            new(MaterialIconKind.HomeOutline, "Home", "home"),
-            new(MaterialIconKind.TestTube, "Workshop", "workshop", null, new ObservableCollection<SidebarScreenViewModel>
-            {
-                new(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
-                new(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
-                new(MaterialIconKind.Connection, "Plugins", "workshop/entries/plugins", "workshop/entries/plugins"),
-                new(MaterialIconKind.Bookshelf, "Library", "workshop/library"),
-            }),
+        SidebarScreen = new SidebarScreenViewModel(MaterialIconKind.Abacus, ROOT_SCREEN, "", null, [
+            new SidebarScreenViewModel(MaterialIconKind.HomeOutline, "Home", "home"),
+            new SidebarScreenViewModel(MaterialIconKind.TestTube, "Workshop", "workshop", null, [
+                new SidebarScreenViewModel(MaterialIconKind.FolderVideo, "Profiles", "workshop/entries/profiles", "workshop/entries/profiles"),
+                new SidebarScreenViewModel(MaterialIconKind.KeyboardVariant, "Layouts", "workshop/entries/layouts", "workshop/entries/layouts"),
+                new SidebarScreenViewModel(MaterialIconKind.Connection, "Plugins", "workshop/entries/plugins", "workshop/entries/plugins"),
+                new SidebarScreenViewModel(MaterialIconKind.Bookshelf, "Library", "workshop/library")
+            ]),
 
-            new(MaterialIconKind.Devices, "Surface Editor", "surface-editor"),
-            new(MaterialIconKind.SettingsOutline, "Settings", "settings")
-        });
+
+            new SidebarScreenViewModel(MaterialIconKind.Devices, "Surface Editor", "surface-editor"),
+            new SidebarScreenViewModel(MaterialIconKind.SettingsOutline, "Settings", "settings")
+        ]);
 
         AddCategory = ReactiveCommand.CreateFromTask(ExecuteAddCategory);
         this.WhenAnyValue(vm => vm.SelectedScreen).WhereNotNull().Subscribe(s => SidebarScreen.ExpandIfRequired(s));

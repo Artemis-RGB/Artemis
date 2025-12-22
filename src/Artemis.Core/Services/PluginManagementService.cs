@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.DryIoc;
-using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
@@ -29,6 +28,7 @@ internal class PluginManagementService : IPluginManagementService
     private readonly IContainer _container;
     private readonly ILogger _logger;
     private readonly IPluginRepository _pluginRepository;
+    private readonly List<PluginInfo> _pluginInfos;
     private readonly List<Plugin> _plugins;
     private FileSystemWatcher? _hotReloadWatcher;
     private bool _disposed;
@@ -40,20 +40,29 @@ internal class PluginManagementService : IPluginManagementService
         _logger = logger;
         _pluginRepository = pluginRepository;
         _deviceRepository = deviceRepository;
-        _plugins = new List<Plugin>();
+        _pluginInfos = [];
+        _plugins = [];
     }
 
-    public List<DirectoryInfo> AdditionalPluginDirectories { get; } = new();
+    public List<DirectoryInfo> AdditionalPluginDirectories { get; } = [];
 
     public bool LoadingPlugins { get; private set; }
     
     public bool LoadedPlugins { get; private set; }
 
+    public List<PluginInfo> GetAllPluginInfo()
+    {
+        lock (_pluginInfos)
+        {
+            return [.._pluginInfos];
+        }
+    }
+
     public List<Plugin> GetAllPlugins()
     {
         lock (_plugins)
         {
-            return new List<Plugin>(_plugins);
+            return [.._plugins];
         }
     }
 
@@ -264,6 +273,13 @@ internal class PluginManagementService : IPluginManagementService
             if (_plugins.Any(p => p.Guid == pluginInfo.Guid))
                 throw new ArtemisCoreException($"Cannot load plugin {pluginInfo} because it is using a GUID already used by another plugin");
         }
+        
+        // There may be info on a plugin that previously failed to load, remove that
+        lock (_pluginInfos)
+        {
+            _pluginInfos.RemoveAll(i => i.Guid == pluginInfo.Guid);
+            _pluginInfos.Add(pluginInfo);
+        }
 
         // Load the entity and fall back on creating a new one
         PluginEntity? entity = _pluginRepository.GetPluginByPluginGuid(pluginInfo.Guid);
@@ -302,6 +318,7 @@ internal class PluginManagementService : IPluginManagementService
         }
         catch (Exception e)
         {
+            pluginInfo.LoadException = e;
             throw new ArtemisPluginException(plugin, "Failed to load the plugins assembly", e);
         }
 
@@ -313,6 +330,7 @@ internal class PluginManagementService : IPluginManagementService
         }
         catch (ReflectionTypeLoadException e)
         {
+            pluginInfo.LoadException = e;
             throw new ArtemisPluginException(
                 plugin,
                 "Failed to initialize the plugin assembly",
@@ -472,6 +490,10 @@ internal class PluginManagementService : IPluginManagementService
         }
 
         plugin.Dispose();
+        lock (_pluginInfos)
+        {
+            _pluginInfos.Remove(plugin.Info);
+        }
         lock (_plugins)
         {
             _plugins.Remove(plugin);

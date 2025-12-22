@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -112,11 +110,11 @@ public partial class InstalledTabItemViewModel : ActivatableViewModelBase
     {
         if (!Entry.TryGetMetadata("PluginId", out Guid pluginId))
             return;
-        Plugin? plugin = _pluginManagementService.GetAllPlugins().FirstOrDefault(p => p.Guid == pluginId);
-        if (plugin == null)
+        PluginInfo? pluginInfo = _pluginManagementService.GetAllPluginInfo().FirstOrDefault(p => p.Guid == pluginId);
+        if (pluginInfo == null)
             return;
 
-        PluginViewModel pluginViewModel = _settingsVmFactory.PluginViewModel(plugin, ReactiveCommand.Create(() => { }));
+        PluginViewModel pluginViewModel = _settingsVmFactory.PluginViewModel(pluginInfo, ReactiveCommand.Create(() => { }));
         await pluginViewModel.ExecuteRemovePrerequisites(true);
     }
 

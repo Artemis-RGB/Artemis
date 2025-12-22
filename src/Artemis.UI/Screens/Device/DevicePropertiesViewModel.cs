@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DryIoc.Factories;
@@ -23,8 +24,8 @@ public partial class DevicePropertiesViewModel : DialogViewModelBase<object>
         _deviceVmFactory = deviceVmFactory;
         _device = device;
 
-        SelectedLeds = new ObservableCollection<ArtemisLed>();
-        Tabs = new ObservableCollection<ActivatableViewModelBase>();
+        SelectedLeds = [];
+        Tabs = [];
 
         AddTabs();
         this.WhenActivated(d =>

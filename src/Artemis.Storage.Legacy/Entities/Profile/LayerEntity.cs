@@ -8,8 +8,8 @@ internal class LayerEntity : RenderElementEntity
 {
     public LayerEntity()
     {
-        Leds = new List<LedEntity>();
-        AdaptionHints = new List<IAdaptionHintEntity>();
+        Leds = [];
+        AdaptionHints = [];
     }
 
     public int Order { get; set; }

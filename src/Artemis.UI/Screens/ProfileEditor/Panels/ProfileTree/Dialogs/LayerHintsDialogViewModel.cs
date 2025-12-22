@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -24,7 +24,7 @@ public class LayerHintsDialogViewModel : DialogViewModelBase<bool>
         _vmFactory = vmFactory;
 
         Layer = layer;
-        AdaptionHints = new ObservableCollection<AdaptionHintViewModelBase>();
+        AdaptionHints = [];
 
         this.WhenActivated(d =>
         {

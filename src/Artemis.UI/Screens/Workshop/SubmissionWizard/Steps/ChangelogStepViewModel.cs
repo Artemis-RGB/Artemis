@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Reactive.Disposables;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Layout;
 using Artemis.UI.Screens.Workshop.SubmissionWizard.Steps.Plugin;

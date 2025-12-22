@@ -1,5 +1,4 @@
-﻿using Artemis.UI.Shared;
-using ReactiveUI;
+﻿using ReactiveUI;
 
 namespace Artemis.UI.Screens.StartupWizard.Steps;
 

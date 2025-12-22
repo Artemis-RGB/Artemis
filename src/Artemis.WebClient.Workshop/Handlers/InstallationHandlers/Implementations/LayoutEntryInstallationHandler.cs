@@ -37,7 +37,7 @@ public class LayoutEntryInstallationHandler : IEntryInstallationHandler
         }
         catch (Exception e)
         {
-            return EntryInstallResult.FromFailure(e.Message);
+            return EntryInstallResult.FromException(e);
         }
 
         // Ensure there is an installed entry

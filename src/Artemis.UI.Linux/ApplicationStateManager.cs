@@ -57,7 +57,7 @@ public class ApplicationStateManager
     {
         try
         {
-            _windowService.ShowExceptionDialog("An unhandled exception occured", e);
+            _windowService.ShowExceptionDialog("An unhandled error occured", e);
         }
         catch
         {
@@ -112,7 +112,7 @@ public class ApplicationStateManager
 
     private void UtilitiesOnRestartRequested(object? sender, RestartEventArgs e)
     {
-        List<string> argsList = new();
+        List<string> argsList = [];
         argsList.AddRange(StartupArguments);
         if (e.ExtraArgs != null)
             argsList.AddRange(e.ExtraArgs.Except(argsList));

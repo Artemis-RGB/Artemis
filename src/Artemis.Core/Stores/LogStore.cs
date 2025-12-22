@@ -12,7 +12,7 @@ public static class LogStore
 {
     private static readonly object _lock = new();
     
-    private static readonly LinkedList<LogEvent> LinkedList = new();
+    private static readonly LinkedList<LogEvent> LinkedList = [];
 
     /// <summary>
     ///     Gets a list containing the last 500 log events.

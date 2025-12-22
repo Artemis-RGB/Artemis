@@ -130,7 +130,7 @@ public class ProfileConfigurationIcon : CorePropertyChanged, IStorageModel
         _entity.ProfileConfiguration.IconType = (int) IconType;
         _entity.ProfileConfiguration.MaterialIcon = IconType == ProfileConfigurationIconType.MaterialIcon ? IconName : null;
         _entity.ProfileConfiguration.IconFill = Fill;
-        _entity.Icon = IconBytes ?? Array.Empty<byte>();
+        _entity.Icon = IconBytes ?? [];
     }
 
     #endregion

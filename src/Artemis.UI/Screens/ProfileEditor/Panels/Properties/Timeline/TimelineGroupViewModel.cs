@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.ProfileEditor;
 using DynamicData;
@@ -18,7 +18,7 @@ public partial class TimelineGroupViewModel : ActivatableViewModelBase
     public TimelineGroupViewModel(PropertyGroupViewModel propertyGroupViewModel, IProfileEditorService profileEditorService)
     {
         PropertyGroupViewModel = propertyGroupViewModel;
-        _keyframePositions = new ReadOnlyObservableCollection<double>(new ObservableCollection<double>());
+        _keyframePositions = new ReadOnlyObservableCollection<double>([]);
 
         this.WhenActivated(d =>
         {

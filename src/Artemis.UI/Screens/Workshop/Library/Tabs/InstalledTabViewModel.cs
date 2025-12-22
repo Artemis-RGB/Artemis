@@ -2,9 +2,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.UI.Shared.Routing;
-using Artemis.WebClient.Workshop;
 using Artemis.WebClient.Workshop.Models;
 using Artemis.WebClient.Workshop.Services;
 using DynamicData;

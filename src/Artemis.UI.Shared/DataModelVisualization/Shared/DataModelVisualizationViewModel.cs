@@ -29,7 +29,7 @@ public abstract class DataModelVisualizationViewModel : ReactiveObject, IDisposa
     internal DataModelVisualizationViewModel(DataModel? dataModel, DataModelVisualizationViewModel? parent, DataModelPath? dataModelPath)
     {
         _dataModel = dataModel;
-        _children = new ObservableCollection<DataModelVisualizationViewModel>();
+        _children = [];
         _parent = parent;
         DataModelPath = dataModelPath;
         IsMatchingFilteredTypes = true;

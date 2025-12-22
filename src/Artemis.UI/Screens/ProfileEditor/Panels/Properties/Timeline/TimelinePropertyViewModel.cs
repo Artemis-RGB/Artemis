@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.Properties.Timeline.Keyframes;
@@ -68,7 +68,7 @@ public class TimelinePropertyViewModel<T> : ActivatableViewModelBase, ITimelineP
 
     public List<ILayerPropertyKeyframe> GetAllKeyframes()
     {
-        return LayerProperty.KeyframesEnabled ? new List<ILayerPropertyKeyframe>(LayerProperty.Keyframes) : new List<ILayerPropertyKeyframe>();
+        return LayerProperty.KeyframesEnabled ? [..LayerProperty.Keyframes] : [];
     }
 
     public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()

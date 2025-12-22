@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using FluentAvalonia.UI.Controls;

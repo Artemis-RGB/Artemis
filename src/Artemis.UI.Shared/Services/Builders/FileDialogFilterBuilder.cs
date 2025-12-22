@@ -2,7 +2,6 @@
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using SkiaSharp;
 
 namespace Artemis.UI.Shared.Services.Builders;
 
@@ -12,7 +11,7 @@ namespace Artemis.UI.Shared.Services.Builders;
 public class FileDialogFilterBuilder
 {
     private string _name;
-    private readonly List<string> _extensions = new();
+    private readonly List<string> _extensions = [];
 
     internal FileDialogFilterBuilder()
     {
