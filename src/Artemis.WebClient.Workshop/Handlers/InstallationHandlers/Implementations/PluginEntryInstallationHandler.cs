@@ -101,9 +101,7 @@ public class PluginEntryInstallationHandler : IEntryInstallationHandler
             {
                 // ignored, will get cleaned up as an orphaned file
             }
-
-            if (installedEntry.Entity.Id != Guid.Empty)
-                _workshopService.RemoveInstalledEntry(installedEntry);
+            
             return EntryInstallResult.FromException(e);
         }
 

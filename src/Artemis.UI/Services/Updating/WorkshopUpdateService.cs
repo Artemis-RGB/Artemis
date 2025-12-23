@@ -20,15 +20,21 @@ public class WorkshopUpdateService : IWorkshopUpdateService
     private readonly ILogger _logger;
     private readonly IWorkshopClient _client;
     private readonly IWorkshopService _workshopService;
+    private readonly IPluginManagementService _pluginManagementService;
     private readonly Lazy<IUpdateNotificationProvider> _updateNotificationProvider;
     private readonly PluginSetting<bool> _showNotifications;
 
-    public WorkshopUpdateService(ILogger logger, IWorkshopClient client, IWorkshopService workshopService, ISettingsService settingsService,
+    public WorkshopUpdateService(ILogger logger,
+        IWorkshopClient client,
+        IWorkshopService workshopService,
+        ISettingsService settingsService,
+        IPluginManagementService pluginManagementService,
         Lazy<IUpdateNotificationProvider> updateNotificationProvider)
     {
         _logger = logger;
         _client = client;
         _workshopService = workshopService;
+        _pluginManagementService = pluginManagementService;
         _updateNotificationProvider = updateNotificationProvider;
         _showNotifications = settingsService.GetSetting("Workshop.ShowNotifications", true);
     }
@@ -87,6 +93,18 @@ public class WorkshopUpdateService : IWorkshopUpdateService
                 _logger.Information("Auto-update successful for entry {Entry}", entry);
             else
                 _logger.Warning("Auto-update failed for entry {Entry}: {Message}", entry, updateResult.Message);
+
+            if (!updateResult.IsSuccess || updateResult.Installed is not Plugin {IsEnabled: false} updatedPlugin)
+                return updateResult.IsSuccess;
+
+            try
+            {
+                _pluginManagementService.EnablePlugin(updatedPlugin, true, true);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to auto-enable updated plugin {Plugin}", updatedPlugin);
+            }
 
             return updateResult.IsSuccess;
         }
