@@ -225,7 +225,6 @@ public class InstalledEntry : CorePropertyChanged
         IsOfficial = Entity.IsOfficial;
         Name = Entity.Name;
         Summary = Entity.Summary;
-        EntryType = (EntryType) Entity.EntryType;
         Downloads = Entity.Downloads;
         CreatedAt = Entity.CreatedAt;
         LatestReleaseId = Entity.LatestReleaseId;
@@ -235,6 +234,15 @@ public class InstalledEntry : CorePropertyChanged
         ReleaseVersion = Entity.ReleaseVersion;
         InstalledAt = Entity.InstalledAt;
         AutoUpdate = Entity.AutoUpdate;
+        
+        // Avoiding a cast here, the enum has shifted around before as it is generated from the GraphQL schema
+        EntryType = Entity.EntryType switch
+        {
+            0 => EntryType.Plugin,
+            1 => EntryType.Profile,
+            2 => EntryType.Layout,
+            _ => EntryType
+        };
 
         _metadata = Entity.Metadata != null ? new Dictionary<string, JsonNode>(Entity.Metadata) : [];
     }
@@ -242,8 +250,6 @@ public class InstalledEntry : CorePropertyChanged
     internal void Save()
     {
         Entity.EntryId = Id;
-        Entity.EntryType = (int) EntryType;
-
         Entity.Author = Author;
         Entity.IsOfficial = IsOfficial;
         Entity.Name = Name;
@@ -257,6 +263,15 @@ public class InstalledEntry : CorePropertyChanged
         Entity.ReleaseVersion = ReleaseVersion;
         Entity.InstalledAt = InstalledAt;
         Entity.AutoUpdate = AutoUpdate;
+        
+        // Avoiding a cast here, the enum has shifted around before as it is generated from the GraphQL schema
+        Entity.EntryType = EntryType switch
+        {
+            EntryType.Plugin => 0,
+            EntryType.Profile => 1,
+            EntryType.Layout => 2,
+            _ => Entity.EntryType
+        };
 
         Entity.Metadata = new Dictionary<string, JsonNode>(_metadata);
     }
