@@ -37,7 +37,7 @@ public partial class EntryReleaseItemViewModel : ActivatableViewModelBase
             }).DisposeWith(d);
 
             IsCurrentVersion = _workshopService.GetInstalledEntry(_entry.Id)?.ReleaseId == Release.Id;
-            IncompatibilityReason = !Release.IsCompatible() ? $"Requires Artemis v{Version.FromLong(Release.MinimumVersion!.Value)} or later" : null;
+            IncompatibilityReason = !Release.IsCompatible() ? $"Requires Artemis v{Release.MinimumVersion} or later" : null;
         });
     }
 
