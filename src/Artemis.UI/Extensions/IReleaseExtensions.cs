@@ -16,8 +16,8 @@ public static class ReleaseExtensions
         {
             if (release.MinimumVersion == null || Constants.CurrentVersion == "local")
                 return true;
-            
-            return release.MinimumVersion <= Version.Parse(Constants.CurrentVersion).ArtemisVersionToLong();
+
+            return Version.Parse(release.MinimumVersion) <= Version.Parse(Constants.CurrentVersion);
         }
     }
 }

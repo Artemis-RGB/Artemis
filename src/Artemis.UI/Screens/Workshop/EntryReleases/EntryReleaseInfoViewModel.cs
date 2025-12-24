@@ -69,11 +69,11 @@ public partial class EntryReleaseInfoViewModel : ActivatableViewModelBase
             }).DisposeWith(d);
 
             IsCurrentVersion = Release != null && _workshopService.GetInstalledEntry(Release.Entry.Id)?.ReleaseId == Release.Id;
-            IncompatibilityReason = Release != null && !Release.IsCompatible() ? $"Requires Artemis v{Version.FromLong(Release.MinimumVersion!.Value)} or later" : null;
+            IncompatibilityReason = Release != null && !Release.IsCompatible() ? $"Requires Artemis v{Release.MinimumVersion} or later" : null;
         });
 
         this.WhenAnyValue(vm => vm.Release).Subscribe(r => IsCurrentVersion = r != null && _workshopService.GetInstalledEntry(r.Entry.Id)?.ReleaseId == r.Id);
-        this.WhenAnyValue(vm => vm.Release).Subscribe(r => IncompatibilityReason = r != null && !r.IsCompatible() ? $"Requires Artemis v{Version.FromLong(r.MinimumVersion!.Value)} or later" : null);
+        this.WhenAnyValue(vm => vm.Release).Subscribe(r => IncompatibilityReason = r != null && !r.IsCompatible() ? $"Requires Artemis v{r.MinimumVersion} or later" : null);
 
         InDetailsScreen = true;
     }
