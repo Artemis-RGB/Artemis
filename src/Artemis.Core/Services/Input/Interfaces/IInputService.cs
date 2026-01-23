@@ -13,6 +13,16 @@ public interface IInputService : IArtemisService, IDisposable
     KeyboardToggleStatus KeyboardToggleStatus { get; }
 
     /// <summary>
+    /// Gets the last reported cursor X position
+    /// </summary>
+    public int CursorX { get; }
+
+    /// <summary>
+    /// Gets the last reported cursor Y position
+    /// </summary>
+    public int CursorY { get; }
+
+    /// <summary>
     ///     Adds an input provided
     /// </summary>
     /// <param name="inputProvider">The input provider the add</param>

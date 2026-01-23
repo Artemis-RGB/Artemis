@@ -48,6 +48,6 @@ public partial class SurfaceEditorView : ReactiveUserControl<SurfaceEditorViewMo
     private void UpdateZoomBorderBackground()
     {
         if (ContainerZoomBorder.Background is VisualBrush visualBrush)
-            visualBrush.DestinationRect = new RelativeRect(ContainerZoomBorder.OffsetX * -1, ContainerZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+            visualBrush.DestinationRect = new RelativeRect(ContainerZoomBorder.OffsetX, ContainerZoomBorder.OffsetY, 20, 20, RelativeUnit.Absolute);
     }
 }

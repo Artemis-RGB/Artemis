@@ -24,6 +24,9 @@ internal class InputService : IInputService
         _deviceService.DeviceRemoved += DeviceServiceOnDevicesModified;
         BustIdentifierCache();
     }
+    
+    public int CursorX { get; private set; }
+    public int CursorY { get; private set; }
 
     protected virtual void OnKeyboardKeyUpDown(ArtemisKeyboardKeyUpDownEventArgs e)
     {
@@ -426,6 +429,9 @@ internal class InputService : IInputService
 
     private void InputProviderOnMouseMoveDataReceived(object? sender, InputProviderMouseMoveEventArgs e)
     {
+        CursorX = e.CursorX;
+        CursorY = e.CursorY;
+        
         OnMouseMove(new ArtemisMouseMoveEventArgs(e.Device, e.CursorX, e.CursorY, e.DeltaX, e.DeltaY));
         // _logger.Verbose("Mouse move data: XY: {X},{Y} - delta XY: {deltaX},{deltaY} - device: {device} ", e.CursorX, e.CursorY, e.DeltaX, e.DeltaY, e.Device);
     }

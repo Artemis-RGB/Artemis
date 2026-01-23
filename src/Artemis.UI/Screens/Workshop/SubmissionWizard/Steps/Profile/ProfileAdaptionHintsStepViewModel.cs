@@ -29,7 +29,7 @@ public class ProfileAdaptionHintsStepViewModel : SubmissionViewModel
         _layers.Connect().Bind(out ReadOnlyObservableCollection<ProfileAdaptionHintsLayerViewModel> layers).Subscribe();
 
         GoBack = ReactiveCommand.Create(() => State.ChangeScreen<ProfileSelectionStepViewModel>());
-        Continue = ReactiveCommand.Create(ExecuteContinue, _layers.Connect().AutoRefresh(l => l.AdaptionHintCount).Filter(l => l.AdaptionHintCount == 0).IsEmpty());
+        Continue = ReactiveCommand.Create(ExecuteContinue);
         EditAdaptionHints = ReactiveCommand.CreateFromTask<Layer>(ExecuteEditAdaptionHints);
         Layers = layers;
 

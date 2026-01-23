@@ -130,7 +130,7 @@ public partial class NodeScriptView : ReactiveUserControl<NodeScriptViewModel>
     private void UpdateZoomBorderBackground()
     {
         if (NodeScriptZoomBorder.Background is VisualBrush visualBrush)
-            visualBrush.DestinationRect = new RelativeRect(NodeScriptZoomBorder.OffsetX * -1, NodeScriptZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+            visualBrush.DestinationRect = new RelativeRect(NodeScriptZoomBorder.OffsetX, NodeScriptZoomBorder.OffsetY, 20, 20, RelativeUnit.Absolute);
     }
 
 

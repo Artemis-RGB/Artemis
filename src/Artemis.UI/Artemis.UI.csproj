@@ -35,4 +35,15 @@
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Screens\ProfileEditor\DesignPanels\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Screens\ProfileEditor\DesignProfileView.axaml.cs">
+        <DependentUpon>DesignProfileView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
 </Project>

@@ -1,23 +1,26 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
+using Artemis.UI.Screens.ProfileEditor.VisualEditor;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Input;
+using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using ReactiveUI.Avalonia;
 using Avalonia.Threading;
 using ReactiveUI;
+using ReactiveUI.Avalonia;
 
-namespace Artemis.UI.Screens.ProfileEditor.VisualEditor;
+namespace Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Preview;
 
-public partial class VisualEditorView : ReactiveUserControl<VisualEditorViewModel>
+public partial class PreviewView : ReactiveUserControl<PreviewViewModel>
 {
     private bool _movedByUser;
 
-    public VisualEditorView()
+    public PreviewView()
     {
         InitializeComponent();
 
@@ -28,8 +31,8 @@ public partial class VisualEditorView : ReactiveUserControl<VisualEditorViewMode
 
         this.WhenActivated(d =>
         {
-            VisualEditorViewModel vm = ViewModel!;
-            vm!.AutoFitRequested += ViewModelOnAutoFitRequested;
+            PreviewViewModel vm = ViewModel!;
+            vm.AutoFitRequested += ViewModelOnAutoFitRequested;
             Disposable.Create(() => vm.AutoFitRequested -= ViewModelOnAutoFitRequested).DisposeWith(d);
         });
 

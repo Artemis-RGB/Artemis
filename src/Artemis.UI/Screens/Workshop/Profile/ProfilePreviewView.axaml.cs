@@ -46,7 +46,7 @@ public partial class ProfilePreviewView : ReactiveUserControl<ProfilePreviewView
     private void UpdateZoomBorderBackground()
     {
         if (ZoomBorder.Background is VisualBrush visualBrush)
-            visualBrush.DestinationRect = new RelativeRect(ZoomBorder.OffsetX * -1, ZoomBorder.OffsetY * -1, 20, 20, RelativeUnit.Absolute);
+            visualBrush.DestinationRect = new RelativeRect(ZoomBorder.OffsetX, ZoomBorder.OffsetY, 20, 20, RelativeUnit.Absolute);
     }
 
     private void ZoomBorder_OnZoomChanged(object sender, ZoomChangedEventArgs e)

@@ -12,6 +12,7 @@ public class NavigationArguments
         Router = router;
         Options = options;
         Path = path;
+        PathSegments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
         RouteParameters = routeParameters;
         SegmentParameters = [];
     }
@@ -30,6 +31,11 @@ public class NavigationArguments
     /// Gets the path of the route that is being navigated to.
     /// </summary>
     public string Path { get; }
+
+    /// <summary>
+    /// Gets the segments of the path that is being navigated to.
+    /// </summary>
+    public string[] PathSegments { get; }
 
     /// <summary>
     /// GEts an array of all parameters provided to this route.

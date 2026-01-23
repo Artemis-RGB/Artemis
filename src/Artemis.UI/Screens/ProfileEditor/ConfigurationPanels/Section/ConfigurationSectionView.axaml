@@ -1,0 +1,18 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:section="clr-namespace:Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Section"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Section.ConfigurationSectionView"
+             x:DataType="section:ConfigurationSectionViewModel">
+    <Border Classes="card" VerticalAlignment="Top">
+        <StackPanel>
+            <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}" Text="{CompiledBinding ConfigurationSection.Name}"/>
+            <Border Classes="card-separator" />
+            <ScrollViewer>
+                <TextBlock>Test</TextBlock>
+            </ScrollViewer>
+        </StackPanel>
+    </Border>
+</UserControl>

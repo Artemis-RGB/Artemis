@@ -67,6 +67,8 @@ namespace Artemis.UI.Routing
             ]),
             new RouteRegistration<ProfileViewModel>("profile/{profileConfigurationId:guid}", [
                 new RouteRegistration<ProfileEditorViewModel>("editor"),
+                new RouteRegistration<ConfigureProfileViewModel>("configure"),
+                new RouteRegistration<DesignProfileViewModel>("design"),
                 new RouteRegistration<WorkshopProfileViewModel>("workshop")
             ]),
         ];

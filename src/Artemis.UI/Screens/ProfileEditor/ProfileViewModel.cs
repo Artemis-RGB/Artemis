@@ -42,17 +42,25 @@ public class ProfileViewModel : RoutableHostScreen<RoutableScreen, ProfileViewMo
             args.Cancel();
             return;
         }
+        
+        // Redirect to the correct sub-page if no sub-page is specified
+        if (args.PathSegments.Length >= 3)
+            return;
 
-        // If the profile is from the workshop, redirect to the workshop page
-        InstalledEntry? workshopEntry = _workshopService.GetInstalledEntryByProfile(profileConfiguration);
-        if (workshopEntry != null && workshopEntry.AutoUpdate)
+        // If the profile is configurable, go to the configuration page
+        if (profileConfiguration.IsConfigurable)
         {
-            if (!args.Path.EndsWith("workshop"))
-                await args.Router.Navigate($"profile/{parameters.ProfileId}/workshop");
+            await args.Router.Navigate($"profile/{parameters.ProfileId}/configure");
         }
-        // Otherwise, show the profile editor if not already on the editor page
-        else if (!args.Path.EndsWith("editor"))
-            await args.Router.Navigate($"profile/{parameters.ProfileId}/editor");
+        // Otherwise either the workshop notice or the editor
+        else
+        {
+            InstalledEntry? workshopEntry = _workshopService.GetInstalledEntryByProfile(profileConfiguration);
+            if (workshopEntry != null && workshopEntry.AutoUpdate)
+                await args.Router.Navigate($"profile/{parameters.ProfileId}/workshop");
+            else
+                await args.Router.Navigate($"profile/{parameters.ProfileId}/editor");
+        }
     }
 }
 

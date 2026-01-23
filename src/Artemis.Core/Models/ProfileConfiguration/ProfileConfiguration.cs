@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
@@ -16,26 +17,12 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public static readonly ProfileConfiguration Empty = new(ProfileCategory.Empty, "Empty", "Empty");
 
-    private ActivationBehaviour _activationBehaviour;
-    private bool _activationConditionMet;
-    private ProfileCategory _category;
-    private Hotkey? _disableHotkey;
     private bool _disposed;
-    private Hotkey? _enableHotkey;
-    private ProfileConfigurationHotkeyMode _hotkeyMode;
-    private bool _isMissingModule;
-    private bool _isSuspended;
-    private bool _fadeInAndOut;
-    private Module? _module;
-
-    private string _name;
-    private int _order;
-    private Profile? _profile;
 
     internal ProfileConfiguration(ProfileCategory category, string name, string icon)
     {
-        _name = name;
-        _category = category;
+        Name = name;
+        Category = category;
 
         Entity = new ProfileContainerEntity();
         Icon = new ProfileConfigurationIcon(Entity);
@@ -49,8 +36,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     internal ProfileConfiguration(ProfileCategory category, ProfileContainerEntity entity)
     {
         // Will be loaded from the entity
-        _name = null!;
-        _category = category;
+        Name = null!;
+        Category = category;
 
         Entity = entity;
         Icon = new ProfileConfigurationIcon(Entity);
@@ -64,8 +51,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public string Name
     {
-        get => _name;
-        set => SetAndNotify(ref _name, value);
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -73,8 +60,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public int Order
     {
-        get => _order;
-        set => SetAndNotify(ref _order, value);
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -83,8 +70,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public bool IsSuspended
     {
-        get => _isSuspended;
-        set => SetAndNotify(ref _isSuspended, value);
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -92,8 +79,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public bool IsMissingModule
     {
-        get => _isMissingModule;
-        private set => SetAndNotify(ref _isMissingModule, value);
+        get;
+        private set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -101,8 +88,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public ProfileCategory Category
     {
-        get => _category;
-        internal set => SetAndNotify(ref _category, value);
+        get;
+        internal set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -110,8 +97,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public ProfileConfigurationHotkeyMode HotkeyMode
     {
-        get => _hotkeyMode;
-        set => SetAndNotify(ref _hotkeyMode, value);
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -119,8 +106,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public Hotkey? EnableHotkey
     {
-        get => _enableHotkey;
-        set => SetAndNotify(ref _enableHotkey, value);
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -128,8 +115,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public Hotkey? DisableHotkey
     {
-        get => _disableHotkey;
-        set => SetAndNotify(ref _disableHotkey, value);
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -137,8 +124,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public ActivationBehaviour ActivationBehaviour
     {
-        get => _activationBehaviour;
-        set => SetAndNotify(ref _activationBehaviour, value);
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -146,8 +133,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public bool ActivationConditionMet
     {
-        get => _activationConditionMet;
-        private set => SetAndNotify(ref _activationConditionMet, value);
+        get;
+        private set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -155,8 +142,8 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public Profile? Profile
     {
-        get => _profile;
-        internal set => SetAndNotify(ref _profile, value);
+        get;
+        internal set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -164,8 +151,17 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public bool FadeInAndOut
     {
-        get => _fadeInAndOut;
-        set => SetAndNotify(ref _fadeInAndOut, value);
+        get;
+        set => SetAndNotify(ref field, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets a boolean indicating whether this profile is configurable via its <see cref="ConfigurationSections"/>.
+    /// </summary>
+    public bool IsConfigurable
+    {
+        get;
+        set => SetAndNotify(ref field, value);
     }
 
     /// <summary>
@@ -173,13 +169,18 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public Module? Module
     {
-        get => _module;
+        get;
         set
         {
-            SetAndNotify(ref _module, value);
+            SetAndNotify(ref field, value);
             IsMissingModule = false;
         }
     }
+
+    /// <summary>
+    ///     Gets the configuration sections of this profile configuration.
+    /// </summary>
+    public ObservableCollection<ConfigurationSection> ConfigurationSections { get; } = [];
 
     /// <summary>
     ///     Gets the icon configuration
@@ -301,6 +302,30 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
 
         EnableHotkey = Entity.ProfileConfiguration.EnableHotkey != null ? new Hotkey(Entity.ProfileConfiguration.EnableHotkey) : null;
         DisableHotkey = Entity.ProfileConfiguration.DisableHotkey != null ? new Hotkey(Entity.ProfileConfiguration.DisableHotkey) : null;
+
+        // Placeholder configuration sections
+        ConfigurationSections.Clear();
+        ConfigurationSections.Add(new ConfigurationSection()
+        {
+            Name = "General (slot 0)",
+            Slot = 0,
+        });
+        ConfigurationSections.Add(new ConfigurationSection()
+        {
+            Name = "Other (slot 1)",
+            Slot = 1
+        });
+        ConfigurationSections.Add(new ConfigurationSection()
+        {
+            Name = "Something else (slot 2)",
+            Slot = 2
+        });
+        ConfigurationSections[0].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the General section."});
+        ConfigurationSections[0].Items.Add(new ConfigurationNumericItem() {Name = "Numeric item"});
+        ConfigurationSections[0].Items.Add(new ConfigurationBooleanItem() {Name = "Do the thing?", TrueText = "Absolutely", FalseText = "Nope"});
+        ConfigurationSections[1].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the Other section."});
+        ConfigurationSections[2].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the Something else section."});
+        ConfigurationSections[2].Items.Add(new ConfigurationTextItem() {Text = "This is another placeholder text item in the Something else section."});
     }
 
     /// <inheritdoc />
