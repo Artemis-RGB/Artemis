@@ -7,12 +7,32 @@
              x:Class="Artemis.UI.Screens.ProfileEditor.ConfigureProfileView"
              x:DataType="profileEditor:ConfigureProfileViewModel">
     <Border Classes="router-container" Padding="8">
-        <Grid RowDefinitions="0.6*, 0.6*" ColumnDefinitions="0.3*, 0.3*, 0.4*" ColumnSpacing="8" RowSpacing="8">
+        <Grid RowDefinitions="0.6*, Auto" ColumnDefinitions="0.3*, 0.3*, Auto" ColumnSpacing="8" RowSpacing="8">
             <ContentControl Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Content="{CompiledBinding PreviewViewModel}" />
             
-            <ItemsControl Grid.Column="0" Grid.Row="1" ItemsSource="{CompiledBinding BottomLeftSections}"/> 
-            <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{CompiledBinding BottomRightSections}"/> 
-            <ItemsControl Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" ItemsSource="{CompiledBinding SideSections}"/> 
+            <ItemsControl Grid.Column="0" Grid.Row="1" ItemsSource="{CompiledBinding BottomLeftSections}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="8"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{CompiledBinding BottomRightSections}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="8"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <ScrollViewer Grid.Column="2" Grid.Row="0" Grid.RowSpan="2">
+            <ItemsControl  ItemsSource="{CompiledBinding SideSections}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="8"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            </ScrollViewer>
         </Grid>
     </Border>
 </UserControl>

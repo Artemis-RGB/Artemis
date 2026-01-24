@@ -1,0 +1,26 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:section="clr-namespace:Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Section"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Section.ConfigurationBooleanItemView"
+             x:DataType="section:ConfigurationBooleanItemViewModel">
+    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+            <TextBlock Text="{CompiledBinding Item.Name}" TextWrapping="Wrap" />
+            <TextBlock Classes="subtitle" 
+                       TextWrapping="Wrap" 
+                       Text="{CompiledBinding Item.Description}"
+                       IsVisible="{CompiledBinding Item.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+            <ToggleSwitch IsChecked="{CompiledBinding Item.Value}" 
+                          OnContent="{CompiledBinding Item.TrueText}" 
+                          OffContent="{CompiledBinding Item.FalseText}"
+                          MinWidth="0"
+                          Margin="0 -10"
+                          FlowDirection="RightToLeft"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

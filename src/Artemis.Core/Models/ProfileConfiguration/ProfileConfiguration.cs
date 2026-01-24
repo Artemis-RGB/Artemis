@@ -308,12 +308,12 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         ConfigurationSections.Add(new ConfigurationSection()
         {
             Name = "General (slot 0)",
-            Slot = 0,
+            Slot = 2,
         });
         ConfigurationSections.Add(new ConfigurationSection()
         {
             Name = "Other (slot 1)",
-            Slot = 1
+            Slot = 2
         });
         ConfigurationSections.Add(new ConfigurationSection()
         {
@@ -321,11 +321,14 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
             Slot = 2
         });
         ConfigurationSections[0].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the General section."});
-        ConfigurationSections[0].Items.Add(new ConfigurationNumericItem() {Name = "Numeric item"});
+        ConfigurationSections[0].Items.Add(new ConfigurationNumericItem() {Name = "Numeric item", Description = "This one also has a description"});
         ConfigurationSections[0].Items.Add(new ConfigurationBooleanItem() {Name = "Do the thing?", TrueText = "Absolutely", FalseText = "Nope"});
         ConfigurationSections[1].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the Other section."});
         ConfigurationSections[2].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the Something else section."});
         ConfigurationSections[2].Items.Add(new ConfigurationTextItem() {Text = "This is another placeholder text item in the Something else section."});
+        ConfigurationSections[2].Items.Add(new ConfigurationNumericItem() {Name = "Numeric item", Description = "This one uses a slider", Minimum = 0, Maximum = 10, Slider = true});
+        ConfigurationSections[2].Items.Add(new ConfigurationColorGradientItem() {Name = "Color gradient"});
+        ConfigurationSections[2].Items.Add(new ConfigurationSKColorItem() {Name = "A simple color", Description = "Again with a description"});
     }
 
     /// <inheritdoc />

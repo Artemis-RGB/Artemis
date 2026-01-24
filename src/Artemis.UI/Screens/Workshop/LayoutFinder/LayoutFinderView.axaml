@@ -9,7 +9,7 @@
     <ItemsControl ItemsSource="{CompiledBinding DeviceViewModels}">
         <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="layoutFinder:LayoutFinderDeviceViewModel">
-                <StackPanel Classes="device-view-model-container">
+                <StackPanel>
                     <!-- Your existing item template goes here -->
                     <ContentControl Content="{CompiledBinding}"/>
                     <Border Classes="card-separator" Name="Separator" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace Artemis.Core;
@@ -11,7 +12,8 @@ namespace Artemis.Core;
 ///         Usage outside that context is not recommended due to conversion overhead.
 ///     </para>
 /// </summary>
-public readonly struct Numeric : IComparable<Numeric>, IConvertible
+[TypeConverter(typeof(NumericTypeConverter))]
+public readonly struct Numeric : IComparable<Numeric>, IConvertible, IEquatable<Numeric>
 {
     private readonly float _value;
 

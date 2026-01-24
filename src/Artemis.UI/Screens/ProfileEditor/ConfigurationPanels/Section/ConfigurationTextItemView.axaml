@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:slot="clr-namespace:Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Slot"
+             xmlns:section="clr-namespace:Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Section"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Slot.SlotView"
-             x:DataType="slot:SlotViewModel">
-    Welcome to Avalonia!
+             x:Class="Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Section.ConfigurationTextItemView"
+             x:DataType="section:ConfigurationTextItemViewModel">
+    <TextBlock Text="{CompiledBinding Item.Text}"></TextBlock>
 </UserControl>

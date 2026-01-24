@@ -10,9 +10,25 @@
         <StackPanel>
             <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}" Text="{CompiledBinding ConfigurationSection.Name}"/>
             <Border Classes="card-separator" />
-            <ScrollViewer>
-                <TextBlock>Test</TextBlock>
-            </ScrollViewer>
+           
+            <ItemsControl ItemsSource="{CompiledBinding Items}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Classes="device-view-model-container">
+                            <!-- Your existing item template goes here -->
+                            <ContentControl Content="{CompiledBinding}"/>
+                            <Border Classes="card-separator" Name="Separator" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.Styles>
+                    <Styles>
+                        <Style Selector="ContentPresenter:nth-last-child(1) > StackPanel > Border#Separator">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
+                    </Styles>
+                </ItemsControl.Styles>
+            </ItemsControl>
         </StackPanel>
     </Border>
 </UserControl>
