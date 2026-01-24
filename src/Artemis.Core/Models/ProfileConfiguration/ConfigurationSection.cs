@@ -17,15 +17,6 @@ public class ConfigurationSection : CorePropertyChanged
     }
 
     /// <summary>
-    /// Gets or sets the slot number of the configuration section.
-    /// </summary>
-    public int Slot
-    {
-        get;
-        set => SetAndNotify(ref field, value);
-    }
-
-    /// <summary>
     /// Gets the collection of configuration items in this section.
     /// </summary>
     public ObservableCollection<IConfigurationItem> Items { get; } = [];

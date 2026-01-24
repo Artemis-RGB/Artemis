@@ -307,18 +307,15 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         ConfigurationSections.Clear();
         ConfigurationSections.Add(new ConfigurationSection()
         {
-            Name = "General (slot 0)",
-            Slot = 2,
+            Name = "General",
         });
         ConfigurationSections.Add(new ConfigurationSection()
         {
-            Name = "Other (slot 1)",
-            Slot = 2
+            Name = "Other",
         });
         ConfigurationSections.Add(new ConfigurationSection()
         {
-            Name = "Something else (slot 2)",
-            Slot = 2
+            Name = "Something else",
         });
         ConfigurationSections[0].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the General section."});
         ConfigurationSections[0].Items.Add(new ConfigurationNumericItem() {Name = "Numeric item", Description = "This one also has a description"});

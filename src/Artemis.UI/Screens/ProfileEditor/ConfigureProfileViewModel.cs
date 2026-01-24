@@ -33,30 +33,15 @@ public partial class ConfigureProfileViewModel : RoutableScreen<ProfileViewModel
 
         _configurationSections = new SourceList<ConfigurationSection>();
         _configurationSections.Connect()
-            .Filter(s => s.Slot == 0)
             .Transform(getConfigurationSectionViewModel)
-            .Bind(out ReadOnlyObservableCollection<ConfigurationSectionViewModel> bottomLeftSections)
+            .Bind(out ReadOnlyObservableCollection<ConfigurationSectionViewModel> sections)
             .Subscribe();
-        _configurationSections.Connect()
-            .Filter(s => s.Slot == 1)
-            .Transform(getConfigurationSectionViewModel)
-            .Bind(out ReadOnlyObservableCollection<ConfigurationSectionViewModel> bottomRightSections)
-            .Subscribe();
-        _configurationSections.Connect()
-            .Filter(s => s.Slot == 2)
-            .Transform(getConfigurationSectionViewModel)
-            .Bind(out ReadOnlyObservableCollection<ConfigurationSectionViewModel> sideSections)
-            .Subscribe();
-
-        BottomLeftSections = bottomLeftSections;
-        BottomRightSections = bottomRightSections;
-        SideSections = sideSections;
+        
+        Sections = sections;
     }
 
     public PreviewViewModel PreviewViewModel { get; }
-    public ReadOnlyObservableCollection<ConfigurationSectionViewModel> BottomLeftSections { get; private set; }
-    public ReadOnlyObservableCollection<ConfigurationSectionViewModel> BottomRightSections { get; private set; }
-    public ReadOnlyObservableCollection<ConfigurationSectionViewModel> SideSections { get; private set; }
+    public ReadOnlyObservableCollection<ConfigurationSectionViewModel> Sections { get; private set; }
 
     /// <inheritdoc />
     public override async Task OnNavigating(ProfileViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)

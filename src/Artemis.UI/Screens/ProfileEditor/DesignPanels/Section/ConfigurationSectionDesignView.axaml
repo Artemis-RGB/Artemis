@@ -1,0 +1,34 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:section="clr-namespace:Artemis.UI.Screens.ProfileEditor.DesignPanels.Section"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.DesignPanels.Section.ConfigurationSectionDesignView"
+             x:DataType="section:ConfigurationSectionDesignViewModel">
+    <Border Classes="card" VerticalAlignment="Top">
+        <StackPanel>
+            <TextBlock Theme="{StaticResource SubtitleTextBlockStyle}" Text="{CompiledBinding ConfigurationSection.Name}"/>
+            <Border Classes="card-separator" />
+           
+            <ItemsControl ItemsSource="{CompiledBinding Items}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Classes="device-view-model-container">
+                            <!-- Your existing item template goes here -->
+                            <ContentControl Content="{CompiledBinding}"/>
+                            <Border Classes="card-separator" Name="Separator" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.Styles>
+                    <Styles>
+                        <Style Selector="ContentPresenter:nth-last-child(1) > StackPanel > Border#Separator">
+                            <Setter Property="IsVisible" Value="False" />
+                        </Style>
+                    </Styles>
+                </ItemsControl.Styles>
+            </ItemsControl>
+        </StackPanel>
+    </Border>
+</UserControl>
