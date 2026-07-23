@@ -489,6 +489,7 @@ public static class InputUtilities
             88 => KeyboardKey.F12,
             91 => KeyboardKey.LeftWin,
             92 => KeyboardKey.RightWin,
+            93 => KeyboardKey.Application,
             100 => KeyboardKey.F13,
             101 => KeyboardKey.F14,
             102 => KeyboardKey.F15,
@@ -500,8 +501,7 @@ public static class InputUtilities
             108 => KeyboardKey.F21,
             109 => KeyboardKey.F22,
             110 => KeyboardKey.F23,
-            //???
-            118 => KeyboardKey.F24,
+            111 => KeyboardKey.F24,
             
             //28 = enter or numpad enter
             //29 = left ctrl or right ctrl
