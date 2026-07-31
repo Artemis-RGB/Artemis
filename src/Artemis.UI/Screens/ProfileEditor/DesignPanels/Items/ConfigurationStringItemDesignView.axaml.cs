@@ -1,5 +1,4 @@
-﻿using Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Items;
-using ReactiveUI.Avalonia;
+﻿using ReactiveUI.Avalonia;
 
 namespace Artemis.UI.Screens.ProfileEditor.DesignPanels.Items;
 

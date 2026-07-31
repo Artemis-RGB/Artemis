@@ -3,24 +3,30 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:items="clr-namespace:Artemis.UI.Screens.ProfileEditor.DesignPanels.Items"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.DesignPanels.Items.ConfigurationBooleanItemDesignView"
              x:DataType="items:ConfigurationBooleanItemDesignViewModel">
-    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-            <TextBlock Text="{CompiledBinding Item.Name}" TextWrapping="Wrap" />
-            <TextBlock Classes="subtitle" 
-                       TextWrapping="Wrap" 
-                       Text="{CompiledBinding Item.Description}"
-                       IsVisible="{CompiledBinding Item.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="5">
+            <TextBox Text="{CompiledBinding BooleanItem.Name}" Watermark="Name" />
+            <TextBox Text="{CompiledBinding BooleanItem.Description}" Watermark="Description" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="5">
+                <TextBox Grid.Column="0" Text="{CompiledBinding BooleanItem.TrueText}" Watermark="Enabled label" />
+                <TextBox Grid.Column="1" Text="{CompiledBinding BooleanItem.FalseText}" Watermark="Disabled label" />
+            </Grid>
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-            <ToggleSwitch IsChecked="{CompiledBinding Item.Value}" 
-                          OnContent="{CompiledBinding Item.TrueText}" 
-                          OffContent="{CompiledBinding Item.FalseText}"
-                          MinWidth="0"
-                          Margin="0 -10"
-                          FlowDirection="RightToLeft"/>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <TextBlock Margin="0 14 0 4">Default:</TextBlock>
+            <ToggleSwitch IsChecked="{CompiledBinding BooleanItem.Value}"
+                          OnContent="{CompiledBinding BooleanItem.TrueText}"
+                          OffContent="{CompiledBinding BooleanItem.FalseText}"
+                          Width="150"
+                          Margin="0 -6 0 0"
+                          HorizontalAlignment="Left" />
         </StackPanel>
+        <Button Grid.Row="0" Grid.Column="1" ToolTip.Tip="Remove" HorizontalAlignment="Right" VerticalAlignment="Top" Classes="icon-button-outlined" Command="{CompiledBinding RemoveItem}">
+            <avalonia:MaterialIcon Kind="Trash" />
+        </Button>
     </Grid>
 </UserControl>

@@ -5,28 +5,36 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:behaviors="clr-namespace:Artemis.UI.Shared.Behaviors;assembly=Artemis.UI.Shared"
              xmlns:items="clr-namespace:Artemis.UI.Screens.ProfileEditor.DesignPanels.Items"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.DesignPanels.Items.ConfigurationNumericItemDesignView"
              x:DataType="items:ConfigurationNumericItemDesignViewModel">
-    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
-        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-            <TextBlock Text="{CompiledBinding Item.Name}" TextWrapping="Wrap" />
-            <TextBlock Classes="subtitle"
-                       TextWrapping="Wrap"
-                       Text="{CompiledBinding Item.Description}"
-                       IsVisible="{CompiledBinding Item.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="5">
+            <TextBox Text="{CompiledBinding NumericItem.Name}" Watermark="Name" />
+            <TextBox Text="{CompiledBinding NumericItem.Description}" Watermark="Description" />
+            <ToggleSwitch IsChecked="{CompiledBinding NumericItem.Slider}"
+                          OnContent="Slider"
+                          OffContent="Number box"
+                          MinWidth="0"
+                          Margin="0 -8" />
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-            <controls:NumberBox Width="150" IsVisible="{CompiledBinding !Item.Slider}">
+        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Top">
+            <TextBlock Margin="0 14 0 4">Default:</TextBlock>
+            <controls:NumberBox Width="150" IsVisible="{CompiledBinding !NumericItem.Slider}">
                 <Interaction.Behaviors>
-                    <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding Item.Value}" />
+                    <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding NumericItem.Value}" />
                 </Interaction.Behaviors>
             </controls:NumberBox>
-            <Slider Minimum="{CompiledBinding Item.Minimum}"
-                             Maximum="{CompiledBinding Item.Maximum}"
-                             Width="150"
-                             IsVisible="{CompiledBinding Item.Slider}"
-                             Value="{CompiledBinding Item.Value, Mode=TwoWay}" />
+            <Slider Minimum="{CompiledBinding NumericItem.Minimum}"
+                    Maximum="{CompiledBinding NumericItem.Maximum}"
+                    Width="150"
+                    Margin="0 -5 0 0"
+                    IsVisible="{CompiledBinding NumericItem.Slider}"
+                    Value="{CompiledBinding NumericItem.Value, Mode=TwoWay}" />
         </StackPanel>
+        <Button Grid.Row="0" Grid.Column="1" ToolTip.Tip="Remove" HorizontalAlignment="Right" VerticalAlignment="Top" Classes="icon-button-outlined" Command="{CompiledBinding RemoveItem}">
+            <avalonia:MaterialIcon Kind="Trash" />
+        </Button>
     </Grid>
 </UserControl>

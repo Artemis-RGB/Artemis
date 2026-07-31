@@ -1,65 +1,87 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.Workshop.Library.Tabs;
+using Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Preview;
+using Artemis.UI.Screens.ProfileEditor.DesignPanels.Section;
 using Artemis.UI.Shared.Routing;
-using Artemis.WebClient.Workshop.Models;
-using Artemis.WebClient.Workshop.Services;
+using Artemis.UI.Shared.Services.ProfileEditor;
+using DynamicData;
+using DynamicData.Binding;
 using PropertyChanged.SourceGenerator;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor;
 
 public partial class DesignProfileViewModel : RoutableScreen<ProfileViewModelParameters>
 {
+    private readonly IProfileEditorService _profileEditorService;
     private readonly IProfileService _profileService;
-    private readonly IWorkshopService _workshopService;
-    private readonly IRouter _router;
-    private readonly Func<InstalledEntry, InstalledTabItemViewModel> _getInstalledTabItemViewModel;
 
     [Notify] private ProfileConfiguration? _profileConfiguration;
-    [Notify] private InstalledEntry? _workshopEntry;
-    [Notify] private InstalledTabItemViewModel? _entryViewModel;
+    [Notify] private ReadOnlyObservableCollection<ConfigurationSectionDesignViewModel>? _sections;
 
-    public DesignProfileViewModel(IProfileService profileService, IWorkshopService workshopService, IRouter router, Func<InstalledEntry, InstalledTabItemViewModel> getInstalledTabItemViewModel)
+    public DesignProfileViewModel(IProfileService profileService, IProfileEditorService profileEditorService, PreviewViewModel previewViewModel,
+        Func<ConfigurationSection, ConfigurationSectionDesignViewModel> getConfigurationSectionDesignViewModel)
     {
         _profileService = profileService;
-        _workshopService = workshopService;
-        _router = router;
-        _getInstalledTabItemViewModel = getInstalledTabItemViewModel;
+        _profileEditorService = profileEditorService;
         ParameterSource = ParameterSource.Route;
+
+        PreviewViewModel = previewViewModel;
+
+        this.WhenActivated(d =>
+        {
+            this.WhenAnyValue(vm => vm.ProfileConfiguration)
+                .Select(p => p?.ConfigurationSections.ToObservableChangeSet() ?? Observable.Empty<IChangeSet<ConfigurationSection>>())
+                .Switch()
+                .Transform(getConfigurationSectionDesignViewModel)
+                .Bind(out ReadOnlyObservableCollection<ConfigurationSectionDesignViewModel> sections)
+                .Subscribe()
+                .DisposeWith(d);
+
+            Sections = sections;
+        });
     }
 
-    public async Task DisableAutoUpdate()
-    {
-        if (WorkshopEntry != null)
-        {
-            _workshopService.SetAutoUpdate(WorkshopEntry, false);
-        }
+    public PreviewViewModel PreviewViewModel { get; }
 
-        if (ProfileConfiguration != null)
-        {
-            await _router.Navigate($"profile/{ProfileConfiguration.ProfileId}/editor");
-        }
-    }
-
-    public override Task OnNavigating(ProfileViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public override async Task OnNavigating(ProfileViewModelParameters parameters, NavigationArguments args, CancellationToken cancellationToken)
     {
-        ProfileConfiguration = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
+        ProfileConfiguration? profileConfiguration = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(c => c.ProfileId == parameters.ProfileId);
 
         // If the profile doesn't exist, cancel navigation
-        if (ProfileConfiguration == null)
+        if (profileConfiguration == null)
         {
             args.Cancel();
-            return Task.CompletedTask;
+            return;
         }
 
-        WorkshopEntry = _workshopService.GetInstalledEntryByProfile(ProfileConfiguration);
-        EntryViewModel = WorkshopEntry != null ? _getInstalledTabItemViewModel(WorkshopEntry) : null;
-        if (EntryViewModel != null)
-            EntryViewModel.DisplayManagement = false;
-        return Task.CompletedTask;
+        await _profileEditorService.ChangeCurrentProfileConfiguration(profileConfiguration);
+        ProfileConfiguration = profileConfiguration;
+    }
+
+    /// <inheritdoc />
+    public override async Task OnClosing(NavigationArguments args)
+    {
+        if (!args.Path.StartsWith("profile"))
+        {
+            ProfileConfiguration = null;
+            await _profileEditorService.ChangeCurrentProfileConfiguration(null);
+        }
+    }
+
+    public async Task AddSection()
+    {
+        ProfileConfiguration?.ConfigurationSections.Add(new ConfigurationSection(ProfileConfiguration)
+        {
+            Name = $"New Section {ProfileConfiguration.ConfigurationSections.Count(s => s.Name.StartsWith("New Section")) + 1}"
+        });
     }
 }

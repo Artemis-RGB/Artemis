@@ -1,14 +1,17 @@
 ﻿using Artemis.Core;
-using Artemis.UI.Shared;
 
 namespace Artemis.UI.Screens.ProfileEditor.DesignPanels.Items;
 
-public class ConfigurationColorGradientItemDesignViewModel : ActivatableViewModelBase
+public class ConfigurationColorGradientItemDesignViewModel : ConfigurationItemDesignViewModel
 {
-    public ConfigurationColorGradientItemDesignViewModel(ConfigurationColorGradientItem item)
+    public ConfigurationColorGradientItemDesignViewModel(ConfigurationColorGradientItem item, ConfigurationSection configurationSection) : base(item, configurationSection)
     {
-        Item = item;
+        // The gradient picker doesn't handle null values well
+        item.DefaultValue ??= ColorGradient.GetUnicornBarf();
+        item.Value ??= ColorGradient.GetUnicornBarf();
+
+        GradientItem = item;
     }
 
-    public ConfigurationColorGradientItem Item { get; }
+    public ConfigurationColorGradientItem GradientItem { get; }
 }

@@ -1,0 +1,46 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Artemis.UI.Screens.ProfileEditor.DesignPanels.Section.AddConfigurationItemDesignView">
+    <ListBox SelectionChanged="SelectingItemsControl_OnSelectionChanged">
+        <ListBoxItem x:Name="BooleanInputItem">
+            <StackPanel Margin="0 4">
+                <TextBlock>Boolean input</TextBlock>
+                <TextBlock Classes="subtitle">Allows the user enable/disable something via a toggle</TextBlock>
+            </StackPanel>
+        </ListBoxItem>
+        <ListBoxItem x:Name="ColorGradientInputItem">
+            <StackPanel Margin="0 4">
+                <TextBlock>Color gradient input</TextBlock>
+                <TextBlock Classes="subtitle">Allows the user create a color gradient</TextBlock>
+            </StackPanel>
+        </ListBoxItem>
+        <ListBoxItem x:Name="ColorInputItem">
+            <StackPanel Margin="0 4">
+                <TextBlock>Color input</TextBlock>
+                <TextBlock Classes="subtitle">Allows the user to select a color</TextBlock>
+            </StackPanel>
+        </ListBoxItem>
+        <ListBoxItem x:Name="NumericInputItem">
+            <StackPanel Margin="0 4">
+                <TextBlock>Numeric input</TextBlock>
+                <TextBlock Classes="subtitle">Allows the user to a number in either a box or via a slider</TextBlock>
+            </StackPanel>
+        </ListBoxItem>
+        <ListBoxItem x:Name="TextInputItem">
+            <StackPanel Margin="0 4">
+                <TextBlock>Text input</TextBlock>
+                <TextBlock Classes="subtitle">Allows the user to input arbitrary text</TextBlock>
+            </StackPanel>
+        </ListBoxItem>
+        <ListBoxItem x:Name="TextBlockItem">
+            <StackPanel Margin="0 4">
+                <TextBlock>Text block</TextBlock>
+                <TextBlock Classes="subtitle">A simple piece of text, useful for explaining things</TextBlock>
+            </StackPanel>
+        </ListBoxItem>
+
+    </ListBox>
+</UserControl>

@@ -3,12 +3,27 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.DesignProfileView"
              x:DataType="profileEditor:DesignProfileViewModel">
-    <Border Classes="router-container">
-
-        <TextBlock>Design</TextBlock>
-
+    <Border Classes="router-container" Padding="8">
+        <Grid RowDefinitions="*" ColumnDefinitions="0.6*, Auto" ColumnSpacing="8" RowSpacing="8">
+            <ContentControl Grid.Column="0" Grid.Row="0" Content="{CompiledBinding PreviewViewModel}" />
+            <ScrollViewer Grid.Column="1" Grid.Row="0">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{CompiledBinding Sections}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="8" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                    <Button HorizontalAlignment="Stretch" Margin="0 8 0 0" ToolTip.Tip="Add Section" Command="{CompiledBinding AddSection}">
+                        <avalonia:MaterialIcon Kind="Add" />
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Border>
 </UserControl>

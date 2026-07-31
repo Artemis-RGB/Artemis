@@ -1,14 +1,8 @@
 ﻿using Artemis.Core;
-using Artemis.UI.Shared;
 
 namespace Artemis.UI.Screens.ProfileEditor.DesignPanels.Items;
 
-public class ConfigurationNumericItemDesignViewModel : ActivatableViewModelBase
+public class ConfigurationNumericItemDesignViewModel(ConfigurationNumericItem item, ConfigurationSection configurationSection) : ConfigurationItemDesignViewModel(item, configurationSection)
 {
-    public ConfigurationNumericItem Item { get; }
-
-    public ConfigurationNumericItemDesignViewModel(ConfigurationNumericItem item)
-    {
-        Item = item;
-    }
+    public ConfigurationNumericItem NumericItem { get; } = item;
 }

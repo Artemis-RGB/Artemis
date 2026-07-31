@@ -3,7 +3,7 @@
         xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <!-- Preview -->
     <Design.PreviewWith>
-		<Border Padding="20">
+        <Border Padding="20">
             <StackPanel>
                 <TextBlock Margin="0 5 0 0">Button.icon-button</TextBlock>
                 <Button Classes="icon-button">
@@ -13,7 +13,7 @@
                     <avalonia:MaterialIcon Kind="Cog" />
                 </Button>
 
-				<TextBlock Margin="0 5 0 0">Button.icon-button icon-button-small</TextBlock>
+                <TextBlock Margin="0 5 0 0">Button.icon-button icon-button-small</TextBlock>
                 <Button Classes="icon-button icon-button-small">
                     <avalonia:MaterialIcon Kind="Cog" />
                 </Button>
@@ -34,15 +34,15 @@
                 </HyperlinkButton>
 
 
-				<TextBlock Margin="0 5 0 0">Button.window-button</TextBlock>
-				<Button Classes="title-bar-button">
-					<avalonia:MaterialIcon Kind="WindowMinimize" />
-				</Button>
-                
+                <TextBlock Margin="0 5 0 0">Button.window-button</TextBlock>
+                <Button Classes="title-bar-button">
+                    <avalonia:MaterialIcon Kind="WindowMinimize" />
+                </Button>
+
                 <Button Classes="icon-button">
                     <avalonia:MaterialIcon Kind="Cog" />
                 </Button>
-                
+
                 <Button Classes="danger">
                     Oohohoho daanger!
                 </Button>
@@ -51,6 +51,9 @@
     </Design.PreviewWith>
 
     <!-- Styles -->
+    <Style Selector=":is(Button).icon-button-outlined">
+        <Setter Property="Padding" Value="7" />
+    </Style>
     <Style Selector=":is(Button).icon-button">
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Background" Value="Transparent" />
@@ -58,7 +61,7 @@
     </Style>
     <Style Selector=":is(Button).icon-button:pointerover /template/ Border#BorderElement">
         <Setter Property="BorderBrush" Value="Transparent" />
-    </Style> 
+    </Style>
     <Style Selector=":is(Button).icon-button:disabled /template/ Border#BorderElement">
         <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
@@ -79,7 +82,7 @@
         <Setter Property="TextBlock.Foreground" Value="{DynamicResource AppBarButtonForegroundDisabled}" />
     </Style>
 
-	<Style Selector=":is(Button).icon-button-small">
+    <Style Selector=":is(Button).icon-button-small">
         <Setter Property="Padding" Value="4" />
     </Style>
     <Style Selector=":is(Button).icon-button-small avalonia|MaterialIcon">
@@ -97,21 +100,21 @@
     </Style>
 
     <Style Selector="Button.title-bar-button">
-        <Setter Property="Width" Value="46"></Setter>
-        <Setter Property="Height" Value="30"></Setter>
-        <Setter Property="BorderThickness" Value="0"></Setter>
-        <Setter Property="CornerRadius" Value="0"></Setter>
-        <Setter Property="Margin" Value="0"></Setter>
-        <Setter Property="Background" Value="Transparent"></Setter>
+        <Setter Property="Width" Value="46" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="Button.title-bar-button:pointerover">
-        <Setter Property="Background" Value="Red"></Setter>
+        <Setter Property="Background" Value="Red" />
     </Style>
-    
+
     <Style Selector="Button.danger">
-        <Setter Property="Background" Value="#D64848"></Setter>
+        <Setter Property="Background" Value="#D64848" />
     </Style>
-    
+
     <!-- <Style Selector="Button.danger:pointerover"> -->
     <!--     <Style Selector="^ /template/ controls|FABorder#Root"> -->
     <!--         <Setter Property="Background" Value="#D65757"/> -->

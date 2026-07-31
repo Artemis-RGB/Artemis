@@ -13,7 +13,7 @@ namespace Artemis.Core;
 public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, IPluginFeatureDependent
 {
     /// <summary>
-    /// Represents an empty profile.
+    ///     Represents an empty profile.
     /// </summary>
     public static readonly ProfileConfiguration Empty = new(ProfileCategory.Empty, "Empty", "Empty");
 
@@ -147,7 +147,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     }
 
     /// <summary>
-    ///    Gets or sets a boolean indicating whether this profile should fade in and out when enabling or disabling
+    ///     Gets or sets a boolean indicating whether this profile should fade in and out when enabling or disabling
     /// </summary>
     public bool FadeInAndOut
     {
@@ -156,7 +156,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     }
 
     /// <summary>
-    ///     Gets or sets a boolean indicating whether this profile is configurable via its <see cref="ConfigurationSections"/>.
+    ///     Gets or sets a boolean indicating whether this profile is configurable via its <see cref="ConfigurationSections" />.
     /// </summary>
     public bool IsConfigurable
     {
@@ -251,19 +251,6 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         return $"[ProfileConfiguration] {nameof(Name)}: {Name}";
     }
 
-    /// <inheritdoc />
-    public IEnumerable<PluginFeature> GetFeatureDependencies()
-    {
-        if (_disposed)
-            throw new ObjectDisposedException("ProfileConfiguration");
-        if (Profile == null)
-            throw new InvalidOperationException("Cannot determine feature dependencies when the profile is not loaded.");
-
-        return ActivationCondition.GetFeatureDependencies()
-            .Concat(Profile.GetFeatureDependencies())
-            .Concat(Module != null ? [Module] : []);
-    }
-
     internal void LoadModules(List<Module> enabledModules)
     {
         if (_disposed)
@@ -278,6 +265,19 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     {
         _disposed = true;
         ActivationCondition.Dispose();
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<PluginFeature> GetFeatureDependencies()
+    {
+        if (_disposed)
+            throw new ObjectDisposedException("ProfileConfiguration");
+        if (Profile == null)
+            throw new InvalidOperationException("Cannot determine feature dependencies when the profile is not loaded.");
+
+        return ActivationCondition.GetFeatureDependencies()
+            .Concat(Profile.GetFeatureDependencies())
+            .Concat(Module != null ? [Module] : []);
     }
 
     #region Implementation of IStorageModel
@@ -305,27 +305,27 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
 
         // Placeholder configuration sections
         ConfigurationSections.Clear();
-        ConfigurationSections.Add(new ConfigurationSection()
+        ConfigurationSections.Add(new ConfigurationSection(this)
         {
-            Name = "General",
+            Name = "General"
         });
-        ConfigurationSections.Add(new ConfigurationSection()
+        ConfigurationSections.Add(new ConfigurationSection(this)
         {
-            Name = "Other",
+            Name = "Other"
         });
-        ConfigurationSections.Add(new ConfigurationSection()
+        ConfigurationSections.Add(new ConfigurationSection(this)
         {
-            Name = "Something else",
+            Name = "Something else"
         });
-        ConfigurationSections[0].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the General section."});
-        ConfigurationSections[0].Items.Add(new ConfigurationNumericItem() {Name = "Numeric item", Description = "This one also has a description"});
-        ConfigurationSections[0].Items.Add(new ConfigurationBooleanItem() {Name = "Do the thing?", TrueText = "Absolutely", FalseText = "Nope"});
-        ConfigurationSections[1].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the Other section."});
-        ConfigurationSections[2].Items.Add(new ConfigurationTextItem() {Text = "This is a placeholder text item in the Something else section."});
-        ConfigurationSections[2].Items.Add(new ConfigurationTextItem() {Text = "This is another placeholder text item in the Something else section."});
-        ConfigurationSections[2].Items.Add(new ConfigurationNumericItem() {Name = "Numeric item", Description = "This one uses a slider", Minimum = 0, Maximum = 10, Slider = true});
-        ConfigurationSections[2].Items.Add(new ConfigurationColorGradientItem() {Name = "Color gradient"});
-        ConfigurationSections[2].Items.Add(new ConfigurationSKColorItem() {Name = "A simple color", Description = "Again with a description"});
+        ConfigurationSections[0].Items.Add(new ConfigurationTextItem {Text = "This is a placeholder text item in the General section."});
+        ConfigurationSections[0].Items.Add(new ConfigurationNumericItem {Name = "Numeric item", Description = "This one also has a description"});
+        ConfigurationSections[0].Items.Add(new ConfigurationBooleanItem {Name = "Do the thing?", TrueText = "Absolutely", FalseText = "Nope"});
+        ConfigurationSections[1].Items.Add(new ConfigurationTextItem {Text = "This is a placeholder text item in the Other section."});
+        ConfigurationSections[2].Items.Add(new ConfigurationTextItem {Text = "This is a placeholder text item in the Something else section."});
+        ConfigurationSections[2].Items.Add(new ConfigurationTextItem {Text = "This is another placeholder text item in the Something else section."});
+        ConfigurationSections[2].Items.Add(new ConfigurationNumericItem {Name = "Numeric item", Description = "This one uses a slider", Minimum = 0, Maximum = 10, Slider = true});
+        ConfigurationSections[2].Items.Add(new ConfigurationColorGradientItem {Name = "Color gradient"});
+        ConfigurationSections[2].Items.Add(new ConfigurationSKColorItem {Name = "A simple color", Description = "Again with a description"});
     }
 
     /// <inheritdoc />

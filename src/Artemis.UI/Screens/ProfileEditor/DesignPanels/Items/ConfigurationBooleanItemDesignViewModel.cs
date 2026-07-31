@@ -1,14 +1,8 @@
 ﻿using Artemis.Core;
-using Artemis.UI.Shared;
 
 namespace Artemis.UI.Screens.ProfileEditor.DesignPanels.Items;
 
-public class ConfigurationBooleanItemDesignViewModel : ActivatableViewModelBase
+public class ConfigurationBooleanItemDesignViewModel(ConfigurationBooleanItem item, ConfigurationSection configurationSection) : ConfigurationItemDesignViewModel(item, configurationSection)
 {
-    public ConfigurationBooleanItem Item { get; }
-
-    public ConfigurationBooleanItemDesignViewModel(ConfigurationBooleanItem item)
-    {
-        Item = item;
-    }
+    public ConfigurationBooleanItem BooleanItem { get; } = item;
 }
