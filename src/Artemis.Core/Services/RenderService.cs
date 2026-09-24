@@ -42,6 +42,9 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
         _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 30);
         _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
         _preferredGraphicsContext = settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
+        // LED rectangles must use the same pixel grid as the texture from the
+        // first frame, including when a saved 25% or 100% scale is restored.
+        RenderScale.SetRenderScaleMultiplier((int) (1 / _renderScaleSetting.Value));
         _targetFrameRateSetting.SettingChanged += OnRenderSettingsChanged;
         _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
         _preferredGraphicsContext.SettingChanged += PreferredGraphicsContextOnSettingChanged;

@@ -17,19 +17,32 @@ internal static class RenderScale
 
     internal static SKRectI CreateScaleCompatibleRect(float x, float y, float width, float height)
     {
-        int roundX = (int) MathF.Floor(x);
-        int roundY = (int) MathF.Floor(y);
-        int roundWidth = (int) MathF.Ceiling(width);
-        int roundHeight = (int) MathF.Ceiling(height);
+        int multiplier = RenderScaleMultiplier;
+        if (multiplier == 1)
+            return SKRectI.Create((int) MathF.Floor(x), (int) MathF.Floor(y), (int) MathF.Ceiling(width), (int) MathF.Ceiling(height));
 
-        if (RenderScaleMultiplier == 1)
-            return SKRectI.Create(roundX, roundY, roundWidth, roundHeight);
+        int left = AlignStart(x, width, multiplier);
+        int top = AlignStart(y, height, multiplier);
+        int right = AlignEnd(x, width, multiplier, left);
+        int bottom = AlignEnd(y, height, multiplier, top);
+        return SKRectI.Create(left, top, right - left, bottom - top);
+    }
 
-        return SKRectI.Create(
-            roundX - roundX % RenderScaleMultiplier,
-            roundY - roundY % RenderScaleMultiplier,
-            roundWidth - roundWidth % RenderScaleMultiplier,
-            roundHeight - roundHeight % RenderScaleMultiplier
-        );
+    private static int AlignStart(float start, float length, int multiplier)
+    {
+        int firstFullCell = (int) MathF.Ceiling(start / multiplier) * multiplier;
+        int lastFullCellEnd = (int) MathF.Floor((start + length) / multiplier) * multiplier;
+
+        // A thin LED may not contain a whole render pixel. Keep the cell containing
+        // its center instead of rounding its width or height down to zero.
+        return firstFullCell < lastFullCellEnd
+            ? firstFullCell
+            : (int) MathF.Floor((start + length / 2) / multiplier) * multiplier;
+    }
+
+    private static int AlignEnd(float start, float length, int multiplier, int alignedStart)
+    {
+        int lastFullCellEnd = (int) MathF.Floor((start + length) / multiplier) * multiplier;
+        return Math.Max(lastFullCellEnd, alignedStart + multiplier);
     }
 }
