@@ -12,11 +12,26 @@
              x:Class="Artemis.UI.Screens.Settings.GeneralTabView"
              x:DataType="settings:GeneralTabViewModel">
 
+    <Grid>
+
+        <!-- FPS COUNTER OVERLAY -->
+        <Border Background="#33000000"
+                Padding="6"
+                Margin="10"
+                CornerRadius="4"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <avalonia:MaterialIcon Kind="Speedometer" Width="18" Height="18"/>
+                <TextBlock Text="{CompiledBinding CurrentFps, StringFormat='FPS: {0:F1}'}"
+                           FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="15" MaxWidth="1000">
             <TextBlock Classes="h4">General settings</TextBlock>
             <TextBlock>
-                Here you can change the general settings op the application, for plugin and device specific settings, see the other tabs.
+                Here you can change the general settings of the application. For plugin and device specific settings, see the other tabs.
             </TextBlock>
             <!-- General settings -->
             <TextBlock Classes="card-title">
@@ -448,5 +463,5 @@
             </Border>
         </StackPanel>
     </ScrollViewer>
-
+</Grid>
 </UserControl>

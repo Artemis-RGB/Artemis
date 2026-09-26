@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -32,6 +32,7 @@ public class GeneralTabViewModel : RoutableScreen
     private readonly IAutoRunProvider? _autoRunProvider;
     private readonly IProtocolProvider? _protocolProvider;
     private readonly IDebugService _debugService;
+    private readonly IRenderService _renderService;
     private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
     private readonly INotificationService _notificationService;
     private readonly ISettingsService _settingsService;
@@ -39,13 +40,22 @@ public class GeneralTabViewModel : RoutableScreen
     private readonly IWindowService _windowService;
     private bool _startupWizardOpen;
 
-    public GeneralTabViewModel(IContainer container,
+    private double _currentFps;
+    public double CurrentFps
+    {
+        get => _currentFps;
+        set => this.RaiseAndSetIfChanged(ref _currentFps, value);
+    }
+
+    public GeneralTabViewModel(
+        IContainer container,
         ISettingsService settingsService,
         IPluginManagementService pluginManagementService,
         IDebugService debugService,
         IWindowService windowService,
         IUpdateService updateService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IRenderService renderService)
     {
         DisplayName = "General";
         _settingsService = settingsService;
@@ -53,6 +63,7 @@ public class GeneralTabViewModel : RoutableScreen
         _windowService = windowService;
         _updateService = updateService;
         _notificationService = notificationService;
+        _renderService = renderService;
         _autoRunProvider = container.Resolve<IAutoRunProvider>(IfUnresolved.ReturnDefault);
         _protocolProvider = container.Resolve<IProtocolProvider>(IfUnresolved.ReturnDefault);
 
@@ -81,8 +92,16 @@ public class GeneralTabViewModel : RoutableScreen
             UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
             EnableMica.SettingChanged += EnableMicaOnSettingChanged;
 
+            // FPS hook
+            _renderService.FrameRendered += OnFrameRendered;
+            Disposable.Create(() =>
+            {
+                _renderService.FrameRendered -= OnFrameRendered;
+            }).DisposeWith(d);
+
             Dispatcher.UIThread.InvokeAsync(ApplyAutoRun);
             Dispatcher.UIThread.Invoke(ApplyProtocolAssociation);
+
             Disposable.Create(() =>
             {
                 UIAutoRun.SettingChanged -= UIAutoRunOnSettingChanged;
@@ -93,6 +112,11 @@ public class GeneralTabViewModel : RoutableScreen
                 _settingsService.SaveAllSettings();
             }).DisposeWith(d);
         });
+    }
+
+    private void OnFrameRendered(object? sender, FrameRenderedEventArgs e)
+    {
+        CurrentFps = _renderService.FrameRate;
     }
 
     public ReactiveCommand<Unit, Unit> ShowLogs { get; }
@@ -122,7 +146,10 @@ public class GeneralTabViewModel : RoutableScreen
         new RenderSettingViewModel("30 FPS", 30),
         new RenderSettingViewModel("45 FPS", 45),
         new RenderSettingViewModel("60 FPS (lol)", 60),
-        new RenderSettingViewModel("144 FPS (omegalol)", 144)
+        new RenderSettingViewModel("120 FPS (omegalol)", 120),
+        new RenderSettingViewModel("144 FPS (why tho)", 144),
+        new RenderSettingViewModel("240 FPS (make cpu cry)", 240),
+        new RenderSettingViewModel("360 FPS (explode pc)", 360)
     ];
 
     public LayerBrushDescriptor? SelectedLayerBrushDescriptor
@@ -150,7 +177,7 @@ public class GeneralTabViewModel : RoutableScreen
         set
         {
             if (value != null)
-                CoreTargetFrameRate.Value = (int) value.Value;
+                CoreTargetFrameRate.Value = (int)value.Value;
         }
     }
 
@@ -180,7 +207,6 @@ public class GeneralTabViewModel : RoutableScreen
     {
         try
         {
-            // If an update was available a popup was shown, no need to continue
             if (await _updateService.CheckForUpdate())
                 return;
 
@@ -233,12 +259,12 @@ public class GeneralTabViewModel : RoutableScreen
             _windowService.ShowExceptionDialog("Failed to apply auto-run", exception);
         }
     }
-    
+
     private void ApplyProtocolAssociation()
     {
         if (_protocolProvider == null)
             return;
-        
+
         try
         {
             if (UIUseProtocol.Value)
@@ -256,7 +282,7 @@ public class GeneralTabViewModel : RoutableScreen
     {
         await ApplyAutoRun();
     }
-    
+
     private void UIUseProtocolOnSettingChanged(object? sender, EventArgs e)
     {
         ApplyProtocolAssociation();
