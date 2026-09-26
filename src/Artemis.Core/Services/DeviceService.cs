@@ -256,8 +256,10 @@ internal class DeviceService : IDeviceService
             try
             {
                 _renderService.Value.IsPaused = true;
-                foreach (DeviceProvider deviceProvider in _pluginManagementService.GetFeaturesOfType<DeviceProvider>().Where(d => d.SuspendSupported))
-                    SuspendDeviceProvider(deviceProvider);
+                foreach (DeviceProvider deviceProvider in _pluginManagementService.GetFeaturesOfType<DeviceProvider>())
+                {
+                    SuspendDeviceProvider(deviceProvider, deviceProvider.SuspendSupported);
+                }
             }
             finally
             {
@@ -278,7 +280,9 @@ internal class DeviceService : IDeviceService
             {
                 _renderService.Value.IsPaused = true;
                 foreach (DeviceProvider deviceProvider in _suspendedDeviceProviders.ToList())
+                {
                     ResumeDeviceProvider(deviceProvider);
+                }
             }
             finally
             {
@@ -287,7 +291,7 @@ internal class DeviceService : IDeviceService
         }
     }
 
-    private void SuspendDeviceProvider(DeviceProvider deviceProvider)
+    private void SuspendDeviceProvider(DeviceProvider deviceProvider, bool callSuspend)
     {
         if (_suspendedDeviceProviders.Contains(deviceProvider))
         {
@@ -298,7 +302,10 @@ internal class DeviceService : IDeviceService
         try
         {
             _pluginManagementService.DisablePluginFeature(deviceProvider, false);
-            deviceProvider.Suspend();
+            if (callSuspend)
+            {
+                deviceProvider.Suspend();
+            }
             _suspendedDeviceProviders.Add(deviceProvider);
             _logger.Information("Device provider {DeviceProvider} suspended", deviceProvider.Info.Name);
         }
