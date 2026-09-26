@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Artemis.Core.SkiaSharp;
 using HPPH;
-using HPPH.SkiaSharp;
 using RGB.NET.Core;
 using RGB.NET.Presets.Extensions;
 using SkiaSharp;
@@ -25,6 +24,7 @@ public sealed class SKTexture : ITexture, IDisposable
         Surface = graphicsContext == null
             ? SKSurface.Create(ImageInfo)
             : SKSurface.Create(graphicsContext.GraphicsContext, true, ImageInfo);
+        _readback = new SKBitmap(new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Unpremul));
 
         foreach (ArtemisDevice artemisDevice in devices)
         {
@@ -44,14 +44,52 @@ public sealed class SKTexture : ITexture, IDisposable
 
     internal Color GetColorAtRenderTarget(in RenderTarget renderTarget)
     {
-        if (_image == null) return Color.Transparent;
+        if (!_hasPixels) return Color.Transparent;
 
         SKRectI skRectI = _ledRects[renderTarget.Led];
 
         if (skRectI.Width <= 0 || skRectI.Height <= 0)
             return Color.Transparent;
 
-        return _image[skRectI.Left, skRectI.Top, skRectI.Width, skRectI.Height].Average().ToColor();
+        return AveragePixels(_readback, skRectI);
+    }
+
+    internal static unsafe Color AveragePixels(SKBitmap bitmap, SKRectI rectangle)
+    {
+        int left = Math.Max(0, rectangle.Left);
+        int top = Math.Max(0, rectangle.Top);
+        int right = Math.Min(bitmap.Width, rectangle.Right);
+        int bottom = Math.Min(bitmap.Height, rectangle.Bottom);
+        if (left >= right || top >= bottom)
+            return Color.Transparent;
+
+        byte* pixels = (byte*)bitmap.GetPixels().ToPointer();
+        if (pixels == null)
+            return Color.Transparent;
+
+        long blue = 0;
+        long green = 0;
+        long red = 0;
+        long alpha = 0;
+        int rowBytes = bitmap.RowBytes;
+        for (int y = top; y < bottom; y++)
+        {
+            byte* pixel = pixels + y * rowBytes + left * 4;
+            for (int x = left; x < right; x++, pixel += 4)
+            {
+                blue += pixel[0];
+                green += pixel[1];
+                red += pixel[2];
+                alpha += pixel[3];
+            }
+        }
+
+        float count = (right - left) * (bottom - top);
+        return new ColorBGRA(
+            (byte)MathF.Round(blue / count),
+            (byte)MathF.Round(green / count),
+            (byte)MathF.Round(red / count),
+            (byte)MathF.Round(alpha / count)).ToColor();
     }
 
     /// <inheritdoc />
@@ -63,6 +101,7 @@ public sealed class SKTexture : ITexture, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        _readback.Dispose();
         Surface.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -79,15 +118,15 @@ public sealed class SKTexture : ITexture, IDisposable
 
     internal void CopyPixelData()
     {
-        using SKImage skImage = Surface.Snapshot();
-        _image = skImage.ToImage();
+        _hasPixels = Surface.ReadPixels(_readback.Info, _readback.GetPixels(), _readback.RowBytes, 0, 0);
     }
 
     #endregion
 
     #region Properties & Fields
 
-    private IImage? _image;
+    private readonly SKBitmap _readback;
+    private bool _hasPixels;
     private readonly Dictionary<Led, SKRectI> _ledRects = [];
 
     /// <inheritdoc />
