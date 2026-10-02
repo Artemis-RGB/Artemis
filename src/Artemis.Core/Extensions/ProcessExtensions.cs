@@ -21,10 +21,20 @@ public static class ProcessExtensions
     {
         int capacity = 2000;
         StringBuilder builder = new(capacity);
-        nint ptr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, p.Id);
-        if (!QueryFullProcessImageName(ptr, 0, builder, ref capacity)) return string.Empty;
+        nint processHandle = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, p.Id);
+        if (processHandle == nint.Zero)
+            return string.Empty;
 
-        return builder.ToString();
+        try
+        {
+            return QueryFullProcessImageName(processHandle, 0, builder, ref capacity)
+                ? builder.ToString()
+                : string.Empty;
+        }
+        finally
+        {
+            CloseHandle(processHandle);
+        }
     }
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
@@ -32,6 +42,10 @@ public static class ProcessExtensions
 
     [DllImport("kernel32.dll")]
     private static extern nint OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
+
+    [DllImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool CloseHandle(nint hObject);
 
     [Flags]
     private enum ProcessAccessFlags : uint
