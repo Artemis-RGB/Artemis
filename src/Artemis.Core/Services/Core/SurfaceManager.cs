@@ -36,7 +36,7 @@ internal sealed class SurfaceManager : IDisposable
         TargetFrameRate = targetFrameRate;
         _effectiveFrameRate = targetFrameRate;
         RenderScale = renderScale;
-        RenderPressureBudgetMs = Math.Max(0, renderPressureBudgetMs);
+        RenderPressureBudgetMs = Math.Max(-1, renderPressureBudgetMs);
         Surface = new RGBSurface();
         Surface.Updating += SurfaceOnUpdating;
         Surface.RegisterUpdateTrigger(_updateTrigger);
@@ -125,7 +125,9 @@ internal sealed class SurfaceManager : IDisposable
 
     public void UpdateRenderPressureBudget(double renderPressureBudgetMs)
     {
-        RenderPressureBudgetMs = Math.Max(0, renderPressureBudgetMs);
+        RenderPressureBudgetMs = Math.Max(-1, renderPressureBudgetMs);
+        if (RenderPressureBudgetMs < 0)
+            SetEffectiveFrameRate(TargetFrameRate);
     }
 
     public void UpdateGraphicsContext(IManagedGraphicsContext? graphicsContext)
@@ -218,7 +220,7 @@ internal sealed class SurfaceManager : IDisposable
 
     private void UpdateAdaptiveFrameRate(TimeSpan frameTime)
     {
-        if (TargetFrameRate <= MinimumAdaptiveFrameRate)
+        if (RenderPressureBudgetMs < 0 || TargetFrameRate <= MinimumAdaptiveFrameRate)
             return;
 
         double targetFrameTimeMs = RenderPressureBudgetMs > 0

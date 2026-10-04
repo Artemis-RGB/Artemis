@@ -185,14 +185,14 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
 
         double averageMs = _pressureSampleTotal.TotalMilliseconds / _pressureSampleFrames;
         _logger.Information(
-            "Render pressure: frames={Frames}, min={MinMs:F2}ms, avg={AverageMs:F2}ms, max={MaxMs:F2}ms, configuredFps={ConfiguredFps}, effectiveFps={EffectiveFps:F2}, budgetMs={BudgetMs:F2}",
+            "Render pressure: frames={Frames}, min={MinMs:F2}ms, avg={AverageMs:F2}ms, max={MaxMs:F2}ms, configuredFps={ConfiguredFps}, effectiveFps={EffectiveFps:F2}, budget={Budget}",
             _pressureSampleFrames,
             _pressureSampleMin.TotalMilliseconds,
             averageMs,
             _pressureSampleMax.TotalMilliseconds,
             _surfaceManager.TargetFrameRate,
             _surfaceManager.EffectiveFrameRate,
-            _surfaceManager.RenderPressureBudgetMs);
+            _surfaceManager.RenderPressureBudgetMs < 0 ? "disabled" : $"{_surfaceManager.RenderPressureBudgetMs:F2}ms");
 
         _pressureSampleFrames = 0;
         _pressureSampleTotal = TimeSpan.Zero;

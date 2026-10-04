@@ -67,6 +67,7 @@ public class GeneralTabViewModel : RoutableScreen
             LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
             BrushType = "SolidBrush"
         });
+        UpdateRenderPressureBudgets();
 
         ShowLogs = ReactiveCommand.Create(ExecuteShowLogs);
         CheckForUpdate = ReactiveCommand.CreateFromTask(ExecuteCheckForUpdate);
@@ -80,6 +81,7 @@ public class GeneralTabViewModel : RoutableScreen
             UIUseProtocol.SettingChanged += UIUseProtocolOnSettingChanged;
             UIAutoRunDelay.SettingChanged += UIAutoRunDelayOnSettingChanged;
             EnableMica.SettingChanged += EnableMicaOnSettingChanged;
+            CoreTargetFrameRate.SettingChanged += CoreTargetFrameRateOnSettingChanged;
 
             Dispatcher.UIThread.InvokeAsync(ApplyAutoRun);
             Dispatcher.UIThread.Invoke(ApplyProtocolAssociation);
@@ -89,6 +91,7 @@ public class GeneralTabViewModel : RoutableScreen
                 UIUseProtocol.SettingChanged -= UIUseProtocolOnSettingChanged;
                 UIAutoRunDelay.SettingChanged -= UIAutoRunDelayOnSettingChanged;
                 EnableMica.SettingChanged -= EnableMicaOnSettingChanged;
+                CoreTargetFrameRate.SettingChanged -= CoreTargetFrameRateOnSettingChanged;
 
                 _settingsService.SaveAllSettings();
             }).DisposeWith(d);
@@ -125,16 +128,7 @@ public class GeneralTabViewModel : RoutableScreen
         new RenderSettingViewModel("144 FPS (omegalol)", 144)
     ];
 
-    public ObservableCollection<RenderSettingViewModel> RenderPressureBudgets { get; } =
-    [
-        new RenderSettingViewModel("Auto (frame budget)", 0),
-        new RenderSettingViewModel("16 ms", 16),
-        new RenderSettingViewModel("20 ms", 20),
-        new RenderSettingViewModel("25 ms", 25),
-        new RenderSettingViewModel("33 ms", 33),
-        new RenderSettingViewModel("50 ms", 50),
-        new RenderSettingViewModel("75 ms", 75)
-    ];
+    public ObservableCollection<RenderSettingViewModel> RenderPressureBudgets { get; } = [];
 
     public LayerBrushDescriptor? SelectedLayerBrushDescriptor
     {
@@ -196,6 +190,34 @@ public class GeneralTabViewModel : RoutableScreen
     private void ExecuteShowLogs()
     {
         Utilities.OpenFolder(Constants.LogsFolder);
+    }
+
+    private void CoreTargetFrameRateOnSettingChanged(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(UpdateRenderPressureBudgets);
+    }
+
+    private void UpdateRenderPressureBudgets()
+    {
+        double targetFrameTimeMs = 1000d / CoreTargetFrameRate.Value;
+        (string Label, double Multiplier)[] budgets = [("25%", 0.25), ("50%", 0.5), ("75%", 0.75)];
+
+        RenderPressureBudgets.Clear();
+        RenderPressureBudgets.Add(new RenderSettingViewModel("Disabled", -1));
+        RenderPressureBudgets.Add(new RenderSettingViewModel("Auto (frame budget)", 0));
+        foreach ((string label, double multiplier) in budgets)
+        {
+            double budgetMs = Math.Max(1, Math.Floor(targetFrameTimeMs * multiplier));
+            if (RenderPressureBudgets.Any(s => Math.Abs(s.Value - budgetMs) < 0.01))
+                continue;
+
+            RenderPressureBudgets.Add(new RenderSettingViewModel($"{label} ({budgetMs:0} ms)", budgetMs));
+        }
+
+        if (!RenderPressureBudgets.Any(s => Math.Abs(s.Value - CoreRenderPressureBudget.Value) < 0.01))
+            CoreRenderPressureBudget.Value = 0;
+
+        this.RaisePropertyChanged(nameof(SelectedRenderPressureBudget));
     }
 
     private async Task ExecuteCheckForUpdate(CancellationToken cancellationToken)
