@@ -14,7 +14,6 @@ namespace Artemis.Core.Services.Core;
 internal sealed class SurfaceManager : IDisposable
 {
     private const double MinimumAdaptiveFrameRate = 10;
-    private const double BackoffMultiplier = 1.25;
     private const double RecoveryThresholdMultiplier = 0.75;
 
     private readonly IRenderer _renderer;
@@ -230,10 +229,8 @@ internal sealed class SurfaceManager : IDisposable
 
         if (frameTimeMs > targetFrameTimeMs)
         {
-            // A synchronous GPU readback that misses its budget should yield the next
-            // compositor tick instead of immediately competing with the foreground app.
-            double sustainableFrameRate = 1000.0 / (frameTimeMs * BackoffMultiplier);
-            SetEffectiveFrameRate(Math.Max(MinimumAdaptiveFrameRate, sustainableFrameRate));
+            double effectiveFrameRate = TargetFrameRate * targetFrameTimeMs / frameTimeMs;
+            SetEffectiveFrameRate(Math.Max(MinimumAdaptiveFrameRate, effectiveFrameRate));
             return;
         }
 
