@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.SkiaSharp;
 using RGB.NET.Core;
@@ -12,22 +13,29 @@ namespace Artemis.Core.Services.Core;
 /// </summary>
 internal sealed class SurfaceManager : IDisposable
 {
+    private const double MinimumAdaptiveFrameRate = 10;
+    private const double RecoveryThresholdMultiplier = 0.75;
+
     private readonly IRenderer _renderer;
     private readonly TimerUpdateTrigger _updateTrigger;
+    private readonly Stopwatch _frameStopwatch = new();
     private readonly List<ArtemisDevice> _devices = [];
     private readonly SKTextureBrush _textureBrush = new(null) {CalculationMode = RenderMode.Absolute};
 
     private ListLedGroup? _surfaceLedGroup;
     private SKTexture? _texture;
+    private double _effectiveFrameRate;
 
-    public SurfaceManager(IRenderer renderer, IManagedGraphicsContext? graphicsContext, int targetFrameRate, float renderScale)
+    public SurfaceManager(IRenderer renderer, IManagedGraphicsContext? graphicsContext, int targetFrameRate, float renderScale, double renderPressureBudgetMs)
     {
         _renderer = renderer;
         _updateTrigger = new TimerUpdateTrigger(false) {UpdateFrequency = 1.0 / targetFrameRate};
 
         GraphicsContext = graphicsContext;
         TargetFrameRate = targetFrameRate;
+        _effectiveFrameRate = targetFrameRate;
         RenderScale = renderScale;
+        RenderPressureBudgetMs = Math.Max(-1, renderPressureBudgetMs);
         Surface = new RGBSurface();
         Surface.Updating += SurfaceOnUpdating;
         Surface.RegisterUpdateTrigger(_updateTrigger);
@@ -37,6 +45,8 @@ internal sealed class SurfaceManager : IDisposable
 
     public IManagedGraphicsContext? GraphicsContext { get; private set; }
     public int TargetFrameRate { get; private set; }
+    public double EffectiveFrameRate => _effectiveFrameRate;
+    public double RenderPressureBudgetMs { get; private set; }
     public float RenderScale { get; private set; }
     public RGBSurface Surface { get; }
 
@@ -103,13 +113,20 @@ internal sealed class SurfaceManager : IDisposable
     public void UpdateTargetFrameRate(int targetFrameRate)
     {
         TargetFrameRate = targetFrameRate;
-        _updateTrigger.UpdateFrequency = 1.0 / TargetFrameRate;
+        SetEffectiveFrameRate(TargetFrameRate);
     }
 
     public void UpdateRenderScale(float renderScale)
     {
         RenderScale = renderScale;
         _texture?.Invalidate();
+    }
+
+    public void UpdateRenderPressureBudget(double renderPressureBudgetMs)
+    {
+        RenderPressureBudgetMs = Math.Max(-1, renderPressureBudgetMs);
+        if (RenderPressureBudgetMs < 0)
+            SetEffectiveFrameRate(TargetFrameRate);
     }
 
     public void UpdateGraphicsContext(IManagedGraphicsContext? graphicsContext)
@@ -156,6 +173,7 @@ internal sealed class SurfaceManager : IDisposable
 
     private void SurfaceOnUpdating(UpdatingEventArgs args)
     {
+        _frameStopwatch.Restart();
         SKTexture? texture = _texture;
         if (texture == null || texture.IsInvalid)
             texture = CreateTexture();
@@ -180,6 +198,8 @@ internal sealed class SurfaceManager : IDisposable
             canvas.RestoreToCount(-1);
             canvas.Flush();
             texture.CopyPixelData();
+            _frameStopwatch.Stop();
+            UpdateAdaptiveFrameRate(_frameStopwatch.Elapsed);
         }
 
         try
@@ -195,5 +215,36 @@ internal sealed class SurfaceManager : IDisposable
     private void ArtemisDeviceOnDeviceUpdated(object? sender, EventArgs e)
     {
         _texture?.Invalidate();
+    }
+
+    private void UpdateAdaptiveFrameRate(TimeSpan frameTime)
+    {
+        if (RenderPressureBudgetMs < 0 || TargetFrameRate <= MinimumAdaptiveFrameRate)
+            return;
+
+        double targetFrameTimeMs = RenderPressureBudgetMs > 0
+            ? RenderPressureBudgetMs
+            : 1000.0 / TargetFrameRate;
+        double frameTimeMs = frameTime.TotalMilliseconds;
+
+        if (frameTimeMs > targetFrameTimeMs)
+        {
+            double effectiveFrameRate = TargetFrameRate * targetFrameTimeMs / frameTimeMs;
+            SetEffectiveFrameRate(Math.Max(MinimumAdaptiveFrameRate, effectiveFrameRate));
+            return;
+        }
+
+        if (_effectiveFrameRate < TargetFrameRate && frameTimeMs <= targetFrameTimeMs * RecoveryThresholdMultiplier)
+            SetEffectiveFrameRate(Math.Min(TargetFrameRate, _effectiveFrameRate * 1.15));
+    }
+
+    private void SetEffectiveFrameRate(double frameRate)
+    {
+        frameRate = Math.Clamp(frameRate, Math.Min(MinimumAdaptiveFrameRate, TargetFrameRate), TargetFrameRate);
+        if (Math.Abs(_effectiveFrameRate - frameRate) < 0.1)
+            return;
+
+        _effectiveFrameRate = frameRate;
+        _updateTrigger.UpdateFrequency = 1.0 / _effectiveFrameRate;
     }
 }

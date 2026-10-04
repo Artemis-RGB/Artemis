@@ -348,6 +348,29 @@
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0">
                             <TextBlock>
+                                GPU pressure budget
+                            </TextBlock>
+                            <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                Lower budgets yield GPU time sooner and are more aggressive. Auto waits for the target frame budget; Disabled keeps the target rate.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ComboBox Width="185"
+                                      SelectedItem="{CompiledBinding SelectedRenderPressureBudget}"
+                                      ItemsSource="{CompiledBinding RenderPressureBudgets}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="settings:RenderSettingViewModel">
+                                        <TextBlock Text="{CompiledBinding Display}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                    <Border Classes="card-separator" />
+
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0">
+                            <TextBlock>
                                 Render scale
                             </TextBlock>
                             <TextBlock Classes="subtitle" TextWrapping="Wrap">
