@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.SkiaSharp;
 using RGB.NET.Core;
@@ -12,13 +13,19 @@ namespace Artemis.Core.Services.Core;
 /// </summary>
 internal sealed class SurfaceManager : IDisposable
 {
+    private const double MinimumAdaptiveFrameRate = 10;
+    private const double BackoffMultiplier = 1.25;
+    private const double RecoveryThresholdMultiplier = 0.75;
+
     private readonly IRenderer _renderer;
     private readonly TimerUpdateTrigger _updateTrigger;
+    private readonly Stopwatch _frameStopwatch = new();
     private readonly List<ArtemisDevice> _devices = [];
     private readonly SKTextureBrush _textureBrush = new(null) {CalculationMode = RenderMode.Absolute};
 
     private ListLedGroup? _surfaceLedGroup;
     private SKTexture? _texture;
+    private double _effectiveFrameRate;
 
     public SurfaceManager(IRenderer renderer, IManagedGraphicsContext? graphicsContext, int targetFrameRate, float renderScale)
     {
@@ -27,6 +34,7 @@ internal sealed class SurfaceManager : IDisposable
 
         GraphicsContext = graphicsContext;
         TargetFrameRate = targetFrameRate;
+        _effectiveFrameRate = targetFrameRate;
         RenderScale = renderScale;
         Surface = new RGBSurface();
         Surface.Updating += SurfaceOnUpdating;
@@ -103,7 +111,7 @@ internal sealed class SurfaceManager : IDisposable
     public void UpdateTargetFrameRate(int targetFrameRate)
     {
         TargetFrameRate = targetFrameRate;
-        _updateTrigger.UpdateFrequency = 1.0 / TargetFrameRate;
+        SetEffectiveFrameRate(TargetFrameRate);
     }
 
     public void UpdateRenderScale(float renderScale)
@@ -156,6 +164,7 @@ internal sealed class SurfaceManager : IDisposable
 
     private void SurfaceOnUpdating(UpdatingEventArgs args)
     {
+        _frameStopwatch.Restart();
         SKTexture? texture = _texture;
         if (texture == null || texture.IsInvalid)
             texture = CreateTexture();
@@ -180,6 +189,8 @@ internal sealed class SurfaceManager : IDisposable
             canvas.RestoreToCount(-1);
             canvas.Flush();
             texture.CopyPixelData();
+            _frameStopwatch.Stop();
+            UpdateAdaptiveFrameRate(_frameStopwatch.Elapsed);
         }
 
         try
@@ -195,5 +206,36 @@ internal sealed class SurfaceManager : IDisposable
     private void ArtemisDeviceOnDeviceUpdated(object? sender, EventArgs e)
     {
         _texture?.Invalidate();
+    }
+
+    private void UpdateAdaptiveFrameRate(TimeSpan frameTime)
+    {
+        if (TargetFrameRate <= MinimumAdaptiveFrameRate)
+            return;
+
+        double targetFrameTimeMs = 1000.0 / TargetFrameRate;
+        double frameTimeMs = frameTime.TotalMilliseconds;
+
+        if (frameTimeMs > targetFrameTimeMs)
+        {
+            // A synchronous GPU readback that misses its budget should yield the next
+            // compositor tick instead of immediately competing with the foreground app.
+            double sustainableFrameRate = 1000.0 / (frameTimeMs * BackoffMultiplier);
+            SetEffectiveFrameRate(Math.Max(MinimumAdaptiveFrameRate, sustainableFrameRate));
+            return;
+        }
+
+        if (_effectiveFrameRate < TargetFrameRate && frameTimeMs <= targetFrameTimeMs * RecoveryThresholdMultiplier)
+            SetEffectiveFrameRate(Math.Min(TargetFrameRate, _effectiveFrameRate * 1.15));
+    }
+
+    private void SetEffectiveFrameRate(double frameRate)
+    {
+        frameRate = Math.Clamp(frameRate, Math.Min(MinimumAdaptiveFrameRate, TargetFrameRate), TargetFrameRate);
+        if (Math.Abs(_effectiveFrameRate - frameRate) < 0.1)
+            return;
+
+        _effectiveFrameRate = frameRate;
+        _updateTrigger.UpdateFrequency = 1.0 / _effectiveFrameRate;
     }
 }
