@@ -355,7 +355,7 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="150"
+                            <ComboBox Width="185"
                                       SelectedItem="{CompiledBinding SelectedRenderPressureBudget}"
                                       ItemsSource="{CompiledBinding RenderPressureBudgets}">
                                 <ComboBox.ItemTemplate>
