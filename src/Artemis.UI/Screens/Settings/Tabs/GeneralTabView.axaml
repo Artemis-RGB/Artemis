@@ -351,7 +351,7 @@
                                 GPU pressure budget
                             </TextBlock>
                             <TextBlock Classes="subtitle" TextWrapping="Wrap">
-                                Starts reducing Artemis render cadence when rendering and LED readback exceed this time. Auto uses the target frame-rate budget.
+                                Lower budgets yield GPU time sooner and are more aggressive. Auto waits for the target frame budget; Disabled keeps the target rate.
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
