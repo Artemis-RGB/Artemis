@@ -23,12 +23,18 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
     private readonly LazyEnumerable<IGraphicsContextProvider> _graphicsContextProviders;
     private readonly PluginSetting<int> _targetFrameRateSetting;
     private readonly PluginSetting<double> _renderScaleSetting;
+    private readonly PluginSetting<double> _renderPressureBudgetSetting;
     private readonly PluginSetting<string> _preferredGraphicsContext;
     private readonly SurfaceManager _surfaceManager;
     
     private int _frames;
+    private int _pressureSampleFrames;
     private DateTime _lastExceptionLog;
     private DateTime _lastFrameRateSample;
+    private TimeSpan _pressureSampleMax = TimeSpan.Zero;
+    private TimeSpan _pressureSampleMin = TimeSpan.MaxValue;
+    private TimeSpan _pressureSampleTotal = TimeSpan.Zero;
+    private readonly Stopwatch _pressureSampleStopwatch = Stopwatch.StartNew();
     private bool _initialized;
 
     public RenderService(ILogger logger, ISettingsService settingsService, IDeviceService deviceService, CoreRenderer coreRenderer, LazyEnumerable<IGraphicsContextProvider> graphicsContextProviders)
@@ -41,13 +47,15 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
 
         _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 30);
         _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
+        _renderPressureBudgetSetting = settingsService.GetSetting("Core.RenderPressureBudgetMs", 0d);
         _preferredGraphicsContext = settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
         _targetFrameRateSetting.SettingChanged += OnRenderSettingsChanged;
         _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
+        _renderPressureBudgetSetting.SettingChanged += RenderPressureBudgetSettingOnSettingChanged;
         _preferredGraphicsContext.SettingChanged += PreferredGraphicsContextOnSettingChanged;
 
         Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
-        _surfaceManager = new SurfaceManager(this, GraphicsContext, _targetFrameRateSetting.Value, (float) _renderScaleSetting.Value);
+        _surfaceManager = new SurfaceManager(this, GraphicsContext, _targetFrameRateSetting.Value, (float) _renderScaleSetting.Value, _renderPressureBudgetSetting.Value);
     }
 
     /// <inheritdoc />
@@ -110,6 +118,7 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
 
             FrameTime = _frameStopWatch.Elapsed;
 
+            RecordRenderPressure(FrameTime);
             LogUpdateExceptions();
         }
     }
@@ -164,6 +173,34 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
         _updateExceptions.Clear();
     }
 
+    private void RecordRenderPressure(TimeSpan frameTime)
+    {
+        _pressureSampleFrames++;
+        _pressureSampleTotal += frameTime;
+        _pressureSampleMin = TimeSpan.FromTicks(Math.Min(_pressureSampleMin.Ticks, frameTime.Ticks));
+        _pressureSampleMax = TimeSpan.FromTicks(Math.Max(_pressureSampleMax.Ticks, frameTime.Ticks));
+
+        if (_pressureSampleStopwatch.Elapsed < TimeSpan.FromMinutes(1))
+            return;
+
+        double averageMs = _pressureSampleTotal.TotalMilliseconds / _pressureSampleFrames;
+        _logger.Information(
+            "Render pressure: frames={Frames}, min={MinMs:F2}ms, avg={AverageMs:F2}ms, max={MaxMs:F2}ms, configuredFps={ConfiguredFps}, effectiveFps={EffectiveFps:F2}, budgetMs={BudgetMs:F2}",
+            _pressureSampleFrames,
+            _pressureSampleMin.TotalMilliseconds,
+            averageMs,
+            _pressureSampleMax.TotalMilliseconds,
+            _surfaceManager.TargetFrameRate,
+            _surfaceManager.EffectiveFrameRate,
+            _surfaceManager.RenderPressureBudgetMs);
+
+        _pressureSampleFrames = 0;
+        _pressureSampleTotal = TimeSpan.Zero;
+        _pressureSampleMin = TimeSpan.MaxValue;
+        _pressureSampleMax = TimeSpan.Zero;
+        _pressureSampleStopwatch.Restart();
+    }
+
     private void DeviceServiceOnDeviceProviderAdded(object? sender, DeviceProviderEventArgs e)
     {
         _surfaceManager.AddDevices(e.Devices.Where(d => d.IsEnabled));
@@ -193,6 +230,11 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
     {
         RenderScale.SetRenderScaleMultiplier((int) (1 / _renderScaleSetting.Value));
         _surfaceManager.UpdateRenderScale((float) _renderScaleSetting.Value);
+    }
+
+    private void RenderPressureBudgetSettingOnSettingChanged(object? sender, EventArgs e)
+    {
+        _surfaceManager.UpdateRenderPressureBudget(_renderPressureBudgetSetting.Value);
     }
 
     private void PreferredGraphicsContextOnSettingChanged(object? sender, EventArgs e)

@@ -27,7 +27,7 @@ internal sealed class SurfaceManager : IDisposable
     private SKTexture? _texture;
     private double _effectiveFrameRate;
 
-    public SurfaceManager(IRenderer renderer, IManagedGraphicsContext? graphicsContext, int targetFrameRate, float renderScale)
+    public SurfaceManager(IRenderer renderer, IManagedGraphicsContext? graphicsContext, int targetFrameRate, float renderScale, double renderPressureBudgetMs)
     {
         _renderer = renderer;
         _updateTrigger = new TimerUpdateTrigger(false) {UpdateFrequency = 1.0 / targetFrameRate};
@@ -36,6 +36,7 @@ internal sealed class SurfaceManager : IDisposable
         TargetFrameRate = targetFrameRate;
         _effectiveFrameRate = targetFrameRate;
         RenderScale = renderScale;
+        RenderPressureBudgetMs = Math.Max(0, renderPressureBudgetMs);
         Surface = new RGBSurface();
         Surface.Updating += SurfaceOnUpdating;
         Surface.RegisterUpdateTrigger(_updateTrigger);
@@ -45,6 +46,8 @@ internal sealed class SurfaceManager : IDisposable
 
     public IManagedGraphicsContext? GraphicsContext { get; private set; }
     public int TargetFrameRate { get; private set; }
+    public double EffectiveFrameRate => _effectiveFrameRate;
+    public double RenderPressureBudgetMs { get; private set; }
     public float RenderScale { get; private set; }
     public RGBSurface Surface { get; }
 
@@ -118,6 +121,11 @@ internal sealed class SurfaceManager : IDisposable
     {
         RenderScale = renderScale;
         _texture?.Invalidate();
+    }
+
+    public void UpdateRenderPressureBudget(double renderPressureBudgetMs)
+    {
+        RenderPressureBudgetMs = Math.Max(0, renderPressureBudgetMs);
     }
 
     public void UpdateGraphicsContext(IManagedGraphicsContext? graphicsContext)
@@ -213,7 +221,9 @@ internal sealed class SurfaceManager : IDisposable
         if (TargetFrameRate <= MinimumAdaptiveFrameRate)
             return;
 
-        double targetFrameTimeMs = 1000.0 / TargetFrameRate;
+        double targetFrameTimeMs = RenderPressureBudgetMs > 0
+            ? RenderPressureBudgetMs
+            : 1000.0 / TargetFrameRate;
         double frameTimeMs = frameTime.TotalMilliseconds;
 
         if (frameTimeMs > targetFrameTimeMs)

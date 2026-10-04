@@ -125,6 +125,17 @@ public class GeneralTabViewModel : RoutableScreen
         new RenderSettingViewModel("144 FPS (omegalol)", 144)
     ];
 
+    public ObservableCollection<RenderSettingViewModel> RenderPressureBudgets { get; } =
+    [
+        new RenderSettingViewModel("Auto (frame budget)", 0),
+        new RenderSettingViewModel("16 ms", 16),
+        new RenderSettingViewModel("20 ms", 20),
+        new RenderSettingViewModel("25 ms", 25),
+        new RenderSettingViewModel("33 ms", 33),
+        new RenderSettingViewModel("50 ms", 50),
+        new RenderSettingViewModel("75 ms", 75)
+    ];
+
     public LayerBrushDescriptor? SelectedLayerBrushDescriptor
     {
         get => LayerBrushDescriptors.FirstOrDefault(d => d.MatchesLayerBrushReference(_defaultLayerBrushDescriptor.Value));
@@ -154,6 +165,16 @@ public class GeneralTabViewModel : RoutableScreen
         }
     }
 
+    public RenderSettingViewModel? SelectedRenderPressureBudget
+    {
+        get => RenderPressureBudgets.FirstOrDefault(s => Math.Abs(s.Value - CoreRenderPressureBudget.Value) < 0.01);
+        set
+        {
+            if (value != null)
+                CoreRenderPressureBudget.Value = value.Value;
+        }
+    }
+
     public PluginSetting<bool> UIAutoRun => _settingsService.GetSetting("UI.AutoRun", false);
     public PluginSetting<bool> UIUseProtocol => _settingsService.GetSetting("UI.UseProtocol", true);
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
@@ -167,6 +188,7 @@ public class GeneralTabViewModel : RoutableScreen
     public PluginSetting<string> CorePreferredGraphicsContext => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Software");
     public PluginSetting<double> CoreRenderScale => _settingsService.GetSetting("Core.RenderScale", 0.5);
     public PluginSetting<int> CoreTargetFrameRate => _settingsService.GetSetting("Core.TargetFrameRate", 30);
+    public PluginSetting<double> CoreRenderPressureBudget => _settingsService.GetSetting("Core.RenderPressureBudgetMs", 0d);
     public PluginSetting<bool> WebServerEnabled => _settingsService.GetSetting("WebServer.Enabled", true);
     public PluginSetting<bool> WebServerRemoteAccess => _settingsService.GetSetting("WebServer.RemoteAccess", false);
     public PluginSetting<int> WebServerPort => _settingsService.GetSetting("WebServer.Port", 9696);
