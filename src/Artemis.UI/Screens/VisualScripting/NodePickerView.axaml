@@ -35,11 +35,6 @@
                         <TextBlock Text="{CompiledBinding Category}"></TextBlock>
                     </TreeDataTemplate>
                 </TreeView.DataTemplates>
-                <TreeView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel/>
-                    </ItemsPanelTemplate>
-                </TreeView.ItemsPanel>
             </TreeView>
             <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="20" IsVisible="{CompiledBinding !Categories.Count}">
                 <avalonia:MaterialIcon Kind="CloseCircle" Width="64" Height="64"></avalonia:MaterialIcon>
