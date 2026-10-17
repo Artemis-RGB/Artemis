@@ -29,18 +29,31 @@ public sealed class SKTexture : ITexture, IDisposable
         foreach (ArtemisDevice artemisDevice in devices)
         {
             foreach (ArtemisLed artemisLed in artemisDevice.Leds)
-            {
-                _ledRects[artemisLed.RgbLed] = SKRectI.Create(
-                    (int)(artemisLed.AbsoluteRectangle.Left * RenderScale),
-                    (int)(artemisLed.AbsoluteRectangle.Top * RenderScale),
-                    (int)(artemisLed.AbsoluteRectangle.Width * RenderScale),
-                    (int)(artemisLed.AbsoluteRectangle.Height * RenderScale)
-                );
-            }
+                _ledRects[artemisLed.RgbLed] = CreateSampleRect(artemisLed.RgbLed.AbsoluteBoundary, scale, width, height);
         }
     }
 
     #endregion
+
+    private static SKRectI CreateSampleRect(Rectangle boundary, float scale, int width, int height)
+    {
+        (int left, int right) = ScaleSpan(boundary.Location.X, boundary.Size.Width, scale, width);
+        (int top, int bottom) = ScaleSpan(boundary.Location.Y, boundary.Size.Height, scale, height);
+        return new SKRectI(left, top, right, bottom);
+    }
+
+    private static (int Start, int End) ScaleSpan(float location, float size, float scale, int max)
+    {
+        float start = location * scale;
+        float end = (location + size) * scale;
+        if (end <= 0 || start >= max)
+            return (0, 0);
+
+        // Always sample at least one pixel
+        int startPixel = Math.Clamp(start.RoundToInt(), 0, max - 1);
+        int endPixel = Math.Clamp(end.RoundToInt(), startPixel + 1, max);
+        return (startPixel, endPixel);
+    }
 
     internal Color GetColorAtRenderTarget(in RenderTarget renderTarget)
     {
