@@ -191,7 +191,8 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
     /// <inheritdoc />
     public IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        if (Target == null)
+        // Data models provided by Artemis itself are always available
+        if (Target == null || Target.Module.Plugin == Constants.CorePlugin)
             return [];
         return [Target.Module];
     }

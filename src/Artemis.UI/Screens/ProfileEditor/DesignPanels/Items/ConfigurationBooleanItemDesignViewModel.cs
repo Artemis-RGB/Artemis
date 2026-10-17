@@ -2,7 +2,8 @@
 
 namespace Artemis.UI.Screens.ProfileEditor.DesignPanels.Items;
 
-public class ConfigurationBooleanItemDesignViewModel(ConfigurationBooleanItem item, ConfigurationSection configurationSection) : ConfigurationItemDesignViewModel(item, configurationSection)
+public class ConfigurationBooleanItemDesignViewModel(ConfigurationBooleanItem item, ConfigurationSection configurationSection)
+    : ConfigurationInputItemDesignViewModel<ConfigurationBooleanItem, bool>(item, configurationSection)
 {
     public ConfigurationBooleanItem BooleanItem { get; } = item;
 }

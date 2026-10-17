@@ -18,7 +18,7 @@
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1">
             <TextBlock Margin="0 14 0 4">Default:</TextBlock>
-            <ToggleSwitch IsChecked="{CompiledBinding BooleanItem.Value}"
+            <ToggleSwitch IsChecked="{CompiledBinding BooleanItem.DefaultValue}"
                           OnContent="{CompiledBinding BooleanItem.TrueText}"
                           OffContent="{CompiledBinding BooleanItem.FalseText}"
                           Width="150"

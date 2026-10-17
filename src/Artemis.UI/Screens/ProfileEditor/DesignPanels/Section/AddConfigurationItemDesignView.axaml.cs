@@ -13,7 +13,7 @@ public partial class AddConfigurationItemDesignView : ReactiveUserControl<AddCon
 
     private void SelectingItemsControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (e.AddedItems[0] is not ListBoxItem item) return;
+        if (e.AddedItems.Count == 0 || e.AddedItems[0] is not ListBoxItem item) return;
 
         if (item == BooleanInputItem)
             ViewModel?.AddItem(new ConfigurationBooleanItem {Name = "New Boolean"});

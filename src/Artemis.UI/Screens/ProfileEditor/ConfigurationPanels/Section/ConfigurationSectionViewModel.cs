@@ -1,33 +1,50 @@
-﻿using System.Collections.ObjectModel;
+using System;
+using System.Collections.ObjectModel;
+using System.Reactive.Disposables.Fluent;
 using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Items;
 using Artemis.UI.Shared;
+using DynamicData;
+using DynamicData.Binding;
+using PropertyChanged.SourceGenerator;
+using ReactiveUI;
 
 namespace Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Section;
 
-public class ConfigurationSectionViewModel : ActivatableViewModelBase
+public partial class ConfigurationSectionViewModel : ActivatableViewModelBase
 {
-    public ConfigurationSection ConfigurationSection { get; }
-    public ObservableCollection<ActivatableViewModelBase> Items { get; }
+    [Notify] private ReadOnlyObservableCollection<ActivatableViewModelBase>? _items;
 
     public ConfigurationSectionViewModel(ConfigurationSection configurationSection)
     {
         ConfigurationSection = configurationSection;
-        Items = [];
-        foreach (IConfigurationItem item in ConfigurationSection.Items)
+
+        this.WhenActivated(d =>
         {
-            if (item is ConfigurationTextItem textItem)
-                Items.Add(new ConfigurationTextItemViewModel(textItem));
-            else if (item is ConfigurationStringItem stringItem)
-                Items.Add(new ConfigurationStringItemViewModel(stringItem));
-            else if (item is ConfigurationBooleanItem booleanItem)
-                Items.Add(new ConfigurationBooleanItemViewModel(booleanItem));
-            else if (item is ConfigurationNumericItem numberItem)
-                Items.Add(new ConfigurationNumericItemViewModel(numberItem));
-            else if (item is ConfigurationSKColorItem colorItem)
-                Items.Add(new ConfigurationSKColorItemViewModel(colorItem));
-            else if (item is ConfigurationColorGradientItem colorGradientItem)
-                Items.Add(new ConfigurationColorGradientItemViewModel(colorGradientItem));
-        }
+            ConfigurationSection.Items
+                .ToObservableChangeSet()
+                .Transform(CreateViewModelForItem)
+                .Bind(out ReadOnlyObservableCollection<ActivatableViewModelBase> items)
+                .Subscribe()
+                .DisposeWith(d);
+
+            Items = items;
+        });
+    }
+
+    public ConfigurationSection ConfigurationSection { get; }
+
+    private static ActivatableViewModelBase CreateViewModelForItem(IConfigurationItem item)
+    {
+        return item switch
+        {
+            ConfigurationTextItem textItem => new ConfigurationTextItemViewModel(textItem),
+            ConfigurationStringItem stringItem => new ConfigurationStringItemViewModel(stringItem),
+            ConfigurationBooleanItem booleanItem => new ConfigurationBooleanItemViewModel(booleanItem),
+            ConfigurationNumericItem numberItem => new ConfigurationNumericItemViewModel(numberItem),
+            ConfigurationSKColorItem colorItem => new ConfigurationSKColorItemViewModel(colorItem),
+            ConfigurationColorGradientItem colorGradientItem => new ConfigurationColorGradientItemViewModel(colorGradientItem),
+            _ => throw new ArgumentException($"Unknown configuration item type: {item.GetType()}")
+        };
     }
 }

@@ -6,14 +6,21 @@
              xmlns:behaviors="clr-namespace:Artemis.UI.Shared.Behaviors;assembly=Artemis.UI.Shared"
              xmlns:items="clr-namespace:Artemis.UI.Screens.ProfileEditor.DesignPanels.Items"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.DesignPanels.Items.ConfigurationNumericItemDesignView"
              x:DataType="items:ConfigurationNumericItemDesignViewModel">
-    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="5">
         <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="5">
             <TextBox Text="{CompiledBinding NumericItem.Name}" Watermark="Name" />
             <TextBox Text="{CompiledBinding NumericItem.Description}" Watermark="Description" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="5" IsVisible="{CompiledBinding !HasDropdown}">
+                <controls:NumberBox Grid.Column="0" Value="{CompiledBinding Minimum}" PlaceholderText="No minimum" ToolTip.Tip="Minimum" />
+                <controls:NumberBox Grid.Column="1" Value="{CompiledBinding Maximum}" PlaceholderText="No maximum" ToolTip.Tip="Maximum" />
+            </Grid>
             <ToggleSwitch IsChecked="{CompiledBinding NumericItem.Slider}"
+                          IsVisible="{CompiledBinding !HasDropdown}"
                           OnContent="Slider"
                           OffContent="Number box"
                           MinWidth="0"
@@ -21,20 +28,71 @@
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Top">
             <TextBlock Margin="0 14 0 4">Default:</TextBlock>
-            <controls:NumberBox Width="150" IsVisible="{CompiledBinding !NumericItem.Slider}">
-                <Interaction.Behaviors>
-                    <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding NumericItem.Value}" />
-                </Interaction.Behaviors>
-            </controls:NumberBox>
-            <Slider Minimum="{CompiledBinding NumericItem.Minimum}"
-                    Maximum="{CompiledBinding NumericItem.Maximum}"
-                    Width="150"
-                    Margin="0 -5 0 0"
-                    IsVisible="{CompiledBinding NumericItem.Slider}"
-                    Value="{CompiledBinding NumericItem.Value, Mode=TwoWay}" />
+            <Panel IsVisible="{CompiledBinding !HasDropdown}">
+                <controls:NumberBox Width="150"
+                                    Minimum="{CompiledBinding NumericItem.Minimum, TargetNullValue={x:Static system:Double.MinValue}}"
+                                    Maximum="{CompiledBinding NumericItem.Maximum, TargetNullValue={x:Static system:Double.MaxValue}}"
+                                    IsVisible="{CompiledBinding !NumericItem.Slider}">
+                    <Interaction.Behaviors>
+                        <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding NumericItem.DefaultValue}" />
+                    </Interaction.Behaviors>
+                </controls:NumberBox>
+                <Slider Minimum="{CompiledBinding NumericItem.Minimum, TargetNullValue=0}"
+                        Maximum="{CompiledBinding NumericItem.Maximum, TargetNullValue=100}"
+                        Width="150"
+                        Margin="0 -5 0 0"
+                        IsVisible="{CompiledBinding NumericItem.Slider}"
+                        Value="{CompiledBinding NumericItem.DefaultValue, Mode=TwoWay}" />
+            </Panel>
+            <ComboBox ItemsSource="{CompiledBinding NumericItem.DropdownValues}"
+                      SelectedItem="{CompiledBinding SelectedDefaultDropdownValue}"
+                      IsVisible="{CompiledBinding HasDropdown}"
+                      Width="150">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:ConfigurationDropdownValue">
+                        <TextBlock Text="{CompiledBinding DisplayName}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
         <Button Grid.Row="0" Grid.Column="1" ToolTip.Tip="Remove" HorizontalAlignment="Right" VerticalAlignment="Top" Classes="icon-button-outlined" Command="{CompiledBinding RemoveItem}">
             <avalonia:MaterialIcon Kind="Trash" />
         </Button>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8 0 0" Spacing="5">
+            <TextBlock Classes="subtitle" IsVisible="{CompiledBinding HasDropdown}">Dropdown options</TextBlock>
+            <ItemsControl ItemsSource="{CompiledBinding NumericItem.DropdownValues}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="5" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="core:ConfigurationDropdownValue">
+                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="5">
+                            <TextBox Grid.Column="0" Text="{CompiledBinding DisplayName}" Watermark="Display name" />
+                            <controls:NumberBox Grid.Column="1" ToolTip.Tip="Value">
+                                <Interaction.Behaviors>
+                                    <behaviors:LostFocusNumberBoxBindingBehavior Value="{Binding Value}" />
+                                </Interaction.Behaviors>
+                            </controls:NumberBox>
+                            <Button Grid.Column="2"
+                                    ToolTip.Tip="Remove option"
+                                    Classes="icon-button"
+                                    Command="{CompiledBinding $parent[ItemsControl].((items:ConfigurationNumericItemDesignViewModel)DataContext).RemoveDropdownValue}"
+                                    CommandParameter="{CompiledBinding}">
+                                <avalonia:MaterialIcon Kind="Close" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Command="{CompiledBinding AddDropdownValue}" ToolTip.Tip="Let users pick the value from a dropdown instead of entering a number">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <avalonia:MaterialIcon Kind="FormatListBulleted" />
+                    <TextBlock>Add dropdown option</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </Grid>
 </UserControl>

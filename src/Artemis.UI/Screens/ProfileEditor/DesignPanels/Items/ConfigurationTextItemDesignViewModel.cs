@@ -1,4 +1,4 @@
-﻿using Artemis.Core;
+using Artemis.Core;
 using Artemis.UI.Shared;
 
 namespace Artemis.UI.Screens.ProfileEditor.DesignPanels.Items;

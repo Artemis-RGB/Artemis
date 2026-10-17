@@ -46,6 +46,16 @@ public partial class DesignProfileViewModel : RoutableScreen<ProfileViewModelPar
                 .DisposeWith(d);
 
             Sections = sections;
+
+            this.WhenAnyValue(vm => vm.ProfileConfiguration)
+                .Select(p => p != null
+                    ? Observable.FromEventPattern(h => p.ConfigurationChanged += h, h => p.ConfigurationChanged -= h).Select(_ => p)
+                    : Observable.Empty<ProfileConfiguration>())
+                .Switch()
+                .Throttle(TimeSpan.FromMilliseconds(500))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(p => _profileService.SaveProfileCategory(p.Category))
+                .DisposeWith(d);
         });
     }
 
@@ -70,6 +80,10 @@ public partial class DesignProfileViewModel : RoutableScreen<ProfileViewModelPar
     /// <inheritdoc />
     public override async Task OnClosing(NavigationArguments args)
     {
+        // Don't lose changes that are still waiting on the throttled save
+        if (ProfileConfiguration != null)
+            _profileService.SaveProfileCategory(ProfileConfiguration.Category);
+
         if (!args.Path.StartsWith("profile"))
         {
             ProfileConfiguration = null;
@@ -77,7 +91,7 @@ public partial class DesignProfileViewModel : RoutableScreen<ProfileViewModelPar
         }
     }
 
-    public async Task AddSection()
+    public void AddSection()
     {
         ProfileConfiguration?.ConfigurationSections.Add(new ConfigurationSection(ProfileConfiguration)
         {

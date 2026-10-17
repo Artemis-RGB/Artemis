@@ -5,6 +5,8 @@
              xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
              xmlns:behaviors="clr-namespace:Artemis.UI.Shared.Behaviors;assembly=Artemis.UI.Shared"
              xmlns:items="clr-namespace:Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Items"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Items.ConfigurationNumericItemView"
              x:DataType="items:ConfigurationNumericItemViewModel">
@@ -16,17 +18,32 @@
                        Text="{CompiledBinding Item.Description}"
                        IsVisible="{CompiledBinding Item.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-            <controls:NumberBox Width="150" IsVisible="{CompiledBinding !Item.Slider}">
-                <Interaction.Behaviors>
-                    <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding Item.Value}" />
-                </Interaction.Behaviors>
-            </controls:NumberBox>
-            <Slider Minimum="{CompiledBinding Item.Minimum}"
-                    Maximum="{CompiledBinding Item.Maximum}"
-                    Width="150"
-                    IsVisible="{CompiledBinding Item.Slider}"
-                    Value="{CompiledBinding Item.Value, Mode=TwoWay}" />
-        </StackPanel>
+        <Panel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+            <Panel IsVisible="{CompiledBinding !HasDropdown}">
+                <controls:NumberBox Width="150"
+                                    Minimum="{CompiledBinding Item.Minimum, TargetNullValue={x:Static system:Double.MinValue}}"
+                                    Maximum="{CompiledBinding Item.Maximum, TargetNullValue={x:Static system:Double.MaxValue}}"
+                                    IsVisible="{CompiledBinding !Item.Slider}">
+                    <Interaction.Behaviors>
+                        <behaviors:LostFocusNumberBoxBindingBehavior Value="{CompiledBinding Item.Value}" />
+                    </Interaction.Behaviors>
+                </controls:NumberBox>
+                <Slider Minimum="{CompiledBinding Item.Minimum, TargetNullValue=0}"
+                        Maximum="{CompiledBinding Item.Maximum, TargetNullValue=100}"
+                        Width="150"
+                        IsVisible="{CompiledBinding Item.Slider}"
+                        Value="{CompiledBinding Item.Value, Mode=TwoWay}" />
+            </Panel>
+            <ComboBox ItemsSource="{CompiledBinding Item.DropdownValues}"
+                      SelectedItem="{CompiledBinding SelectedDropdownValue}"
+                      IsVisible="{CompiledBinding HasDropdown}"
+                      Width="150">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:ConfigurationDropdownValue">
+                        <TextBlock Text="{CompiledBinding DisplayName}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Panel>
     </Grid>
 </UserControl>

@@ -1,10 +1,9 @@
-﻿namespace Artemis.Core;
+namespace Artemis.Core;
 
 /// <summary>
 /// Represents a single option in a configuration dropdown list.
 /// </summary>
-/// <typeparam name="T">The type of the value that this dropdown option represents.</typeparam>
-public class ConfigurationDropdownValue<T> : CorePropertyChanged
+public abstract class ConfigurationDropdownValue : CorePropertyChanged
 {
     /// <summary>
     /// Gets or sets the display name shown to the user for this dropdown option.
@@ -14,7 +13,14 @@ public class ConfigurationDropdownValue<T> : CorePropertyChanged
         get;
         set => SetAndNotify(ref field, value);
     }
+}
 
+/// <summary>
+/// Represents a single option in a configuration dropdown list.
+/// </summary>
+/// <typeparam name="T">The type of the value that this dropdown option represents.</typeparam>
+public class ConfigurationDropdownValue<T> : ConfigurationDropdownValue
+{
     /// <summary>
     /// Gets or sets the actual value associated with this dropdown option.
     /// </summary>

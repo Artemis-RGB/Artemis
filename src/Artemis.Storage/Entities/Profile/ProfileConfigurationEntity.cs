@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Artemis.Storage.Entities.Profile.Configuration;
 using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.Storage.Entities.Profile;
@@ -25,5 +27,14 @@ public class ProfileConfigurationEntity
     public Guid ProfileId { get; set; }
 
     public bool FadeInAndOut { get; set; }
+
+    public bool IsConfigurable { get; set; }
+    public List<ConfigurationSectionEntity> ConfigurationSections { get; set; } = [];
+
+    /// <summary>
+    ///     The JSON-serialized values the user picked for the configuration items, keyed by item ID
+    /// </summary>
+    public Dictionary<Guid, string> ConfigurationValues { get; set; } = [];
+
     public int Version { get; set; }
 }

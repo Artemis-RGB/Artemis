@@ -54,6 +54,12 @@ internal class ProfileService : IProfileService
         if (!ProfileCategories.Any())
             CreateDefaultProfileCategories();
         UpdateModules();
+
+        // Expose the values of configurable profiles in the data model
+        if (DataModelStore.GetAll().All(r => r.DataModel != ProfileConfigurationsDataModel.Instance))
+            DataModelStore.Add(ProfileConfigurationsDataModel.Instance);
+        foreach (ProfileConfiguration profileConfiguration in ProfileCategories.SelectMany(c => c.ProfileConfigurations))
+            profileConfiguration.AddConfigurationDataModel();
     }
 
     public ProfileConfiguration? FocusProfile { get; set; }
@@ -258,6 +264,7 @@ internal class ProfileService : IProfileService
         ProfileConfiguration configuration = new(category, name, icon);
 
         category.AddProfileConfiguration(configuration, category.ProfileConfigurations.FirstOrDefault());
+        configuration.AddConfigurationDataModel();
         SaveProfileCategory(category);
         
         OnProfileAdded(new ProfileConfigurationEventArgs(configuration));
@@ -273,6 +280,7 @@ internal class ProfileService : IProfileService
 
         category.RemoveProfileConfiguration(profileConfiguration);
         category.Save();
+        profileConfiguration.RemoveConfigurationDataModel();
 
         _profileRepository.Remove(profileConfiguration.Entity);
         _profileCategoryRepository.Save(category.Entity);
@@ -390,7 +398,17 @@ internal class ProfileService : IProfileService
 
         // Assign a new GUID to make sure it is unique in case of a previous import of the same content
         if (makeUnique)
-            profileEntity.UpdateGuid(Guid.NewGuid());
+        {
+            Guid newGuid = Guid.NewGuid();
+
+            // Data model paths pointing to the configuration values of this profile contain the profile ID, point those to the new ID
+            string oldKey = profileEntity.Id.ToString("N");
+            string newKey = newGuid.ToString("N");
+            configurationEntity = ReplaceInEntity(configurationEntity, oldKey, newKey);
+            profileEntity = ReplaceInEntity(profileEntity, oldKey, newKey);
+
+            profileEntity.UpdateGuid(newGuid);
+        }
         else
         {
             // If the profile already exists and this one is not to be made unique, return the existing profile
@@ -424,12 +442,22 @@ internal class ProfileService : IProfileService
 
         profileConfiguration.Entity.ProfileConfiguration.ProfileId = profileEntity.Id;
         category.AddProfileConfiguration(profileConfiguration, target);
+        profileConfiguration.AddConfigurationDataModel();
 
         List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
         profileConfiguration.LoadModules(modules);
         SaveProfileCategory(category);
 
         return profileConfiguration;
+    }
+
+    private static T ReplaceInEntity<T>(T entity, string oldValue, string newValue)
+    {
+        string json = CoreJson.Serialize(entity);
+        if (!json.Contains(oldValue))
+            return entity;
+
+        return CoreJson.Deserialize<T>(json.Replace(oldValue, newValue)) ?? entity;
     }
 
     /// <inheritdoc />

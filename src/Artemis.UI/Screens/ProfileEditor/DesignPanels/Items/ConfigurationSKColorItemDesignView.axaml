@@ -15,7 +15,7 @@
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
             <TextBlock Margin="0 14 0 4">Default:</TextBlock>
-            <controls:ColorPickerButton Color="{CompiledBinding ColorItem.Value, Converter={StaticResource SKColorToColorConverter}}"
+            <controls:ColorPickerButton Color="{CompiledBinding ColorItem.DefaultValue, Converter={StaticResource SKColorToColorConverter}}"
                                         Width="150"
                                         ShowAcceptDismissButtons="False"
                                         FlyoutPlacement="Right" />

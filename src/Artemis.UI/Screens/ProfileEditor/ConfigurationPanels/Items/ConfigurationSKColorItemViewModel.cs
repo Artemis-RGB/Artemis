@@ -1,14 +1,6 @@
 ﻿using Artemis.Core;
-using Artemis.UI.Shared;
+using SkiaSharp;
 
 namespace Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Items;
 
-public class ConfigurationSKColorItemViewModel : ActivatableViewModelBase
-{
-    public ConfigurationSKColorItemViewModel(ConfigurationSKColorItem item)
-    {
-        Item = item;
-    }
-
-    public ConfigurationSKColorItem Item { get; }
-}
+public class ConfigurationSKColorItemViewModel(ConfigurationSKColorItem item) : ConfigurationInputItemViewModel<ConfigurationSKColorItem, SKColor>(item);

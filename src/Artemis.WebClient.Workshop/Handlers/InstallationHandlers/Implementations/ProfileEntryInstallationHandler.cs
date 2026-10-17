@@ -44,7 +44,10 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
             {
                 ProfileConfiguration overwritten = await _profileService.ImportProfile(stream, existing.Category, true, false, null, existing);
                 overwritten.Name = existing.Name;
-                
+                // Keep whatever the user configured in the previous version
+                overwritten.CopyConfigurationValues(existing);
+                _profileService.SaveProfileCategory(overwritten.Category);
+
                 // Update the release
                 installedEntry.SetMetadata("ProfileId", overwritten.ProfileId);
                 UpdateRelease(installedEntry, release);
@@ -62,6 +65,9 @@ public class ProfileEntryInstallationHandler : IEntryInstallationHandler
         // Add the profile as a fresh import
         ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == "Workshop") ?? _profileService.CreateProfileCategory("Workshop", true);
         ProfileConfiguration imported = await _profileService.ImportProfile(stream, category, true, true, null);
+        // The export contains the values the author had configured, start with the defaults the author picked instead
+        imported.ResetConfigurationToDefaults();
+        _profileService.SaveProfileCategory(category);
         installedEntry.SetMetadata("ProfileId", imported.ProfileId);
 
         // Update the release and return the profile configuration

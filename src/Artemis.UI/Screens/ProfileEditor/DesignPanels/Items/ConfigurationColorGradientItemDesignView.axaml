@@ -16,7 +16,7 @@
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
             <TextBlock Margin="0 14 0 4">Default:</TextBlock>
             <gradientPicker:GradientPickerButton Width="150"
-                                                 ColorGradient="{CompiledBinding GradientItem.Value}"
+                                                 ColorGradient="{CompiledBinding GradientItem.DefaultValue}"
                                                  VerticalAlignment="Center" />
         </StackPanel>
         <Button Grid.Row="0" Grid.Column="1" ToolTip.Tip="Remove" HorizontalAlignment="Right" VerticalAlignment="Top" Classes="icon-button-outlined" Command="{CompiledBinding RemoveItem}">

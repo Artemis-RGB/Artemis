@@ -4,21 +4,64 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:items="clr-namespace:Artemis.UI.Screens.ProfileEditor.DesignPanels.Items"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.DesignPanels.Items.ConfigurationStringItemDesignView"
              x:DataType="items:ConfigurationStringItemDesignViewModel">
-    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="5">
         <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="5">
             <TextBox Text="{CompiledBinding StringItem.Name}" Watermark="Name" />
             <TextBox Text="{CompiledBinding StringItem.Description}" Watermark="Description" />
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
             <TextBlock Margin="0 14 0 4">Default:</TextBlock>
-            <TextBox Text="{CompiledBinding StringItem.Value, Mode=TwoWay}" MinWidth="150" />
+            <TextBox Text="{CompiledBinding StringItem.DefaultValue, Mode=TwoWay}" MinWidth="150" IsVisible="{CompiledBinding !HasDropdown}" />
+            <ComboBox ItemsSource="{CompiledBinding StringItem.DropdownValues}"
+                      SelectedItem="{CompiledBinding SelectedDefaultDropdownValue}"
+                      IsVisible="{CompiledBinding HasDropdown}"
+                      MinWidth="150">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:ConfigurationDropdownValue">
+                        <TextBlock Text="{CompiledBinding DisplayName}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
 
         <Button Grid.Row="0" Grid.Column="1" ToolTip.Tip="Remove" HorizontalAlignment="Right" VerticalAlignment="Top" Classes="icon-button-outlined" Command="{CompiledBinding RemoveItem}">
             <avalonia:MaterialIcon Kind="Trash" />
         </Button>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 8 0 0" Spacing="5">
+            <TextBlock Classes="subtitle" IsVisible="{CompiledBinding HasDropdown}">Dropdown options</TextBlock>
+            <ItemsControl ItemsSource="{CompiledBinding StringItem.DropdownValues}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="5" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="core:ConfigurationDropdownValue">
+                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="5">
+                            <TextBox Grid.Column="0" Text="{CompiledBinding DisplayName}" Watermark="Display name" />
+                            <TextBox Grid.Column="1" Text="{Binding Value}" Watermark="Value" />
+                            <Button Grid.Column="2"
+                                    ToolTip.Tip="Remove option"
+                                    Classes="icon-button"
+                                    Command="{CompiledBinding $parent[ItemsControl].((items:ConfigurationStringItemDesignViewModel)DataContext).RemoveDropdownValue}"
+                                    CommandParameter="{CompiledBinding}">
+                                <avalonia:MaterialIcon Kind="Close" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Command="{CompiledBinding AddDropdownValue}" ToolTip.Tip="Let users pick the value from a dropdown instead of typing it">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <avalonia:MaterialIcon Kind="FormatListBulleted" />
+                    <TextBlock>Add dropdown option</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </Grid>
 </UserControl>

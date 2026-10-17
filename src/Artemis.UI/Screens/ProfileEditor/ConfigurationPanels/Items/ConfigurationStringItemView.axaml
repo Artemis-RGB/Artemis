@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:items="clr-namespace:Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Items"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Artemis.UI.Screens.ProfileEditor.ConfigurationPanels.Items.ConfigurationStringItemView"
              x:DataType="items:ConfigurationStringItemViewModel">
@@ -15,7 +16,17 @@
                        IsVisible="{CompiledBinding Item.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-            <TextBox Text="{CompiledBinding Item.Value, Mode=TwoWay}" MinWidth="150" />
+            <TextBox Text="{CompiledBinding Item.Value, Mode=TwoWay}" MinWidth="150" IsVisible="{CompiledBinding !HasDropdown}" />
+            <ComboBox ItemsSource="{CompiledBinding Item.DropdownValues}"
+                      SelectedItem="{CompiledBinding SelectedDropdownValue}"
+                      IsVisible="{CompiledBinding HasDropdown}"
+                      MinWidth="150">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="core:ConfigurationDropdownValue">
+                        <TextBlock Text="{CompiledBinding DisplayName}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
+using Artemis.Storage.Entities.Profile.Configuration;
 
 namespace Artemis.Core;
 
@@ -17,7 +20,11 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// </summary>
     public static readonly ProfileConfiguration Empty = new(ProfileCategory.Empty, "Empty", "Empty");
 
+    private readonly ProfileConfigurationDataModel _configurationDataModel = new();
+    private readonly HashSet<ConfigurationSection> _trackedSections = [];
+    private readonly HashSet<IConfigurationItem> _trackedItems = [];
     private bool _disposed;
+    private bool _configurationDataModelRegistered;
 
     internal ProfileConfiguration(ProfileCategory category, string name, string icon)
     {
@@ -28,6 +35,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         Icon = new ProfileConfigurationIcon(Entity);
         Icon.SetIconByName(icon);
         ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
+        ConfigurationSections.CollectionChanged += ConfigurationSectionsOnCollectionChanged;
 
         Entity.Profile.Id = Guid.NewGuid();
         Entity.ProfileConfiguration.ProfileId = Entity.Profile.Id;
@@ -42,6 +50,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         Entity = entity;
         Icon = new ProfileConfigurationIcon(Entity);
         ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
+        ConfigurationSections.CollectionChanged += ConfigurationSectionsOnCollectionChanged;
 
         Load();
     }
@@ -52,7 +61,11 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     public string Name
     {
         get;
-        set => SetAndNotify(ref field, value);
+        set
+        {
+            if (SetAndNotify(ref field, value))
+                UpdateConfigurationDataModel();
+        }
     }
 
     /// <summary>
@@ -183,6 +196,16 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     public ObservableCollection<ConfigurationSection> ConfigurationSections { get; } = [];
 
     /// <summary>
+    ///     Gets all configuration items in all <see cref="ConfigurationSections" /> that accept user input.
+    /// </summary>
+    public IEnumerable<ConfigurationInputItem> ConfigurationInputItems => ConfigurationSections.SelectMany(s => s.Items).OfType<ConfigurationInputItem>();
+
+    /// <summary>
+    ///     Occurs when anything in the <see cref="ConfigurationSections" /> changed, including the values of items.
+    /// </summary>
+    public event EventHandler? ConfigurationChanged;
+
+    /// <summary>
     ///     Gets the icon configuration
     /// </summary>
     public ProfileConfigurationIcon Icon { get; }
@@ -245,10 +268,42 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         return Module == null || Module.IsActivated;
     }
 
+    /// <summary>
+    ///     Resets the value of every configuration item to its default value.
+    /// </summary>
+    public void ResetConfigurationToDefaults()
+    {
+        foreach (ConfigurationInputItem item in ConfigurationInputItems)
+            item.ResetToDefault();
+    }
+
+    /// <summary>
+    ///     Copies the configured values of the provided profile configuration onto the matching configuration items of this
+    ///     profile configuration. Items are matched by their ID, items without a match keep their current value.
+    /// </summary>
+    /// <param name="source">The profile configuration to copy the values from.</param>
+    public void CopyConfigurationValues(ProfileConfiguration source)
+    {
+        Dictionary<Guid, ConfigurationInputItem> sourceItems = source.ConfigurationInputItems.ToDictionary(i => i.Id);
+        foreach (ConfigurationInputItem item in ConfigurationInputItems)
+        {
+            if (sourceItems.TryGetValue(item.Id, out ConfigurationInputItem? sourceItem) && sourceItem.GetType() == item.GetType())
+                item.DeserializeValue(sourceItem.SerializeValue());
+        }
+    }
+
     /// <inheritdoc />
     public override string ToString()
     {
         return $"[ProfileConfiguration] {nameof(Name)}: {Name}";
+    }
+
+    /// <summary>
+    ///     Invokes the <see cref="ConfigurationChanged" /> event
+    /// </summary>
+    protected virtual void OnConfigurationChanged()
+    {
+        ConfigurationChanged?.Invoke(this, EventArgs.Empty);
     }
 
     internal void LoadModules(List<Module> enabledModules)
@@ -263,9 +318,127 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     /// <inheritdoc />
     public void Dispose()
     {
+        RemoveConfigurationDataModel();
         _disposed = true;
         ActivationCondition.Dispose();
     }
+
+    #region Configuration
+
+    /// <summary>
+    ///     Exposes the configuration values of this profile in the data model, done once the profile is part of the profile service.
+    /// </summary>
+    internal void AddConfigurationDataModel()
+    {
+        _configurationDataModelRegistered = true;
+        UpdateConfigurationDataModel();
+    }
+
+    /// <summary>
+    ///     Removes the configuration values of this profile from the data model, done once the profile is removed from the profile service.
+    /// </summary>
+    internal void RemoveConfigurationDataModel()
+    {
+        _configurationDataModelRegistered = false;
+        UpdateConfigurationDataModel();
+    }
+
+    private void UpdateConfigurationDataModel()
+    {
+        if (_disposed || Entity == null)
+            return;
+
+        List<ConfigurationInputItem> items = ConfigurationInputItems.ToList();
+
+        // Sync the values of this profile
+        HashSet<string> keys = items.Select(i => i.Id.ToString("N")).ToHashSet();
+        foreach (string key in _configurationDataModel.DynamicChildren.Keys.Where(k => !keys.Contains(k)).ToList())
+            _configurationDataModel.RemoveDynamicChildByKey(key);
+        foreach (ConfigurationInputItem item in items)
+        {
+            string key = item.Id.ToString("N");
+            if (_configurationDataModel.TryGetDynamicChild(key, out DynamicChild? dynamicChild))
+            {
+                dynamicChild.Attribute.Name = item.Name;
+                dynamicChild.Attribute.Description = item.Description;
+                item.UpdateDynamicChild(_configurationDataModel, dynamicChild);
+            }
+            else
+            {
+                item.AddDynamicChild(_configurationDataModel, key, new DataModelPropertyAttribute {Name = item.Name, Description = item.Description});
+            }
+        }
+
+        // Only list this profile in the data model if there's actually something to show
+        ProfileConfigurationsDataModel root = ProfileConfigurationsDataModel.Instance;
+        string profileKey = ProfileId.ToString("N");
+        bool shouldBeInRoot = _configurationDataModelRegistered && items.Count > 0;
+        bool isInRoot = root.TryGetDynamicChild(profileKey, out DynamicChild? profileChild) && profileChild.BaseValue == _configurationDataModel;
+
+        if (shouldBeInRoot && !isInRoot)
+        {
+            root.RemoveDynamicChildByKey(profileKey);
+            root.AddDynamicChild(profileKey, _configurationDataModel, Name, "The configuration values of this profile");
+        }
+        else if (!shouldBeInRoot && isInRoot)
+        {
+            root.RemoveDynamicChildByKey(profileKey);
+        }
+        else if (isInRoot)
+        {
+            profileChild!.Attribute.Name = Name;
+        }
+    }
+
+    private void TrackConfiguration()
+    {
+        foreach (ConfigurationSection section in _trackedSections.Except(ConfigurationSections).ToList())
+        {
+            section.PropertyChanged -= ConfigurationOnPropertyChanged;
+            section.Items.CollectionChanged -= ConfigurationOnCollectionChanged;
+            _trackedSections.Remove(section);
+        }
+
+        foreach (ConfigurationSection section in ConfigurationSections.Except(_trackedSections).ToList())
+        {
+            section.PropertyChanged += ConfigurationOnPropertyChanged;
+            section.Items.CollectionChanged += ConfigurationOnCollectionChanged;
+            _trackedSections.Add(section);
+        }
+
+        List<IConfigurationItem> items = ConfigurationSections.SelectMany(s => s.Items).ToList();
+        foreach (IConfigurationItem item in _trackedItems.Except(items).ToList())
+        {
+            item.PropertyChanged -= ConfigurationOnPropertyChanged;
+            _trackedItems.Remove(item);
+        }
+
+        foreach (IConfigurationItem item in items.Except(_trackedItems).ToList())
+        {
+            item.PropertyChanged += ConfigurationOnPropertyChanged;
+            _trackedItems.Add(item);
+        }
+    }
+
+    private void ConfigurationSectionsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        ConfigurationOnCollectionChanged(sender, e);
+    }
+
+    private void ConfigurationOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        TrackConfiguration();
+        UpdateConfigurationDataModel();
+        OnConfigurationChanged();
+    }
+
+    private void ConfigurationOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        UpdateConfigurationDataModel();
+        OnConfigurationChanged();
+    }
+
+    #endregion
 
     /// <inheritdoc />
     public IEnumerable<PluginFeature> GetFeatureDependencies()
@@ -303,29 +476,19 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         EnableHotkey = Entity.ProfileConfiguration.EnableHotkey != null ? new Hotkey(Entity.ProfileConfiguration.EnableHotkey) : null;
         DisableHotkey = Entity.ProfileConfiguration.DisableHotkey != null ? new Hotkey(Entity.ProfileConfiguration.DisableHotkey) : null;
 
-        // Placeholder configuration sections
+        IsConfigurable = Entity.ProfileConfiguration.IsConfigurable;
         ConfigurationSections.Clear();
-        ConfigurationSections.Add(new ConfigurationSection(this)
+        foreach (ConfigurationSectionEntity sectionEntity in Entity.ProfileConfiguration.ConfigurationSections)
+            ConfigurationSections.Add(ConfigurationSection.Load(this, sectionEntity));
+
+        // Apply the values picked by the user, falling back to the defaults set by the author
+        foreach (ConfigurationInputItem item in ConfigurationInputItems)
         {
-            Name = "General"
-        });
-        ConfigurationSections.Add(new ConfigurationSection(this)
-        {
-            Name = "Other"
-        });
-        ConfigurationSections.Add(new ConfigurationSection(this)
-        {
-            Name = "Something else"
-        });
-        ConfigurationSections[0].Items.Add(new ConfigurationTextItem {Text = "This is a placeholder text item in the General section."});
-        ConfigurationSections[0].Items.Add(new ConfigurationNumericItem {Name = "Numeric item", Description = "This one also has a description"});
-        ConfigurationSections[0].Items.Add(new ConfigurationBooleanItem {Name = "Do the thing?", TrueText = "Absolutely", FalseText = "Nope"});
-        ConfigurationSections[1].Items.Add(new ConfigurationTextItem {Text = "This is a placeholder text item in the Other section."});
-        ConfigurationSections[2].Items.Add(new ConfigurationTextItem {Text = "This is a placeholder text item in the Something else section."});
-        ConfigurationSections[2].Items.Add(new ConfigurationTextItem {Text = "This is another placeholder text item in the Something else section."});
-        ConfigurationSections[2].Items.Add(new ConfigurationNumericItem {Name = "Numeric item", Description = "This one uses a slider", Minimum = 0, Maximum = 10, Slider = true});
-        ConfigurationSections[2].Items.Add(new ConfigurationColorGradientItem {Name = "Color gradient"});
-        ConfigurationSections[2].Items.Add(new ConfigurationSKColorItem {Name = "A simple color", Description = "Again with a description"});
+            if (Entity.ProfileConfiguration.ConfigurationValues.TryGetValue(item.Id, out string? value))
+                item.DeserializeValue(value);
+            else
+                item.ResetToDefault();
+        }
     }
 
     /// <inheritdoc />
@@ -354,6 +517,16 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
 
         if (!IsMissingModule)
             Entity.ProfileConfiguration.ModuleId = Module?.Id;
+
+        Entity.ProfileConfiguration.IsConfigurable = IsConfigurable;
+        Entity.ProfileConfiguration.ConfigurationSections = ConfigurationSections.Select(s => s.Save()).ToList();
+        Entity.ProfileConfiguration.ConfigurationValues = [];
+        foreach (ConfigurationInputItem item in ConfigurationInputItems)
+        {
+            string? value = item.SerializeValue();
+            if (value != null)
+                Entity.ProfileConfiguration.ConfigurationValues[item.Id] = value;
+        }
     }
 
     #endregion

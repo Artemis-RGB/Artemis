@@ -38,7 +38,7 @@ public partial class ConfigurationSectionDesignViewModel : ActivatableViewModelB
 
     public ConfigurationSection ConfigurationSection { get; }
 
-    public async Task RemoveSection()
+    public void RemoveSection()
     {
         ConfigurationSection.ProfileConfiguration.ConfigurationSections.Remove(ConfigurationSection);
     }
