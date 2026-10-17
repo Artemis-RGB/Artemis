@@ -114,6 +114,7 @@ public sealed class SKTexture : ITexture, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        _hasPixels = false;
         _readback.Dispose();
         Surface.Dispose();
         GC.SuppressFinalize(this);
