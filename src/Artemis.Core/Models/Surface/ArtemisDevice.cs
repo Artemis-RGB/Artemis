@@ -200,7 +200,11 @@ public class ArtemisDevice : CorePropertyChanged
         {
             DeviceEntity.Rotation = value;
             if (RgbDevice.Surface != null)
+            {
                 RgbDevice.Rotation = DeviceEntity.Rotation;
+                CalculateRenderProperties();
+            }
+
             OnPropertyChanged(nameof(Rotation));
         }
     }
@@ -215,7 +219,11 @@ public class ArtemisDevice : CorePropertyChanged
         {
             DeviceEntity.Scale = value;
             if (RgbDevice.Surface != null)
+            {
                 RgbDevice.Scale = DeviceEntity.Scale;
+                CalculateRenderProperties();
+            }
+
             OnPropertyChanged(nameof(Scale));
         }
     }
