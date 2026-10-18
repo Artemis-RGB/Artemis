@@ -26,6 +26,8 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="Shouldly" />
         <PackageReference Include="SkiaSharp" />
+        <!-- SkiaSharp only ships native libraries for Windows and macOS, this adds the Linux ones so the tests run on Linux -->
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
         <PackageReference Include="xunit.v3" />
         <PackageReference Include="xunit.runner.visualstudio" />
     </ItemGroup>

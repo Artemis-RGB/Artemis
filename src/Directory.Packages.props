@@ -61,6 +61,7 @@
     <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageVersion Include="SkiaSharp" Version="2.88.9" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageVersion Include="SkiaSharp.Vulkan.SharpVk" Version="2.88.9" />
     <PackageVersion Include="Splat.DryIoc" Version="17.1.1" />
     <PackageVersion Include="StrawberryShake.Server" Version="15.1.11" />

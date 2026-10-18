@@ -1,0 +1,38 @@
+name: Pull Request - Test
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows
+
+          - os: ubuntu-latest
+            name: Linux
+    name: ${{ matrix.name }} Tests
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Artemis
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Run Artemis.Core tests
+        run: dotnet test --project src/Artemis.Core.Tests --configuration Release --results-directory TestResults --report-xunit-trx
+      # The TRX report contains the render output (PNG + JSON) of failing render tests as attachments
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.name }}
+          path: TestResults
+          if-no-files-found: ignore
