@@ -28,17 +28,18 @@ public sealed class SKTexture : ITexture, IDisposable
 
         foreach (ArtemisDevice artemisDevice in devices)
         {
+            // Sample the same render-grid-aligned rectangle that layers use to clip and draw the LED
             foreach (ArtemisLed artemisLed in artemisDevice.Leds)
-                _ledRects[artemisLed.RgbLed] = CreateSampleRect(artemisLed.RgbLed.AbsoluteBoundary, scale, width, height);
+                _ledRects[artemisLed.RgbLed] = CreateSampleRect(artemisLed.AbsoluteRectangle, scale, width, height);
         }
     }
 
     #endregion
 
-    private static SKRectI CreateSampleRect(Rectangle boundary, float scale, int width, int height)
+    private static SKRectI CreateSampleRect(SKRect boundary, float scale, int width, int height)
     {
-        (int left, int right) = ScaleSpan(boundary.Location.X, boundary.Size.Width, scale, width);
-        (int top, int bottom) = ScaleSpan(boundary.Location.Y, boundary.Size.Height, scale, height);
+        (int left, int right) = ScaleSpan(boundary.Left, boundary.Width, scale, width);
+        (int top, int bottom) = ScaleSpan(boundary.Top, boundary.Height, scale, height);
         return new SKRectI(left, top, right, bottom);
     }
 
