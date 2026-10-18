@@ -666,9 +666,10 @@ public sealed class Layer : RenderProfileElement
             // Restore the blend mode before doing the actual render
             layerPaint.BlendMode = SKBlendMode.SrcOver;
 
-            // The filters of the effects are applied when compositing the layer, the brush gets a paint without them so
-            // they don't apply to the brush output a second time
+            // The opacity and the filters of the effects are applied when compositing the layer, the brush gets an opaque
+            // paint without filters so they don't apply to the brush output a second time
             using SKPaint brushPaint = layerPaint.Clone();
+            brushPaint.Color = brushPaint.Color.WithAlpha(255);
             brushPaint.ColorFilter = null;
             brushPaint.ImageFilter = null;
 
