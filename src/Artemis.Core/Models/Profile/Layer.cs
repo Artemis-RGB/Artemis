@@ -28,8 +28,11 @@ public sealed class Layer : RenderProfileElement
     private List<LedEntity> _missingLeds = [];
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="Layer" /> class and adds itself to the child collection of the provided
-    ///     <paramref name="parent" />
+    ///     Creates a new instance of the <see cref="Layer" /> class with the provided <paramref name="parent" />.
+    ///     <para>
+    ///         The layer is not added to the child collection of the parent, use <see cref="ProfileElement.AddChild" /> to
+    ///         add it.
+    ///     </para>
     /// </summary>
     /// <param name="parent">The parent of the layer</param>
     /// <param name="name">The name of the layer</param>
