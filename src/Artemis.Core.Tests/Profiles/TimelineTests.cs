@@ -92,7 +92,7 @@ public class TimelineTests : RenderTestBase
 
         using RenderFrame frame = Render(profile, 0.5);
 
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(127, 0, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
     }
 
     #endregion

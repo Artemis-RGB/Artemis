@@ -18,7 +18,7 @@ public class LayerEffectTests : RenderTestBase
 
         using RenderFrame frame = Render(profile);
 
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(127, 0, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class LayerEffectTests : RenderTestBase
         using RenderFrame frame = Render(profile);
 
         // 50% of 50%
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(63, 0, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(25));
     }
 
     [Fact]
@@ -147,8 +147,8 @@ public class LayerEffectTests : RenderTestBase
 
         using RenderTimeline timeline = RenderTimeline(profile, 0.25, 0.75);
 
-        timeline[0].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(191, 0, 0));
-        timeline[1].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(63, 0, 0));
+        timeline[0].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(75));
+        timeline[1].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(25));
     }
 
     [Fact]

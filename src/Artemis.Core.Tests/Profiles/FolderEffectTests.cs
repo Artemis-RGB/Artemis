@@ -38,7 +38,7 @@ public class FolderEffectTests : RenderTestBase
 
         (RenderFrame before, RenderFrame after) = RenderWithAndWithout(profile, opacity);
 
-        after.ShouldOnlyDifferFrom(before, busy.Leds, c => Scale(c, 127));
+        after.ShouldOnlyDifferFrom(before, busy.Leds, c => c.AtOpacity(50));
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class FolderEffectTests : RenderTestBase
         // The nested children get both, the rest of the folder only gets the swap
         ArtemisLed[] outerOnly = busy.Leds.Except(busy.NestedLeds).ToArray();
         foreach (ArtemisLed led in busy.NestedLeds)
-            after.LedColors[led].ShouldBeColor(Scale(Swap(before.LedColors[led]), 127), 3);
+            after.LedColors[led].ShouldBeColor(Swap(before.LedColors[led]).AtOpacity(50), 3);
         after.ShouldOnlyDifferFrom(before, outerOnly, Swap, busy.NestedLeds);
     }
 
@@ -109,7 +109,7 @@ public class FolderEffectTests : RenderTestBase
         using RenderFrame frame = Render(profile);
 
         // The children are flattened before the folder is faded, the bottom layer does not shine through
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(0, 127, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Lime.AtOpacity(50));
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class FolderEffectTests : RenderTestBase
 
         using RenderFrame frame = Render(profile);
 
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(128, 127, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Lime.AtOpacity(50, over: SKColors.Red));
     }
 
     [Fact]
@@ -199,11 +199,6 @@ public class FolderEffectTests : RenderTestBase
     private static SKColor Swap(SKColor color)
     {
         return new SKColor(color.Blue, color.Green, color.Red, color.Alpha);
-    }
-
-    private static SKColor Scale(SKColor color, byte factor)
-    {
-        return new SKColor((byte) (color.Red * factor / 255), (byte) (color.Green * factor / 255), (byte) (color.Blue * factor / 255));
     }
 
     private static SKColor Multiply(SKColor color, SKColor with)

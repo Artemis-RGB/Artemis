@@ -217,7 +217,7 @@ public class ProfileStructureTests : RenderTestBase
         using RenderTimeline timeline = RenderTimeline(profile, 0.5, 1, 1.5);
 
         // The fade uses a cubic ease-in-out, which is at exactly half at the halfway point
-        timeline[0].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(127, 0, 0));
+        timeline[0].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
         timeline[1].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red);
         timeline[2].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red);
     }

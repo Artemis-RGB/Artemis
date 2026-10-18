@@ -63,10 +63,10 @@ public class TextureSamplingTests : RenderTestBase
     [Fact]
     public void SemiTransparentDrawing_IsBlendedOntoBlack()
     {
-        using RenderFrame frame = Harness.Render(canvas => Fill(canvas, Led(LedId.Keyboard_A).AbsoluteRectangle, new SKColor(255, 0, 0, 128)));
+        using RenderFrame frame = Harness.Render(canvas => Fill(canvas, Led(LedId.Keyboard_A).AbsoluteRectangle, SKColors.Red.WithAlpha(128)));
         SaveOutput(frame);
 
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(128, 0, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
     }
 
     [Fact]

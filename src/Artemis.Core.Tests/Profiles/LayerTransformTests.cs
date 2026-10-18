@@ -17,7 +17,7 @@ public class LayerTransformTests : RenderTestBase
 
         using RenderFrame frame = Render(profile);
 
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(127, 0, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class LayerTransformTests : RenderTestBase
 
         using RenderFrame frame = Render(profile);
 
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(127, 0, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class LayerTransformTests : RenderTestBase
         using RenderFrame frame = Render(profile);
 
         // The gradient shader keeps the alpha of the paint, the brush must not get the layer opacity on top of compositing
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(127, 0, 0));
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
     }
 
     [Fact]
