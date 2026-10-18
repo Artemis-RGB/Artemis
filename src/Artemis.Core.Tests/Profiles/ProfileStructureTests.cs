@@ -147,22 +147,21 @@ public class ProfileStructureTests : RenderTestBase
     }
 
     [Fact]
-    public void SuspendingARenderingFolder_KeepsRenderingItsChildren()
+    public void SuspendingARenderingFolder_StopsRenderingItsChildren()
     {
         Profile profile = Harness.CreateProfile();
         BusyFolder busy = BusyFolder.Create(Harness, Keyboard, profile);
         using RenderFrame before = Harness.Render(profile, TimeSpan.FromSeconds(0.1));
 
         busy.Folder.Suspended = true;
-        Harness.Render(profile, TimeSpan.FromSeconds(10)).Dispose();
         using RenderFrame after = Render(profile);
 
-        // Pinned as-is, an inconsistency: Layer.Update disables a suspended layer, Folder.Update only disables a folder
-        // once its timeline finishes, which never happens with the default always-on condition. The editor hides this by
-        // disabling suspended elements itself, so it only affects code suspending folders outside of the editor
-        busy.Folder.Enabled.ShouldBeTrue();
-        foreach ((ArtemisLed led, SKColor color) in before.LedColors)
-            after.LedColors[led].ShouldBeColor(color, 2, led.RgbLed.Id.ToString());
+        busy.Folder.Enabled.ShouldBeFalse();
+        foreach (ArtemisLed led in busy.Leds)
+        {
+            before.LedColors[led].ShouldNotBe(SKColors.Black, led.RgbLed.Id.ToString());
+            after.LedColors[led].ShouldBeColor(SKColors.Black, 2, led.RgbLed.Id.ToString());
+        }
     }
 
     [Fact]

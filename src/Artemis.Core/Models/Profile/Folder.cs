@@ -106,7 +106,7 @@ public sealed class Folder : RenderProfileElement
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Timeline.IsFinished)
+            else if (Suspended || Timeline.IsFinished)
                 Disable();
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
