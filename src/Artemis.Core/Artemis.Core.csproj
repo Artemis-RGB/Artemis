@@ -20,6 +20,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="Artemis.Core.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj" />
         <ProjectReference Condition="'$(BuildingNuget)' == 'True'" Update="..\Artemis.Storage\Artemis.Storage.csproj" PrivateAssets="All" />
         
