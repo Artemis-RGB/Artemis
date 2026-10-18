@@ -36,7 +36,7 @@ public class LayerEffectTests : RenderTestBase
     }
 
     [Fact]
-    public void PreProcessColorFilter_IsAppliedTwiceOnLayers()
+    public void PreProcessColorFilter_IsAppliedOnceOnLayers()
     {
         Profile profile = Harness.CreateProfile();
         (Layer layer, _) = Harness.AddLayer<SolidColorTestBrush>(profile.GetRootFolder(), [Led(LedId.Keyboard_A)]);
@@ -44,11 +44,21 @@ public class LayerEffectTests : RenderTestBase
 
         using RenderFrame frame = Render(profile);
 
-        // Pinned as-is, likely unintended: Layer.DelegateRendering composites with the pre-processed paint and also hands
-        // that same paint to the brush, so for any brush drawing with that paint (regular and per-LED alike) the filter
-        // applies to the brush output and again when compositing.
-        // Swapping red and blue twice cancels out, a hue shift effect would shift twice. Folders apply it once.
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red);
+        // Swapping red and blue twice would cancel out
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Blue);
+    }
+
+    [Fact]
+    public void PreProcessColorFilter_IsAppliedOnceOnPerLedBrushes()
+    {
+        Profile profile = Harness.CreateProfile();
+        (Layer layer, PerLedTestBrush brush) = Harness.AddLayer<PerLedTestBrush>(profile.GetRootFolder(), [Led(LedId.Keyboard_A)]);
+        brush.ColorSelector = (_, _) => SKColors.Red;
+        Harness.AddEffect<ChannelSwapTestEffect>(layer);
+
+        using RenderFrame frame = Render(profile);
+
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Blue);
     }
 
     [Fact]

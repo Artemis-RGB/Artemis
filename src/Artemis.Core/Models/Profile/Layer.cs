@@ -663,7 +663,13 @@ public sealed class Layer : RenderProfileElement
             // Restore the blend mode before doing the actual render
             layerPaint.BlendMode = SKBlendMode.SrcOver;
 
-            LayerBrush.InternalRender(canvas, bounds, layerPaint);
+            // The filters of the effects are applied when compositing the layer, the brush gets a paint without them so
+            // they don't apply to the brush output a second time
+            using SKPaint brushPaint = layerPaint.Clone();
+            brushPaint.ColorFilter = null;
+            brushPaint.ImageFilter = null;
+
+            LayerBrush.InternalRender(canvas, bounds, brushPaint);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
