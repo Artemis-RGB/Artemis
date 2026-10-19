@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Test AZERTY keys</Name>
+  <Description>The letter keys around the movement keys of an AZERTY keyboard, where A sits above Q and Z above S</Description>
+  <Type>Keyboard</Type>
+  <Vendor>Artemis</Vendor>
+  <Model>Test AZERTY keys</Model>
+  <Width>80</Width>
+  <Height>60</Height>
+  <LedUnitWidth>1</LedUnitWidth>
+  <LedUnitHeight>1</LedUnitHeight>
+  <Leds>
+    <Led Id="Keyboard_A">
+      <X>0</X>
+      <Y>0</Y>
+      <Width>19</Width>
+      <Height>19</Height>
+    </Led>
+    <Led Id="Keyboard_Z">
+      <X>19</X>
+      <Y>0</Y>
+      <Width>19</Width>
+      <Height>19</Height>
+    </Led>
+    <Led Id="Keyboard_E">
+      <X>38</X>
+      <Y>0</Y>
+      <Width>19</Width>
+      <Height>19</Height>
+    </Led>
+    <Led Id="Keyboard_Q">
+      <X>5</X>
+      <Y>19</Y>
+      <Width>19</Width>
+      <Height>19</Height>
+    </Led>
+    <Led Id="Keyboard_S">
+      <X>24</X>
+      <Y>19</Y>
+      <Width>19</Width>
+      <Height>19</Height>
+    </Led>
+    <Led Id="Keyboard_D">
+      <X>43</X>
+      <Y>19</Y>
+      <Width>19</Width>
+      <Height>19</Height>
+    </Led>
+    <Led Id="Keyboard_W">
+      <X>10</X>
+      <Y>38</Y>
+      <Width>19</Width>
+      <Height>19</Height>
+    </Led>
+  </Leds>
+</Device>
