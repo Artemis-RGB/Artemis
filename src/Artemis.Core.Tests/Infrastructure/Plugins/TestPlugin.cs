@@ -1,3 +1,4 @@
+using System.Reflection;
 using Artemis.Storage.Entities.Plugins;
 using DryIoc;
 
@@ -5,9 +6,16 @@ namespace Artemis.Core.Tests.Infrastructure.Plugins;
 
 /// <summary>
 ///     A plugin that hosts test features without going through plugin loading.
+///     <para>
+///         Features are enabled and disabled the way PluginFeature.SetEnabled does it, minus the lock files it writes to the
+///         plugin folder. Modules get their data model registered the way the data model service does it.
+///     </para>
 /// </summary>
 public sealed class TestPlugin : IDisposable
 {
+    private static readonly MethodInfo OnEnabled = typeof(PluginFeature).GetMethod("OnEnabled", BindingFlags.NonPublic | BindingFlags.Instance)!;
+    private static readonly MethodInfo OnDisabled = typeof(PluginFeature).GetMethod("OnDisabled", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
     private readonly List<PluginFeature> _features = [];
 
     public TestPlugin()
@@ -36,27 +44,31 @@ public sealed class TestPlugin : IDisposable
         feature.Profiler = Plugin.GetProfiler(typeof(T).Name);
         Plugin.AddFeature(featureInfo);
 
-        // Bypass SetEnabled, it creates lock files in the plugin folder
         feature.IsEnabled = true;
-        feature.Enable();
+        feature.InternalEnable();
+        OnEnabled.Invoke(feature, null);
         _features.Add(feature);
+
+        // Mirrors DataModelService, which registers the data model of a module once it is enabled
+        if (feature is Core.Modules.Module {InternalDataModel: not null} module)
+        {
+            module.InternalDataModel.IsExpansion = module.IsAlwaysAvailable;
+            DataModelStore.Add(module.InternalDataModel);
+        }
+
         return feature;
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
+        // Raising Disabled makes every registration (brushes, effects, data models, node types) remove itself from its store
         foreach (PluginFeature feature in _features)
         {
-            feature.Disable();
+            feature.InternalDisable();
             feature.IsEnabled = false;
+            OnDisabled.Invoke(feature, null);
         }
-
-        // Brush and effect registrations live in static stores, remove ours so tests don't leak into each other
-        foreach (LayerBrushRegistration registration in LayerBrushStore.GetAll().Where(r => r.PluginFeature.Plugin == Plugin))
-            LayerBrushStore.Remove(registration);
-        foreach (LayerEffectRegistration registration in LayerEffectStore.GetAll().Where(r => r.PluginFeature.Plugin == Plugin))
-            LayerEffectStore.Remove(registration);
 
         Plugin.Container?.Dispose();
     }

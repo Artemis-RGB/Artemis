@@ -1,11 +1,13 @@
 namespace Artemis.Core.Tests.Infrastructure.VisualScripting;
 
 /// <summary>
-///     A node that outputs a boolean the test controls
+///     A node that outputs a boolean the test controls. The value is stored, so it survives saving and loading a script
+///     when the node is created through <see cref="Plugins.Nodes.TestNodeProvider" />.
 /// </summary>
-public class TestBooleanNode : Node
+[Node("Test boolean", "Outputs a boolean controlled by the test", "Tests", OutputType = typeof(bool))]
+public class TestBooleanNode : Node<bool>
 {
-    public TestBooleanNode() : base("Test boolean", "Outputs a boolean controlled by the test")
+    public TestBooleanNode()
     {
         Output = CreateOutputPin<bool>();
     }
@@ -15,7 +17,11 @@ public class TestBooleanNode : Node
     /// <summary>
     ///     Gets or sets the value the node outputs
     /// </summary>
-    public bool Value { get; set; }
+    public bool Value
+    {
+        get => Storage;
+        set => Storage = value;
+    }
 
     public override void Evaluate()
     {

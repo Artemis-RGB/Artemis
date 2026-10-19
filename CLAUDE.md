@@ -77,3 +77,23 @@ When working out why a render test failed, read the JSON first: it holds the exa
 more reliable than judging colors from the PNGs. Use the PNGs to get an idea of shapes and positions.
 
 In CI the same files are attached to the test report, which is uploaded as the `test-results-<OS>` artifact of the run.
+
+## Testing without rendering
+
+Not everything needs the render harness. These pieces live under `src/Artemis.Core.Tests/Infrastructure`:
+
+- `Plugins/TestPlugin.cs` hosts test plugin features (brushes, effects, modules, node providers) without plugin
+  loading. `AddFeature` enables a feature the way Artemis does and disposing the plugin disables them again, which also
+  removes their registrations from Core's static stores.
+- `Plugins/Modules/TestModule.cs` is a module with a `TestDataModel`: numbers, text, a color, an enum, a nested data
+  model, lists and data model events. Adding it to a `TestPlugin` registers the data model, so data model paths can find
+  it both directly and when loaded from storage. See `DataModels/DataModelPathTests.cs`.
+- `Plugins/Nodes/TestNodeProvider.cs` registers the test nodes (`TestBooleanNode`, `TestNumericNode`), so scripts using
+  them can be saved and loaded. Create nodes with `AddNode<T>(script)` rather than `new`, otherwise they can't be loaded
+  again. See `VisualScripting/NodeScriptTests.cs`.
+- `Services/ServiceHarness.cs` registers the Artemis.Core services like the app does, backed by a new database in a
+  temporary folder and logging to the test output. `Resolve<T>()` also works for protected services such as
+  `ISettingsService`. Anything working on `Constants.DataFolder` or `Constants.PluginsFolder` directly (loading plugins,
+  the web server) still points at your real Artemis folders, so don't call it. See `Services/ServiceHarnessTests.cs`.
+
+Code coverage: `dotnet test --project src/Artemis.Core.Tests -- --coverage --coverage-output-format cobertura`.

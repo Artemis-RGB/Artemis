@@ -23,7 +23,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
         <PackageReference Include="Shouldly" />
         <PackageReference Include="SkiaSharp" />
         <!-- SkiaSharp only ships native libraries for Windows and macOS, this adds the Linux ones so the tests run on Linux -->
