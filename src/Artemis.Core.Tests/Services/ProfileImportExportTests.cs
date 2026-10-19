@@ -325,7 +325,7 @@ public class ProfileImportExportTests : ProfileServiceTestBase
         // sidebar or the editor (an export followed by an import) runs into this. Restarting Artemis runs into it too, but
         // there the failed migration is only logged and the profile loads normally, see the test above
         InvalidOperationException exception = await Should.ThrowAsync<InvalidOperationException>(() => ProfileService.ImportProfile(export, General, true, false, "copy"));
-        exception.StackTrace.ShouldContain("M0001NodeProviders");
+        exception.StackTrace!.ShouldContain("M0001NodeProviders");
         General.ProfileConfigurations.ShouldBe([configuration]);
     }
 

@@ -78,14 +78,26 @@ public abstract class ServiceTestBase : IDisposable
     }
 
     /// <summary>
-    ///     Creates a fake device from a layout file and adds it through the device service, the way Artemis adds the devices
-    ///     of a device provider when it is enabled.
+    ///     Creates fake devices from layout files and adds them through the device service, the way device provider
+    ///     plugins add their devices when they are enabled.
     /// </summary>
     /// <param name="layoutPaths">The layouts of the devices, one device per layout, see <see cref="TestLayouts" /></param>
     /// <returns>The device provider, its devices are on <see cref="IDeviceService.Devices" /></returns>
     protected TestDeviceProvider AddDeviceProvider(params string[] layoutPaths)
     {
-        TestDeviceProvider deviceProvider = EnableFeature(new TestDeviceProvider());
+        return AddDeviceProvider(new TestDeviceProvider(), layoutPaths);
+    }
+
+    /// <summary>
+    ///     Enables the device provider and adds devices created from layout files through the device service.
+    ///     <para>
+    ///         Note: features of the same type share their ID, which the device service uses to tell providers apart, use
+    ///         a different type of provider for each provider in a test.
+    ///     </para>
+    /// </summary>
+    protected T AddDeviceProvider<T>(T deviceProvider, params string[] layoutPaths) where T : TestDeviceProvider
+    {
+        EnableFeature(deviceProvider);
         foreach (string layoutPath in layoutPaths)
         {
             DeviceLayout layout = DeviceLayout.Load(layoutPath) ?? throw new ArgumentException($"Failed to load layout {layoutPath}", nameof(layoutPaths));
