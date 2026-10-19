@@ -932,6 +932,114 @@ public class ColorGradientTests
 
     #endregion
 
+    #region Repeating and seamless colors (obsolete)
+
+    // These methods are marked obsolete as errors so code can't call them anymore, but they're still there for plugins
+    // built against older versions of Artemis
+
+    [Fact]
+    public void ObsoleteColorsArray_RepeatsTheColorsAndCanCloseTheLoop()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+
+        GetColorsArray(gradient, 0, false).ShouldBe([SKColors.Red, SKColors.Blue]);
+        GetColorsArray(gradient, 1, false).ShouldBe([SKColors.Red, SKColors.Blue, SKColors.Red, SKColors.Blue]);
+        GetColorsArray(gradient, 0, true).ShouldBe([SKColors.Red, SKColors.Blue, SKColors.Red]);
+        GetColorsArray(gradient, 1, true).ShouldBe([SKColors.Red, SKColors.Blue, SKColors.Red, SKColors.Blue, SKColors.Red]);
+    }
+
+    [Fact]
+    public void ObsoleteColorsArray_DoesNotCloseAnAlreadySeamlessGradient()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 0.5f), new ColorGradientStop(SKColors.Red, 1)];
+
+        GetColorsArray(gradient, 0, true).ShouldBe([SKColors.Red, SKColors.Blue, SKColors.Red]);
+    }
+
+    [Fact]
+    public void ObsoletePositionsArray_SqueezesRepeatsIntoTheGradient()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+
+        GetPositionsArray(gradient, 0, false).ShouldBe([0f, 1f]);
+        GetPositionsArray(gradient, 1, false).ShouldBe([0f, 0.5f, 0.5f, 1f]);
+        GetPositionsArray(gradient, 1, true).ShouldBe([0f, 0.375f, 0.375f, 0.75f, 1f]);
+    }
+
+    [Fact]
+    public void ObsoletePositionsArray_IgnoresSeamlessWithoutRepeats()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+
+        // Pinned as-is: without repeats the seamless positions are skipped (the check looks inverted), so there is one
+        // position less than there are colors
+        GetPositionsArray(gradient, 0, true).ShouldBe([0f, 1f]);
+        GetColorsArray(gradient, 0, true).Length.ShouldBe(3);
+    }
+
+    [Fact]
+    public void ObsoleteGetColor_WithoutRepeatsOrSeamlessIsGetColor()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+
+        GetColor(gradient, 0.3f, 0, false).ShouldBe(gradient.GetColor(0.3f));
+    }
+
+    [Fact]
+    public void ObsoleteGetColor_RepeatsTheGradient()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+
+        GetColor(gradient, 0f, 1, false).ShouldBe(SKColors.Red);
+        GetColor(gradient, 0.25f, 1, false).ShouldBe(new SKColor(127, 0, 127));
+        GetColor(gradient, 1f, 1, false).ShouldBe(SKColors.Blue);
+    }
+
+    [Fact]
+    public void ObsoleteGetColor_PicksTheWrongColorAfterARepeat()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+
+        // Pinned as-is: the second repeat starts at 0.5, where the first repeat also ends. Colors are looked up by
+        // position, which finds the end of the first repeat (blue) instead of the start of the second (red), so the
+        // second half is solid blue instead of fading from red to blue again
+        GetColor(gradient, 0.75f, 1, false).ShouldBe(SKColors.Blue);
+    }
+
+    [Fact]
+    public void ObsoleteGetColor_IgnoresSeamlessWithoutRepeats()
+    {
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+
+        // Pinned as-is: because of the missing seamless positions (see ObsoletePositionsArray_IgnoresSeamlessWithoutRepeats)
+        // this fades from red to blue as if seamless was off, instead of turning back towards red past the middle
+        GetColor(gradient, 0.75f, 0, true).ShouldBe(new SKColor(63, 0, 191));
+    }
+
+    [Fact]
+    public void ObsoleteGetColor_OnAnEmptyGradientIsWhite()
+    {
+        // Unlike GetColor(position), which gives transparent
+        GetColor(new ColorGradient(), 0.5f, 1, false).ShouldBe(new SKColor(255, 255, 255));
+    }
+
+    private static SKColor[] GetColorsArray(ColorGradient gradient, int timesToRepeat, bool seamless)
+    {
+        return (SKColor[]) typeof(ColorGradient).GetMethod("GetColorsArray")!.Invoke(gradient, [timesToRepeat, seamless])!;
+    }
+
+    private static float[] GetPositionsArray(ColorGradient gradient, int timesToRepeat, bool seamless)
+    {
+        return (float[]) typeof(ColorGradient).GetMethod("GetPositionsArray")!.Invoke(gradient, [timesToRepeat, seamless])!;
+    }
+
+    private static SKColor GetColor(ColorGradient gradient, float position, int timesToRepeat, bool seamless)
+    {
+        return (SKColor) typeof(ColorGradient).GetMethod("GetColor", [typeof(float), typeof(int), typeof(bool)])!.Invoke(gradient, [position, timesToRepeat, seamless])!;
+    }
+
+    #endregion
+
     private static List<NotifyCollectionChangedEventArgs> RecordCollectionChanges(ColorGradient gradient)
     {
         List<NotifyCollectionChangedEventArgs> events = [];
