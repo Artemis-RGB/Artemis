@@ -262,12 +262,12 @@ public class ModuleServiceTests : ProfileServiceTestBase
     /// </summary>
     private async Task<ProfileConfiguration> WaitForProfile(string categoryName, string profileName)
     {
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 1000; i++)
         {
             ProfileConfiguration? profile = ProfileService.ProfileCategories.FirstOrDefault(c => c.Name == categoryName)?.ProfileConfigurations.FirstOrDefault(p => p.Name == profileName);
             if (profile != null)
                 return profile;
-            await Task.Delay(50, TestContext.Current.CancellationToken);
+            await Task.Delay(5, TestContext.Current.CancellationToken);
         }
 
         throw new TimeoutException($"Profile {profileName} was not imported into {categoryName}");

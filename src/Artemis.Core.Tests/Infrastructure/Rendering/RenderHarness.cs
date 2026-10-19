@@ -38,6 +38,7 @@ public sealed class RenderHarness : IRenderer, IDisposable
 
     private Action<SKCanvas>? _draw;
     private SKBitmap? _lastCanvas;
+    private readonly List<Profile> _profiles = [];
     private bool _disposed;
 
     /// <param name="renderScale">The scale of the canvas relative to the surface, Artemis defaults to 0.5</param>
@@ -99,6 +100,7 @@ public sealed class RenderHarness : IRenderer, IDisposable
         ProfileConfiguration configuration = new(category, name, "TestTube");
         Profile profile = new(configuration, configuration.Entity.Profile);
         configuration.Profile = profile;
+        _profiles.Add(profile);
         return profile;
     }
 
@@ -202,6 +204,7 @@ public sealed class RenderHarness : IRenderer, IDisposable
         Profile profile = new(configuration, entity);
         profile.PopulateLeds(_devices);
         configuration.Profile = profile;
+        _profiles.Add(profile);
         return profile;
     }
 
@@ -295,6 +298,15 @@ public sealed class RenderHarness : IRenderer, IDisposable
             return;
 
         _disposed = true;
+        // Profiles subscribe to static events of Core's stores, disposing them unsubscribes them again. Otherwise every
+        // profile of every test stays in memory and receives the store events of later tests
+        foreach (Profile profile in _profiles)
+        {
+            if (!profile.Disposed)
+                profile.Dispose();
+            profile.Configuration.Dispose();
+        }
+
         _surfaceManager.Dispose();
         _plugin.Dispose();
         RenderScale.SetRenderScaleMultiplier(_previousRenderScaleMultiplier);

@@ -140,6 +140,20 @@ public abstract class ServiceTestBase : IDisposable
             ((System.Timers.Timer) ActivationTimerField.GetValue(_moduleService)!).Dispose();
         RenderScale.RenderScaleMultiplierChanged -= (EventHandler) Delegate.CreateDelegate(typeof(EventHandler), Resolve<IDeviceService>(), RenderScaleHandler);
 
+        // Disposing the plugin management service unloads its plugins, which forces two full garbage collections per
+        // plugin. Disable the test plugin's features the way unloading does and take the plugin out of the list instead
+        foreach (PluginFeatureInfo featureInfo in TestPlugin.Plugin.Features)
+        {
+            if (featureInfo.Instance is {IsEnabled: true} feature)
+                PluginManagement.DisablePluginFeature(feature, false);
+        }
+
+        List<Plugin> plugins = (List<Plugin>) PluginsField.GetValue(PluginManagement)!;
+        lock (plugins)
+        {
+            plugins.Remove(TestPlugin.Plugin);
+        }
+
         Services.Dispose();
         TestPlugin.Dispose();
     }
