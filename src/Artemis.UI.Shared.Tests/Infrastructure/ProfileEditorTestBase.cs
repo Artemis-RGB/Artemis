@@ -90,6 +90,22 @@ public abstract class ProfileEditorTestBase : RenderTestBase
     }
 
     /// <summary>
+    ///     Gets whether the properties of a brush or effect were disposed, which happens when the brush or effect is disposed
+    /// </summary>
+    protected static bool IsDisposed(LayerPropertyGroup properties)
+    {
+        try
+        {
+            properties.GetAllLayerProperties();
+            return false;
+        }
+        catch (ObjectDisposedException)
+        {
+            return true;
+        }
+    }
+
+    /// <summary>
     ///     Makes <see cref="Profile" /> the profile being edited, like opening it in the profile editor
     /// </summary>
     protected async Task StartEditing()
