@@ -9,6 +9,7 @@ The solution is `src/Artemis.sln`. `Artemis.Core` holds profiles, layers, brushe
 ```bash
 dotnet build src/Artemis.sln
 dotnet test --project src/Artemis.Core.Tests
+dotnet test --project src/Artemis.UI.Shared.Tests
 ```
 
 The tests use xUnit v3 on Microsoft.Testing.Platform (switched on by `global.json` in the repo root), so use
@@ -97,3 +98,19 @@ Not everything needs the render harness. These pieces live under `src/Artemis.Co
   the web server) still points at your real Artemis folders, so don't call it. See `Services/ServiceHarnessTests.cs`.
 
 Code coverage: `dotnet test --project src/Artemis.Core.Tests -- --coverage --coverage-output-format cobertura`.
+
+## Profile editor tests
+
+`src/Artemis.UI.Shared.Tests` covers the profile editor logic in `Artemis.UI.Shared/Services/ProfileEditor`: the
+`ProfileEditorService` and its undo/redo commands. Changes there come with tests in this project, and it must pass too.
+
+- It references `Artemis.Core.Tests` to reuse the render harness, test plugins and fake devices, and has the same
+  setup (xUnit v3, tests one at a time).
+- `Infrastructure/ProfileEditorTestBase.cs` builds on `RenderTestBase` and adds a `Profile`, a `Service` backed by the
+  simple test services in `Infrastructure/Services` (they record what the editor asks of them), `StartEditing()`,
+  `Undo()`/`Redo()` and `Snapshot()`. `Snapshot()` returns the profile as Artemis would save it, compare the snapshot
+  from before a command with the one after undoing it to check that undo restored everything.
+- No Avalonia app or dispatcher is needed: under a test runner ReactiveUI runs commands right away on the calling
+  thread. One thing to know: a command that throws inside `ExecuteCommand` is also passed to ReactiveUI's
+  `RxApp.DefaultExceptionHandler`, which ends the test run unless the test replaces it before editing starts (see
+  `ProfileEditorHistoryTests.ExecuteCommand_ThatFails_DoesNotEndUpInTheHistory`).
