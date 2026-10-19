@@ -96,4 +96,12 @@ Not everything needs the render harness. These pieces live under `src/Artemis.Co
   `ISettingsService`. Anything working on `Constants.DataFolder` or `Constants.PluginsFolder` directly (loading plugins,
   the web server) still points at your real Artemis folders, so don't call it. See `Services/ServiceHarnessTests.cs`.
 
-Code coverage: `dotnet test --project src/Artemis.Core.Tests -- --coverage --coverage-output-format cobertura`.
+## Code coverage
+
+```bash
+dotnet test --project src/Artemis.Core.Tests -- --coverage --coverage-output-format cobertura --coverage-settings "$PWD/src/Artemis.Core.Tests/coverage.settings.xml"
+```
+
+`coverage.settings.xml` leaves out the database migrations Entity Framework generates in `Artemis.Storage/Migrations`.
+The path to it has to be absolute, with a relative path the test run fails without saying why. `$PWD` works in bash and
+PowerShell when you run the command from the repo root.
