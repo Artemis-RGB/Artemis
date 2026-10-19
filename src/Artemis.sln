@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Storage.Legacy", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Core.Tests", "Artemis.Core.Tests\Artemis.Core.Tests.csproj", "{294BEC18-ABE5-448A-89AE-F4AFD3A6793E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Shared.Tests", "Artemis.UI.Shared.Tests\Artemis.UI.Shared.Tests.csproj", "{6C1D8E4A-3F2B-4B7E-9A5D-2E8F1C7B4A90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -84,6 +86,10 @@ Global
 		{294BEC18-ABE5-448A-89AE-F4AFD3A6793E}.Debug|x64.Build.0 = Debug|x64
 		{294BEC18-ABE5-448A-89AE-F4AFD3A6793E}.Release|x64.ActiveCfg = Release|x64
 		{294BEC18-ABE5-448A-89AE-F4AFD3A6793E}.Release|x64.Build.0 = Release|x64
+		{6C1D8E4A-3F2B-4B7E-9A5D-2E8F1C7B4A90}.Debug|x64.ActiveCfg = Debug|x64
+		{6C1D8E4A-3F2B-4B7E-9A5D-2E8F1C7B4A90}.Debug|x64.Build.0 = Debug|x64
+		{6C1D8E4A-3F2B-4B7E-9A5D-2E8F1C7B4A90}.Release|x64.ActiveCfg = Release|x64
+		{6C1D8E4A-3F2B-4B7E-9A5D-2E8F1C7B4A90}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

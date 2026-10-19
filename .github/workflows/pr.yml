@@ -28,6 +28,9 @@ jobs:
           dotnet-version: '10.0.x'
       - name: Run Artemis.Core tests
         run: dotnet test --project src/Artemis.Core.Tests --configuration Release --results-directory TestResults --report-xunit-trx
+      - name: Run Artemis.UI.Shared tests
+        if: ${{ !cancelled() }}
+        run: dotnet test --project src/Artemis.UI.Shared.Tests --configuration Release --results-directory TestResults --report-xunit-trx
       # The TRX report contains the render output (PNG + JSON) of failing render tests as attachments
       - name: Upload test results
         if: ${{ !cancelled() }}
