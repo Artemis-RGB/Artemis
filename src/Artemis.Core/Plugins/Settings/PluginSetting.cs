@@ -15,7 +15,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
     private readonly PluginSettingEntity _pluginSettingEntity;
     private T _value;
 
-    internal PluginSetting(IPluginRepository pluginRepository, PluginSettingEntity pluginSettingEntity)
+    internal PluginSetting(IPluginRepository pluginRepository, PluginSettingEntity pluginSettingEntity, T? defaultValue = default)
     {
         _pluginRepository = pluginRepository;
         _pluginSettingEntity = pluginSettingEntity;
@@ -27,7 +27,7 @@ public class PluginSetting<T> : CorePropertyChanged, IPluginSetting
         }
         catch (JsonException)
         {
-            _value = default!;
+            _value = defaultValue!;
         }
     }
 

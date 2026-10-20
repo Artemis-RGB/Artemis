@@ -32,7 +32,7 @@ public class PluginSettings
     /// </summary>
     /// <typeparam name="T">The type of the setting, can be any serializable type</typeparam>
     /// <param name="name">The name of the setting, may not be longer than 128 characters</param>
-    /// <param name="defaultValue">The default value to use if the setting does not exist yet</param>
+    /// <param name="defaultValue">The default value to use if the setting does not exist yet, or can't be read as <typeparamref name="T" /></param>
     public PluginSetting<T> GetSetting<T>(string name, T? defaultValue = default)
     {
         if (name.Length > 128)
@@ -57,7 +57,7 @@ public class PluginSettings
                 _pluginRepository.SaveSetting(settingEntity);
             }
 
-            PluginSetting<T> pluginSetting = new(_pluginRepository, settingEntity);
+            PluginSetting<T> pluginSetting = new(_pluginRepository, settingEntity, defaultValue);
 
             // This overrides null with the default value, I'm not sure if that's desirable because you
             // might expect something to go null and you might not
