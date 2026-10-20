@@ -60,10 +60,9 @@ public class ColorExtensionsTests
     }
 
     [Fact]
-    public void Darken_MakesTheColorOpaque()
+    public void Darken_KeepsTheAlpha()
     {
-        // Pinned as-is: the color is rebuilt from its hue, saturation and lightness, which drops the alpha
-        SKColors.Red.WithAlpha(100).Darken(0.5f).Alpha.ShouldBe((byte) 255);
+        SKColors.Red.WithAlpha(100).Darken(0.5f).Alpha.ShouldBe((byte) 100);
     }
 
     [Theory]

@@ -53,7 +53,7 @@ public static class StringUtilities
                 if (prevlen != sb.Length) prevdash = false;
             }
 
-            if (i == maxlen) break;
+            if (i == maxlen - 1) break;
         }
 
         if (prevdash)
@@ -114,31 +114,31 @@ public static class StringUtilities
         {
             return "g";
         }
-        else if (c == 'ř')
+        else if (s == "ř")
         {
             return "r";
         }
-        else if (c == 'ł')
+        else if (s == "ł")
         {
             return "l";
         }
-        else if (c == 'đ')
+        else if (s == "đ")
         {
             return "d";
         }
-        else if (c == 'ß')
+        else if (s == "ß")
         {
             return "ss";
         }
-        else if (c == 'Þ')
+        else if (s == "þ")
         {
             return "th";
         }
-        else if (c == 'ĥ')
+        else if (s == "ĥ")
         {
             return "h";
         }
-        else if (c == 'ĵ')
+        else if (s == "ĵ")
         {
             return "j";
         }

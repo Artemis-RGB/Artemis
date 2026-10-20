@@ -67,7 +67,7 @@ public static class SKColorExtensions
     {
         c.ToHsl(out float h, out float s, out float l);
         l *= 1f - amount;
-        return SKColor.FromHsl(h, s, l);
+        return SKColor.FromHsl(h, s, l, c.Alpha);
     }
 
     private static byte ClampToByte(float value)

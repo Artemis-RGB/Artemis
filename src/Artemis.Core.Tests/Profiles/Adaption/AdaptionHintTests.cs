@@ -148,8 +148,7 @@ public class AdaptionHintTests : AdaptionTestBase
                 LedId.Keyboard_Num0, LedId.Keyboard_NumPeriodAndDelete
             ]
         },
-        // Pinned as-is: the arrow keys section starts one key early and includes Page Down
-        {KeyboardSection.ArrowKeys, [LedId.Keyboard_PageDown, LedId.Keyboard_ArrowUp, LedId.Keyboard_ArrowLeft, LedId.Keyboard_ArrowDown, LedId.Keyboard_ArrowRight]},
+        {KeyboardSection.ArrowKeys, [LedId.Keyboard_ArrowUp, LedId.Keyboard_ArrowLeft, LedId.Keyboard_ArrowDown, LedId.Keyboard_ArrowRight]},
         {
             KeyboardSection.MediaKeys, [
                 LedId.Keyboard_MediaMute, LedId.Keyboard_MediaStop, LedId.Keyboard_MediaPreviousTrack,

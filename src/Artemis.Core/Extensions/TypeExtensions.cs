@@ -55,7 +55,7 @@ public static class TypeExtensions
         if (type == null)
             return false;
 
-        return type.BaseType?.GetGenericTypeDefinition() == genericType;
+        return type.BaseType is {IsGenericType: true} baseType && baseType.GetGenericTypeDefinition() == genericType;
     }
 
     /// <summary>
@@ -111,9 +111,7 @@ public static class TypeExtensions
             return true;
         if (PrimitiveTypeConversions.ContainsKey(to) && PrimitiveTypeConversions[to].Contains(from))
             return true;
-        bool castable = from.GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .Any(m => m.ReturnType == to && (m.Name == "op_Implicit" || m.Name == "op_Explicit"));
-        return castable;
+        return HasConversionOperator(to, from);
     }
 
     /// <summary>
@@ -139,6 +137,15 @@ public static class TypeExtensions
         if (to.IsAssignableFrom(from))
             return 1;
         return 0;
+    }
+
+    private static bool HasConversionOperator(Type to, Type from)
+    {
+        // A conversion operator can be declared on either of the two types
+        return from.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                   .Any(m => m.ReturnType == to && (m.Name == "op_Implicit" || m.Name == "op_Explicit")) ||
+               to.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                   .Any(m => m.ReturnType == to && (m.Name == "op_Implicit" || m.Name == "op_Explicit") && m.GetParameters()[0].ParameterType.IsAssignableFrom(from));
     }
 
     /// <summary>
@@ -200,6 +207,10 @@ public static class TypeExtensions
     /// <returns></returns>
     public static string GetDisplayName(this Type type, bool humanize = false)
     {
+        // Name the element type separately so humanizing doesn't drop the brackets
+        if (type.IsArray)
+            return $"{type.GetElementType()!.GetDisplayName(humanize)}[{new string(',', type.GetArrayRank() - 1)}]";
+
         if (!type.IsGenericType)
         {
             string displayValue = TypeKeywords.TryGetValue(type, out string? keyword) ? keyword! : type.Name;

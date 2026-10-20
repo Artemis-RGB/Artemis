@@ -159,9 +159,7 @@ public class ColorGradientTests
 
         gradient.Add(stop);
 
-        // Pinned as-is: stops step down 0.001 at a time until they are at least 0.001 away from other stops, but 0.5 - 0.499
-        // comes out a hair under 0.001 in floating point, so the stop takes a second step and ends up 0.002 lower
-        stop.Position.ShouldBe(0.498f, 0.0001f);
+        stop.Position.ShouldBe(0.499f, 0.0001f);
         gradient.IndexOf(stop).ShouldBe(1);
     }
 
@@ -184,7 +182,7 @@ public class ColorGradientTests
 
         gradient.Add(stop);
 
-        stop.Position.ShouldBe(0.496f, 0.0001f);
+        stop.Position.ShouldBe(0.498f, 0.0001f);
     }
 
     [Fact]
@@ -199,33 +197,32 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void Insert_RaisesTheMoveBeforeTheAdd()
+    public void Insert_RaisesAnAddAndThenAMoveIntoPlace()
     {
         ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
         List<NotifyCollectionChangedEventArgs> events = RecordCollectionChanges(gradient);
+        ColorGradientStop middle = new(SKColors.Lime, 0.5f);
 
-        gradient.Insert(0, new ColorGradientStop(SKColors.Lime, 0.5f));
+        gradient.Insert(0, middle);
 
-        // Pinned as-is: Insert reorders before reporting the add, so listeners hear about a move of a stop they
-        // were never told about, and the add then reports the index the stop ended up at. Add does it the other way around
-        events.Select(e => e.Action).ShouldBe([NotifyCollectionChangedAction.Move, NotifyCollectionChangedAction.Add]);
-        events[1].NewStartingIndex.ShouldBe(1);
+        events.Select(e => e.Action).ShouldBe([NotifyCollectionChangedAction.Add, NotifyCollectionChangedAction.Move]);
+        events[0].NewStartingIndex.ShouldBe(0);
+        events[0].NewItems![0].ShouldBeSameAs(middle);
+        gradient.IndexOf(middle).ShouldBe(1);
     }
 
     [Fact]
-    public void Insert_DoesNotMoveAStopOffAnOccupiedPosition()
+    public void Insert_MovesAStopOnAnOccupiedPositionSlightlyDown()
     {
         ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 0.5f)];
         ColorGradientStop stop = new(SKColors.Lime, 0.5f);
 
         gradient.Insert(0, stop);
 
-        // Pinned as-is: unlike Add, Insert doesn't link the stop to the gradient, so two stops can share a position.
-        // Moving the stop later doesn't avoid other stops either
-        stop.Position.ShouldBe(0.5f);
+        // Like Add, the stop also keeps avoiding other stops when it is moved later
+        stop.Position.ShouldBe(0.499f, 0.0001f);
         stop.Position = 0f;
-        stop.Position.ShouldBe(0f);
-        gradient.Count(s => s.Position == 0f).ShouldBe(2);
+        stop.Position.ShouldBe(0.001f, 0.0001f);
     }
 
     [Fact]
@@ -271,6 +268,21 @@ public class ColorGradientTests
     }
 
     [Fact]
+    public void Indexer_LinksTheNewStopAndUnlinksTheReplacedStop()
+    {
+        ColorGradientStop red = new(SKColors.Red, 0);
+        ColorGradient gradient = [red, new ColorGradientStop(SKColors.Blue, 1)];
+        ColorGradientStop lime = new(SKColors.Lime, 1);
+
+        gradient[0] = lime;
+        red.Position = 1;
+
+        // The new stop avoids the other stops, the replaced stop no longer does
+        lime.Position.ShouldBe(0.999f, 0.0001f);
+        red.Position.ShouldBe(1f);
+    }
+
+    [Fact]
     public void Remove_RemovesTheStopAndRaisesARemove()
     {
         ColorGradientStop blue = new(SKColors.Blue, 1);
@@ -298,20 +310,21 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void Remove_OfAnEqualStopRemovesTheGradientsStopButKeepsListeningToIt()
+    public void Remove_OfAnEqualStopRemovesTheGradientsStopAndStopsListeningToIt()
     {
         ColorGradientStop red = new(SKColors.Red, 0);
         ColorGradient gradient = [red, new ColorGradientStop(SKColors.Blue, 1)];
+        List<NotifyCollectionChangedEventArgs> events = RecordCollectionChanges(gradient);
         int changes = 0;
         gradient.StopChanged += (_, _) => changes++;
 
+        // Stops are equal when their color and position match, so removing a look-alike removes the gradient's own stop
         gradient.Remove(new ColorGradientStop(SKColors.Red, 0)).ShouldBeTrue();
         red.Color = SKColors.White;
 
-        // Pinned as-is: stops are equal when their color and position match, so removing a look-alike removes the
-        // gradient's own stop. Only the look-alike is unsubscribed though, the gradient keeps reacting to the removed stop
         gradient.Count.ShouldBe(1);
-        changes.ShouldBe(1);
+        events.Single().OldItems![0].ShouldBeSameAs(red);
+        changes.ShouldBe(0);
     }
 
     [Fact]
@@ -329,7 +342,7 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void Remove_LeavesTheStopLinkedToTheGradient()
+    public void Remove_UnlinksTheStopFromTheGradient()
     {
         ColorGradientStop red = new(SKColors.Red, 0);
         ColorGradientStop blue = new(SKColors.Blue, 1);
@@ -338,8 +351,8 @@ public class ColorGradientTests
         gradient.Remove(blue);
         blue.Position = 0f;
 
-        // Pinned as-is: a removed stop still avoids the positions of the stops in the gradient it was removed from
-        blue.Position.ShouldBe(0.001f, 0.0001f);
+        // A removed stop no longer avoids the positions of the stops in the gradient it was removed from
+        blue.Position.ShouldBe(0f);
     }
 
     [Fact]
@@ -358,18 +371,17 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void RemoveAt_ReportsTheIndexAsTheRemovedStop()
+    public void RemoveAt_ReportsTheRemovedStopAndItsIndex()
     {
-        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
+        ColorGradientStop blue = new(SKColors.Blue, 1);
+        ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), blue];
         List<NotifyCollectionChangedEventArgs> events = RecordCollectionChanges(gradient);
 
         gradient.RemoveAt(1);
 
-        // Pinned as-is: the index is passed where the event expects the removed item, so listeners get the number 1 as
-        // the removed stop and no index. Remove reports the stop and its index properly
         events.Single().Action.ShouldBe(NotifyCollectionChangedAction.Remove);
-        events.Single().OldItems![0].ShouldBe(1);
-        events.Single().OldStartingIndex.ShouldBe(-1);
+        events.Single().OldItems![0].ShouldBeSameAs(blue);
+        events.Single().OldStartingIndex.ShouldBe(1);
     }
 
     [Fact]
@@ -547,17 +559,20 @@ public class ColorGradientTests
 
         gradient.ToggleSeamless();
 
-        // Pinned as-is: the remaining stops are stretched as if they were squeezed by an earlier toggle. Blue would land
-        // past the end (1.35) so it stays where it was, the cap of 100 in ToggleSeamless looks like it was meant to be 1
+        // The remaining stops are stretched as if they were squeezed by an earlier toggle, Blue would land past the end
+        // (1.35) so it stops at the end
         gradient.Select(s => s.Color).ShouldBe([SKColors.Red, SKColors.Lime, SKColors.Blue]);
-        gradient.Select(s => s.Position).ShouldBe([0f, 0.75f, 0.9f]);
+        gradient.Select(s => s.Position).ShouldBe([0f, 0.75f, 1f]);
     }
 
     [Fact]
-    public void ToggleSeamless_OnAnEmptyGradientThrows()
+    public void ToggleSeamless_OnAnEmptyGradientDoesNothing()
     {
-        // Pinned as-is: an empty gradient counts as seamless, so toggling tries to remove a last stop that isn't there
-        Should.Throw<InvalidOperationException>(() => new ColorGradient().ToggleSeamless());
+        ColorGradient gradient = [];
+
+        gradient.ToggleSeamless();
+
+        gradient.ShouldBeEmpty();
     }
 
     #endregion
@@ -582,7 +597,7 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void SpreadStops_AvoidsAStopThatIsStillInTheWay()
+    public void SpreadStops_CanMoveAStopToWhereAnotherStopWas()
     {
         ColorGradient gradient =
         [
@@ -594,19 +609,18 @@ public class ColorGradientTests
 
         gradient.SpreadStops();
 
-        // Pinned as-is: stops are moved one by one, Lime can't take 0.333 while Blue still sits there and moves down instead
-        gradient.Select(s => s.Position).ShouldBe([0f, 0.331f, 0.667f, 1f], 0.0001f);
+        // Lime takes 0.333 even though Blue is still there at the moment Lime moves
+        gradient.Select(s => s.Position).ShouldBe([0f, 0.333f, 0.667f, 1f], 0.0001f);
     }
 
     [Fact]
-    public void SpreadStops_WithASingleStopGivesItNoPosition()
+    public void SpreadStops_WithASingleStopMovesItToTheStart()
     {
         ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0.5f)];
 
         gradient.SpreadStops();
 
-        // Pinned as-is: spreading divides by the number of gaps, which is zero for a single stop
-        float.IsNaN(gradient[0].Position).ShouldBeTrue();
+        gradient[0].Position.ShouldBe(0f);
     }
 
     [Fact]
@@ -637,11 +651,9 @@ public class ColorGradientTests
 
         gradient.FlipStops();
 
-        // Pinned as-is: stops are moved one by one, Red can't take 1 while Blue still sits there so it moves down (by
-        // 0.002, see Add_MovesAStopOnAnOccupiedPositionSlightlyDown).
-        // The same happens to any pair of stops on mirrored positions, like 0.1 and 0.9
+        // Red and Blue swap places, even though the other one is still there at the moment the first of them moves
         gradient.Select(s => s.Color).ShouldBe([SKColors.Blue, SKColors.Lime, SKColors.Red]);
-        gradient.Select(s => s.Position).ShouldBe([0f, 0.75f, 0.998f], 0.0001f);
+        gradient.Select(s => s.Position).ShouldBe([0f, 0.75f, 1f], 0.0001f);
     }
 
     [Fact]
@@ -656,10 +668,9 @@ public class ColorGradientTests
 
         gradient.RotateStops(false);
 
-        // Pinned as-is: stops are moved one by one, starting with the last stop which goes to the position of the first.
-        // The first stop is still there at that moment, so the last stop lands just below it
+        // The last stop wraps around to the position of the first
         gradient.Select(s => s.Color).ShouldBe([SKColors.Blue, SKColors.Red, SKColors.Lime]);
-        gradient.Select(s => s.Position).ShouldBe([0.099f, 0.5f, 0.9f], 0.0001f);
+        gradient.Select(s => s.Position).ShouldBe([0.1f, 0.5f, 0.9f], 0.0001f);
     }
 
     [Fact]
@@ -674,10 +685,9 @@ public class ColorGradientTests
 
         gradient.RotateStops(true);
 
-        // Pinned as-is: like rotating forwards, the first stop to move lands just below the stop that still occupies its
-        // new position
+        // The first stop wraps around to the position of the last
         gradient.Select(s => s.Color).ShouldBe([SKColors.Lime, SKColors.Blue, SKColors.Red]);
-        gradient.Select(s => s.Position).ShouldBe([0.1f, 0.5f, 0.898f], 0.0001f);
+        gradient.Select(s => s.Position).ShouldBe([0.1f, 0.5f, 0.9f], 0.0001f);
     }
 
     [Fact]
@@ -689,11 +699,10 @@ public class ColorGradientTests
         forward.RotateStops(false);
         backward.RotateStops(true);
 
-        // Pinned as-is: see above, at the start of the gradient there is no room below so the stop lands just above 0
         forward.Select(s => s.Color).ShouldBe([SKColors.Blue, SKColors.Red, SKColors.Lime]);
-        forward.Select(s => s.Position).ShouldBe([0.001f, 0.5f, 1f], 0.0001f);
+        forward.Select(s => s.Position).ShouldBe([0f, 0.5f, 1f], 0.0001f);
         backward.Select(s => s.Color).ShouldBe([SKColors.Lime, SKColors.Blue, SKColors.Red]);
-        backward.Select(s => s.Position).ShouldBe([0f, 0.5f, 0.998f], 0.0001f);
+        backward.Select(s => s.Position).ShouldBe([0f, 0.5f, 1f], 0.0001f);
     }
 
     [Fact]
@@ -732,14 +741,13 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void Randomize_WithASingleStopGivesItNoPosition()
+    public void Randomize_WithASingleStopPutsItAtTheStart()
     {
         ColorGradient gradient = [];
 
         gradient.Randomize(1);
 
-        // Pinned as-is: like SpreadStops, the spacing divides by the number of gaps, which is zero for a single stop
-        float.IsNaN(gradient.Single().Position).ShouldBeTrue();
+        gradient.Single().Position.ShouldBe(0f);
     }
 
     [Fact]
@@ -832,11 +840,10 @@ public class ColorGradientTests
         ColorGradient end = from.Interpolate(to, 1f);
 
         // The first two stops follow the target's stops, the third has no counterpart and takes the target's color at its
-        // own position. Pinned as-is: the second stop goes to the target's last stop at 1, which is still taken by the
-        // third stop, so it lands just below it
+        // own position. The second stop goes all the way to the target's last stop at 1, where the third stop also is
         end.Count.ShouldBe(3);
         end.Colors.ShouldBe([SKColors.Black, SKColors.White, SKColors.White]);
-        end.Positions.ShouldBe([0f, 0.998f, 1f], 0.0001f);
+        end.Positions.ShouldBe([0f, 1f, 1f], 0.0001f);
     }
 
     #endregion
@@ -874,7 +881,7 @@ public class ColorGradientTests
 
         copyChanges.ShouldBe(2);
         originalChanges.ShouldBe(0);
-        copiedBlue.Position.ShouldBe(0.498f, 0.0001f, "the copied stops avoid each other's position");
+        copiedBlue.Position.ShouldBe(0.499f, 0.0001f,"the copied stops avoid each other's position");
     }
 
     [Fact]
@@ -902,16 +909,14 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void Copy_FromAListKeepsTheOrderOfTheList()
+    public void Copy_FromAListSortsTheStops()
     {
         List<ColorGradientStop> stops = [new ColorGradientStop(SKColors.Blue, 1), new ColorGradientStop(SKColors.Red, 0)];
 
         ColorGradient gradient = new(stops);
 
-        // Pinned as-is: the copy constructors don't sort, so stops out of order stay out of order until one of them changes,
-        // and GetColor relies on stops being in order
-        gradient.Colors.ShouldBe([SKColors.Blue, SKColors.Red]);
-        gradient.GetColor(0.5f).ShouldBe(SKColors.Blue);
+        gradient.Colors.ShouldBe([SKColors.Red, SKColors.Blue]);
+        gradient.GetColor(0.5f).ShouldBe(new SKColor(127, 0, 127));
     }
 
     [Fact]
@@ -967,13 +972,12 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void ObsoletePositionsArray_IgnoresSeamlessWithoutRepeats()
+    public void ObsoletePositionsArray_ClosesTheLoopWithoutRepeats()
     {
         ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
 
-        // Pinned as-is: without repeats the seamless positions are skipped (the check looks inverted), so there is one
-        // position less than there are colors
-        GetPositionsArray(gradient, 0, true).ShouldBe([0f, 1f]);
+        // A position for each of the three colors
+        GetPositionsArray(gradient, 0, true).ShouldBe([0f, 0.5f, 1f]);
         GetColorsArray(gradient, 0, true).Length.ShouldBe(3);
     }
 
@@ -996,24 +1000,21 @@ public class ColorGradientTests
     }
 
     [Fact]
-    public void ObsoleteGetColor_PicksTheWrongColorAfterARepeat()
+    public void ObsoleteGetColor_FadesAgainAfterARepeat()
     {
         ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
 
-        // Pinned as-is: the second repeat starts at 0.5, where the first repeat also ends. Colors are looked up by
-        // position, which finds the end of the first repeat (blue) instead of the start of the second (red), so the
-        // second half is solid blue instead of fading from red to blue again
-        GetColor(gradient, 0.75f, 1, false).ShouldBe(SKColors.Blue);
+        // The second repeat starts at 0.5, where the first repeat ends, and fades from red to blue again
+        GetColor(gradient, 0.75f, 1, false).ShouldBe(new SKColor(127, 0, 127));
     }
 
     [Fact]
-    public void ObsoleteGetColor_IgnoresSeamlessWithoutRepeats()
+    public void ObsoleteGetColor_SeamlessWithoutRepeatsTurnsBackTowardsTheFirstColor()
     {
         ColorGradient gradient = [new ColorGradientStop(SKColors.Red, 0), new ColorGradientStop(SKColors.Blue, 1)];
 
-        // Pinned as-is: because of the missing seamless positions (see ObsoletePositionsArray_IgnoresSeamlessWithoutRepeats)
-        // this fades from red to blue as if seamless was off, instead of turning back towards red past the middle
-        GetColor(gradient, 0.75f, 0, true).ShouldBe(new SKColor(63, 0, 191));
+        // Red at the start, blue in the middle and red again at the end
+        GetColor(gradient, 0.75f, 0, true).ShouldBe(new SKColor(127, 0, 127));
     }
 
     [Fact]
