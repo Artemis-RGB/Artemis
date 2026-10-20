@@ -243,6 +243,7 @@ public class Timeline : CorePropertyChanged, IStorageModel
             if (IsOverridden)
                 throw new ArtemisCoreException("Can't update an overridden timeline, call ClearOverride first.");
 
+            TimeSpan previousPosition = Position;
             Delta += delta;
             Position += delta;
 
@@ -251,10 +252,15 @@ public class Timeline : CorePropertyChanged, IStorageModel
 
             // If the main segment has no length, simply stick to the start of the segment
             if (MainSegmentLength == TimeSpan.Zero)
+            {
                 Position = MainSegmentStartPosition;
-            // Ensure wrapping back around retains the delta time
-            else
-                Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(delta.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+                return;
+            }
+
+            // Wrap around by as much as the timeline went past the end of the main segment. If it was already past the end
+            // (for example a timeline that had finished), start the main segment over instead
+            TimeSpan overshoot = previousPosition <= MainSegmentEndPosition ? Position - MainSegmentEndPosition : delta;
+            Position = MainSegmentStartPosition + TimeSpan.FromTicks(overshoot.Ticks % MainSegmentLength.Ticks);
         }
     }
 

@@ -117,19 +117,18 @@ public class TimelineTests : RenderTestBase
     }
 
     [Fact]
-    public void AlwaysOn_WrapsAroundUsingTheFrameDeltaRatherThanTheOvershoot()
+    public void AlwaysOn_WrapsAroundByTheOvershoot()
     {
         Profile profile = Harness.CreateProfile();
         (Layer layer, SolidColorTestBrush brush) = Harness.AddLayer<SolidColorTestBrush>(profile.GetRootFolder(), [Led(LedId.Keyboard_A)]);
         layer.Timeline.MainSegmentLength = TimeSpan.FromSeconds(2);
         AddKeyframes(brush.Properties.Color, (0, SKColors.Red), (2, SKColors.Blue));
 
-        // Going from 1.5s to 2.5s overshoots the 2s main segment by 0.5s, the timeline lands on 1s instead of 0.5s.
-        // Pinned as-is: with real frame times (~33ms) the difference is at most a single frame.
+        // Going from 1.5s to 2.5s overshoots the 2s main segment by 0.5s, so the timeline lands on 0.5s
         using RenderTimeline timeline = RenderTimeline(profile, 1.5, 2.5);
 
-        layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(1));
-        timeline[1].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(Purple);
+        layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(0.5));
+        timeline[1].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(191, 0, 64));
     }
 
     [Fact]

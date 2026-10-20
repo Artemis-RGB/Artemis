@@ -245,8 +245,8 @@ public class EventConditionTests : RenderTestBase
         condition.IsMet.ShouldBeTrue();
         ShouldBeOn(on);
         ShouldBeOn(stillOn);
-        // Wrapped around the main segment rather than finishing
-        layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(0.5));
+        // Wrapped around the 1 second main segment rather than finishing, 1.6s in lands on 0.6s
+        layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(0.6));
     }
 
     [Fact]
