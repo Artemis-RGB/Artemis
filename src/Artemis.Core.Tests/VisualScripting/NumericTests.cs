@@ -99,14 +99,12 @@ public class NumericTests
     }
 
     [Fact]
-    public void ToLong_CutsOffTheDecimals_UnlikeTheOtherWholeNumberConversions()
+    public void ToLong_Rounds_LikeTheOtherWholeNumberConversions()
     {
-        // Pinned as-is: turning a Numeric into a long cuts off the decimals, while turning it into an int rounds, and so
-        // does the IConvertible conversion to a long
         long cast = new Numeric(2.7f);
         int castToInt = new Numeric(2.7f);
 
-        cast.ShouldBe(2);
+        cast.ShouldBe(3);
         castToInt.ShouldBe(3);
         AsConvertible(2.7f).ToInt64(null).ShouldBe(3);
     }
@@ -123,12 +121,11 @@ public class NumericTests
     }
 
     [Fact]
-    public void ToSByte_KeepsTheValueBetween0And255_WhichDoesNotFitAnSByte()
+    public void ToSByte_KeepsTheValueWithinTheRangeOfAnSByte()
     {
-        // Pinned as-is: an sbyte holds -128 to 127, but the conversion clamps to 0-255 like a byte does. Anything above
-        // 127 wraps around (200 becomes -56) and negative numbers become 0.
-        AsConvertible(200f).ToSByte(null).ShouldBe((sbyte) -56);
-        AsConvertible(-5f).ToSByte(null).ShouldBe((sbyte) 0);
+        AsConvertible(200f).ToSByte(null).ShouldBe(sbyte.MaxValue);
+        AsConvertible(-200f).ToSByte(null).ShouldBe(sbyte.MinValue);
+        AsConvertible(-5f).ToSByte(null).ShouldBe((sbyte) -5);
         AsConvertible(100f).ToSByte(null).ShouldBe((sbyte) 100);
     }
 
@@ -175,8 +172,9 @@ public class NumericTests
     [Fact]
     public void PassingANumericToConvert_PicksTheByteVersion()
     {
-        // Pinned as-is: Numeric converts implicitly to byte, int, long, float, double and decimal, so the compiler sends
-        // Convert.ToInt32(numeric) and friends to their byte versions. The value is clamped to 0-255 and loses its
+        // Known limitation: Numeric converts implicitly to byte, int, long, float, double and decimal, so the compiler
+        // sends Convert.ToInt32(numeric) and friends to their byte versions. Fixing this means removing implicit
+        // conversions, which would break plugins that rely on them. The value is clamped to 0-255 and loses its
         // decimals before it is converted. Passing it as an object uses IConvertible instead.
         Numeric numeric = new(2.5f);
 
