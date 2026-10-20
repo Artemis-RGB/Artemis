@@ -248,7 +248,7 @@ public class ProfileImportExportTests : ProfileServiceTestBase
     }
 
     [Fact]
-    public async Task ImportProfile_WithUnavailableNodes_DropsThemFromTheActivationCondition()
+    public async Task ImportProfile_WithUnavailableNodes_KeepsThemInTheActivationCondition()
     {
         TestNodeProvider nodes = EnableFeature(new TestNodeProvider());
         ProfileConfiguration original = CreateSavedProfile("Test profile");
@@ -259,17 +259,15 @@ public class ProfileImportExportTests : ProfileServiceTestBase
 
         ProfileConfiguration imported = await ProfileService.ImportProfile(export, General, true, false, null);
 
-        // Pinned as-is: the node can't be loaded without its plugin, and because importing saves the category right
-        // away, the node and its connection are removed from the stored activation condition for good. Unlike missing
-        // brushes and effects, enabling the plugin afterwards doesn't bring it back, and the imported profile now
-        // activates unconditionally
+        // The node can't be loaded without its plugin, but importing saves the category right away and that keeps it, so
+        // enabling the plugin afterwards brings it back like missing brushes and effects
         imported.ActivationCondition.Nodes.OfType<TestBooleanNode>().ShouldBeEmpty();
-        imported.Entity.ProfileConfiguration.ActivationCondition!.Nodes.ShouldNotContain(n => n.Type == nameof(TestBooleanNode));
+        imported.Entity.ProfileConfiguration.ActivationCondition!.Nodes.ShouldContain(n => n.Type == nameof(TestBooleanNode));
         EnableFeature(new TestNodeProvider());
         ProfileConfiguration reloaded = CreateNewProfileService().ProfileCategories.Single(c => c.Name == "General").ProfileConfigurations
             .Single(c => c.ProfileId == imported.ProfileId);
-        reloaded.ActivationCondition.Nodes.OfType<TestBooleanNode>().ShouldBeEmpty();
-        reloaded.ActivationCondition.ExitNodeConnected.ShouldBeFalse();
+        reloaded.ActivationCondition.Nodes.OfType<TestBooleanNode>().ShouldHaveSingleItem();
+        reloaded.ActivationCondition.ExitNodeConnected.ShouldBeTrue();
     }
 
     [Fact]
