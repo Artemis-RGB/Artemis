@@ -98,17 +98,16 @@ public class ProfileEditorCreateElementTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public async Task CreateAndAddLayer_OnALayer_CanRepeatANameAlreadyInUse()
+    public async Task CreateAndAddLayer_OnALayer_PicksANameNotInUseNextToIt()
     {
         Layer existing = AddLayer("New layer", null, LedId.Keyboard_A);
         await StartEditing();
 
         Layer layer = Service.CreateAndAddLayer(existing);
 
-        // Pinned as-is: the name is picked from the children of the target layer (which has none) rather than from its
-        // parent, so the new layer gets the same name as its sibling. CreateAndAddFolder uses the parent.
-        layer.Name.ShouldBe("New layer");
-        Root.Children.Count(c => c.Name == "New layer").ShouldBe(2);
+        layer.Parent.ShouldBe(Root);
+        layer.Name.ShouldNotBe("New layer");
+        Root.Children.Count(c => c.Name == "New layer").ShouldBe(1);
     }
 
     [Fact]

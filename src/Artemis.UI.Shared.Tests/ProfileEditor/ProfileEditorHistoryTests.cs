@@ -34,11 +34,11 @@ public class ProfileEditorHistoryTests : ProfileEditorTestBase
         Service.ExecuteCommand(new RecordingCommand("A", _log));
 
         _log.ShouldBe(["execute A"]);
-        canUndo.ShouldBe([true]);
+        canUndo.ShouldBe([false, true]);
     }
 
     [Fact]
-    public async Task CanUndoAndCanRedo_SayNothingUntilTheHistoryChanges()
+    public async Task CanUndoAndCanRedo_StartOutFalse()
     {
         await StartEditing();
         List<bool> canUndo = [];
@@ -47,10 +47,8 @@ public class ProfileEditorHistoryTests : ProfileEditorTestBase
         using IDisposable undoSubscription = CurrentHistory.CanUndo.Subscribe(canUndo.Add);
         using IDisposable redoSubscription = CurrentHistory.CanRedo.Subscribe(canRedo.Add);
 
-        // Pinned as-is: the subjects behind CanUndo and CanRedo have no initial value, a new subscriber only hears about
-        // the next change. Bindings made after a change show the wrong state until the next one
-        canUndo.ShouldBeEmpty();
-        canRedo.ShouldBeEmpty();
+        canUndo.ShouldBe([false]);
+        canRedo.ShouldBe([false]);
     }
 
     [Fact]
@@ -92,7 +90,7 @@ public class ProfileEditorHistoryTests : ProfileEditorTestBase
         Undo();
         Redo();
 
-        canUndo.ShouldBe([true, false, true]);
+        canUndo.ShouldBe([false, true, false, true]);
         canRedo.ShouldBe([false, true, false]);
     }
 
@@ -152,10 +150,8 @@ public class ProfileEditorHistoryTests : ProfileEditorTestBase
         }
 
         WindowService.ExceptionDialogs.ShouldHaveSingleItem().Title.ShouldBe("Editor command failed");
-        // Pinned as-is: besides the error dialog, ReactiveUI treats the failure as unhandled because nothing subscribes to
-        // the ThrownExceptions of the history's Execute command. In the app that means a failing command is reported as
-        // a crash on top of the dialog.
-        unhandled.ShouldHaveSingleItem().ShouldBeOfType<InvalidOperationException>();
+        // The dialog is enough, ReactiveUI doesn't also treat the failure as unhandled (a crash in the app)
+        unhandled.ShouldBeEmpty();
         Undo().ShouldBeNull();
     }
 
@@ -217,14 +213,13 @@ public class ProfileEditorHistoryTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public async Task CommandScope_WithoutCommands_StillAddsAnEntryToTheHistory()
+    public async Task CommandScope_WithoutCommands_DoesNotAddAnEntryToTheHistory()
     {
         await StartEditing();
 
         Service.CreateCommandScope("Empty").Dispose();
 
-        // Pinned as-is: an empty scope leaves an undo step that does nothing
-        Undo().ShouldBeOfType<CompositeCommand>().DisplayName.ShouldBe("Empty");
+        Undo().ShouldBeNull();
     }
 
     [Fact]
