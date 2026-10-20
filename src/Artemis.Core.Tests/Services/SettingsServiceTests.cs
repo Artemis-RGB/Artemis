@@ -75,15 +75,13 @@ public class SettingsServiceTests : IDisposable
     }
 
     [Fact]
-    public void GetSetting_AStoredValueThatDoesNotFitTheType_UsesTheDefaultOfTheType()
+    public void GetSetting_AStoredValueThatDoesNotFitTheType_UsesTheDefaultValuePassedIn()
     {
         Settings.GetSetting("Tests.Value", "not a number");
 
-        // Pinned as-is: when the stored value can't be read as the requested type the setting falls back to default(T)
-        // rather than to the default value passed in, so the caller's default of 7 is ignored here
         PluginSetting<int> setting = CreateNewSettingsService().GetSetting("Tests.Value", 7);
 
-        setting.Value.ShouldBe(0);
+        setting.Value.ShouldBe(7);
         setting.HasChanged.ShouldBeTrue();
     }
 

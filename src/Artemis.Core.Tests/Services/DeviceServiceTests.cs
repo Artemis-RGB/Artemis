@@ -60,21 +60,16 @@ public class DeviceServiceTests : ServiceTestBase
     }
 
     [Theory]
-    [InlineData("Artemis 1 LED headset.xml", true)]
-    [InlineData("Artemis 2 LEDs headset.xml", false)]
-    [InlineData("Artemis 4 LEDs headset.xml", false)]
-    public void AddDeviceProvider_GivesHeadsetsTheDefaultLayoutForTheirNumberOfLeds(string layoutFile, bool getsLayout)
+    [InlineData("Artemis 1 LED headset.xml")]
+    [InlineData("Artemis 2 LEDs headset.xml")]
+    [InlineData("Artemis 4 LEDs headset.xml")]
+    public void AddDeviceProvider_GivesHeadsetsTheDefaultLayoutForTheirNumberOfLeds(string layoutFile)
     {
         AddDeviceProvider(Path.Combine(AppContext.BaseDirectory, "DefaultLayouts", "Artemis", "Headset", layoutFile));
 
-        // Pinned as-is: the default headset layouts are looked up as "Artemis 2 LED headset.xml" and "Artemis 4 LED
-        // headset.xml", but the files are named "... LEDs headset.xml", so headsets with 2 or more LEDs get no default
-        // layout (the device service logs it as an invalid layout)
         ArtemisDevice headset = Devices.Devices.Single();
-        if (getsLayout)
-            headset.Layout!.IsDefaultLayout.ShouldBeTrue();
-        else
-            headset.Layout.ShouldBeNull();
+        headset.Layout!.IsDefaultLayout.ShouldBeTrue();
+        headset.Layout.FilePath.ShouldEndWith(layoutFile);
     }
 
     [Fact]
@@ -294,9 +289,9 @@ public class DeviceServiceTests : ServiceTestBase
         // There's no fan to place the LED strip next to, so it goes 10 to the right of everything else
         (strip.X, strip.Y).ShouldBe((10 + 441 + 10f, 0f));
 
-        // Pinned as-is: only devices placed by one of their type's own rules get the z-index of their type. LED strips
-        // normally get 2, but placed by the fallback (no fan to place it next to) it keeps the 1 every new device starts with
-        strip.ZIndex.ShouldBe(1);
+        // Placed by the fallback, the LED strip still gets the z-index of its type
+        keyboard.ZIndex.ShouldBe(1);
+        strip.ZIndex.ShouldBe(2);
     }
 
     [Fact]

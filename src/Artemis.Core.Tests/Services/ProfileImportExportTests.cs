@@ -128,7 +128,7 @@ public class ProfileImportExportTests : ProfileServiceTestBase
     }
 
     [Fact]
-    public async Task ImportProfile_DoesNotRaiseProfileAdded()
+    public async Task ImportProfile_RaisesProfileAdded()
     {
         ProfileConfiguration original = CreateSavedProfile("Test profile");
         int profileAdded = 0;
@@ -138,9 +138,7 @@ public class ProfileImportExportTests : ProfileServiceTestBase
 
         await ImportExport(original, General, true);
 
-        // Pinned as-is: creating a profile raises ProfileAdded but importing one doesn't, only the category's own
-        // ProfileConfigurationAdded event tells listeners about an imported profile
-        profileAdded.ShouldBe(0);
+        profileAdded.ShouldBe(1);
         addedToCategory.ShouldBe(1);
     }
 
@@ -291,42 +289,41 @@ public class ProfileImportExportTests : ProfileServiceTestBase
     }
 
     [Fact]
-    public void ProfilesThatWereNeverSavedInTheEditor_AreStoredAsVersionZero()
+    public void NewProfiles_AreStoredAtTheCurrentVersion()
     {
         ProfileConfiguration configuration = ProfileService.CreateProfileConfiguration(General, "Test profile", "TestTube");
-        GetStoredProfiles().Single().ProfileConfiguration.Version.ShouldBe(0);
+        int version = GetStoredProfiles().Single().ProfileConfiguration.Version;
+        version.ShouldBeGreaterThan(0);
 
         ProfileService.SaveProfile(ProfileService.ActivateProfile(configuration), true);
 
-        GetStoredProfiles().Single().ProfileConfiguration.Version.ShouldBeGreaterThan(0);
+        GetStoredProfiles().Single().ProfileConfiguration.Version.ShouldBe(version);
     }
 
     [Fact]
-    public void ProfilesThatWereNeverSavedInTheEditor_FailToMigrateOnStartupButStillLoad()
+    public void NewProfiles_AreLeftAloneByTheMigrationsOnStartup()
     {
         ProfileService.CreateProfileConfiguration(General, "Test profile", "TestTube");
+        int version = GetStoredProfiles().Single().ProfileConfiguration.Version;
 
-        // Artemis migrates stored profiles once on startup, a failure is logged and the profile is left as it is
+        // Artemis migrates stored profiles once on startup
         Resolve<IProfileRepository>().MigrateProfiles();
 
-        GetStoredProfiles().Single().ProfileConfiguration.Version.ShouldBe(0);
+        GetStoredProfiles().Single().ProfileConfiguration.Version.ShouldBe(version);
         CreateNewProfileService().ProfileCategories.Single(c => c.Name == "General").ProfileConfigurations.Single().Name.ShouldBe("Test profile");
     }
 
     [Fact]
-    public async Task ImportProfile_OfAProfileThatWasNeverSavedInTheEditor_Fails()
+    public async Task ImportProfile_OfAProfileThatWasNeverSavedInTheEditor_Works()
     {
+        // Duplicating a freshly created profile from the sidebar or the editor is an export followed by an import
         ProfileConfiguration configuration = ProfileService.CreateProfileConfiguration(General, "Test profile", "TestTube");
         await using Stream export = await ProfileService.ExportProfile(configuration);
 
-        // Pinned as-is: saving the category (which is all creating a profile does) stores the profile without setting its
-        // migration version, only SaveProfile sets it. The export says version 0, so importing runs every migration on
-        // JSON that is already up to date and the first one fails on it. Duplicating a freshly created profile from the
-        // sidebar or the editor (an export followed by an import) runs into this. Restarting Artemis runs into it too, but
-        // there the failed migration is only logged and the profile loads normally, see the test above
-        InvalidOperationException exception = await Should.ThrowAsync<InvalidOperationException>(() => ProfileService.ImportProfile(export, General, true, false, "copy"));
-        exception.StackTrace!.ShouldContain("M0001NodeProviders");
-        General.ProfileConfigurations.ShouldBe([configuration]);
+        ProfileConfiguration imported = await ProfileService.ImportProfile(export, General, true, false, "copy");
+
+        imported.Name.ShouldBe("Test profile - copy");
+        General.ProfileConfigurations.Count.ShouldBe(2);
     }
 
     /// <summary>

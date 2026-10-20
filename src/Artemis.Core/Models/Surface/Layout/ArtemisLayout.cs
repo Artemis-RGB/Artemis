@@ -164,8 +164,8 @@ public class ArtemisLayout
             if (device.Leds.Count == 1)
                 return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 1 LED headset.xml"));
             if (device.Leds.Count == 2)
-                return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 2 LED headset.xml"));
-            return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 4 LED headset.xml"));
+                return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 2 LEDs headset.xml"));
+            return new ArtemisLayout(Path.Combine(DefaultLayoutPath, "Headset", "Artemis 4 LEDs headset.xml"));
         }
 
         return null;

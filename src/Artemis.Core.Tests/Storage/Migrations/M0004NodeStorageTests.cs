@@ -122,7 +122,7 @@ public class M0004NodeStorageTests
     }
 
     [Fact]
-    public void Migrate_NodeWithoutStorage_GetsANullStorage()
+    public void Migrate_NodeWithoutStorage_LeavesTheStorageOut()
     {
         (JsonObject configuration, JsonObject profile) = Version3Profile();
         JsonObject node = profile.FindNode(OldProfileJson.LayerTransformNodeId);
@@ -130,10 +130,7 @@ public class M0004NodeStorageTests
 
         _migration.Migrate(configuration, profile);
 
-        // Pinned as-is: a missing storage is written back as "Storage": null rather than left out, which gives the
-        // NodeEntity a null storage even though the property isn't nullable
-        node.ContainsKey("Storage").ShouldBeTrue();
-        node["Storage"].ShouldBeNull();
+        node.ContainsKey("Storage").ShouldBeFalse();
     }
 
     [Fact]

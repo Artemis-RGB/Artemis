@@ -65,16 +65,11 @@ public class ProfileCategoryTests : ProfileServiceTestBase
     }
 
     [Fact]
-    public void CreateProfileCategory_AtTheTop_IsListedLastUntilTheCategoriesAreSortedAgain()
+    public void CreateProfileCategory_AtTheTop_IsListedFirst()
     {
+        // Profiles are updated and rendered in list order, the first category ends up on top
         ProfileCategory category = ProfileService.CreateProfileCategory("Tests", true);
 
-        // Pinned as-is: the category is created with order 1 but appended to the end of ProfileCategories. Profiles are
-        // updated and rendered in list order (the first category ends up on top), so until something saves a category,
-        // which sorts the list, this category's profiles are drawn underneath the others rather than on top
-        ProfileService.ProfileCategories.Last().ShouldBeSameAs(category);
-
-        ProfileService.SaveProfileCategory(General);
         ProfileService.ProfileCategories.First().ShouldBeSameAs(category);
     }
 
@@ -254,7 +249,7 @@ public class ProfileCategoryTests : ProfileServiceTestBase
     }
 
     [Fact]
-    public void CloneProfileConfiguration_SharesTheStoredDataWithTheOriginal()
+    public void CloneProfileConfiguration_HasItsOwnCopyOfTheStoredData()
     {
         ProfileConfiguration original = ProfileService.CreateProfileConfiguration(General, "Original", "TestTube");
 
@@ -267,12 +262,11 @@ public class ProfileCategoryTests : ProfileServiceTestBase
         // The clone is not added to the category
         General.ProfileConfigurations.ShouldBe([original]);
 
-        // Pinned as-is: documented as creating a copy, but the clone uses the same entity as the original, so saving
-        // changes made to the clone changes the original's stored data too
-        clone.Entity.ShouldBeSameAs(original.Entity);
+        clone.Entity.ShouldNotBeSameAs(original.Entity);
+        clone.Entity.Profile.ShouldNotBeSameAs(original.Entity.Profile);
         clone.Name = "Changed through the clone";
         clone.Save();
-        original.Entity.ProfileConfiguration.Name.ShouldBe("Changed through the clone");
+        original.Entity.ProfileConfiguration.Name.ShouldBe("Original");
     }
 
     [Fact]
