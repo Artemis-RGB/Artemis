@@ -147,8 +147,8 @@ public class ProfileMigrationTests : IDisposable
         configuration.Remove("Version");
         JsonObject profile = OldProfileJson.Parse(OldProfileJson.MigratedProfile);
 
-        // Pinned as-is: without a version the profile is taken to be from before version 1 and M0001 fails on the
-        // current format, so a profile in the current format without a version can't be imported
+        // Without a version the profile is taken to be from before version 1, the version was added to tell those apart.
+        // M0001 fails on the current format, so a profile in the current format without a version can't be imported
         Should.Throw<InvalidOperationException>(() => _services.Resolve<IProfileRepository>().MigrateProfile(configuration, profile));
     }
 

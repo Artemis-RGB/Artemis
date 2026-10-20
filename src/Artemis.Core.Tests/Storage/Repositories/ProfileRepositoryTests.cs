@@ -5,7 +5,6 @@ using Artemis.Core.Tests.Infrastructure.Storage;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories;
 using Artemis.Storage.Repositories.Interfaces;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artemis.Core.Tests.Storage.Repositories;
@@ -138,17 +137,17 @@ public class ProfileRepositoryTests : IDisposable
     }
 
     [Fact]
-    public void MigrateProfiles_ProfileWithoutVersion_IsNotMigrated()
+    public void MigrateProfiles_ProfileWithoutVersion_IsMigratedFromVersion0()
     {
         ProfileCategoryEntity category = StoredProfiles.AddCategory(_services.CreateDbContext);
         Guid id = StoredProfiles.InsertRaw(_services.CreateDbContext, category.Id, OldProfileJson.Version0Configuration, OldProfileJson.Version0Profile);
 
         _repository.MigrateProfiles();
 
-        // Pinned as-is: the database query only picks profiles whose version is below the latest, a missing version
-        // doesn't count as lower. MigrateProfile itself treats a missing version as version 0. Profiles stored by
-        // Entity Framework always have a version, so this only matters for rows written some other way.
-        StoredProfiles.ReadRaw(_services.CreateDbContext, id).ShouldBe((OldProfileJson.Version0Configuration, OldProfileJson.Version0Profile));
+        // Like MigrateProfile does, a missing version counts as version 0
+        (string configuration, string profile) = StoredProfiles.ReadRaw(_services.CreateDbContext, id);
+        JsonNode.Parse(configuration)!["Version"]!.GetValue<int>().ShouldBeGreaterThan(0);
+        profile.ShouldNotBe(OldProfileJson.Version0Profile);
     }
 
     [Theory]
@@ -169,38 +168,35 @@ public class ProfileRepositoryTests : IDisposable
     }
 
     [Fact]
-    public void MigrateProfiles_ConfigurationThatIsNotJson_StopsAllMigrations()
+    public void MigrateProfiles_ConfigurationThatIsNotJson_IsLoggedAndSkipped()
     {
         ProfileCategoryEntity category = StoredProfiles.AddCategory(_services.CreateDbContext);
         StoredProfiles.InsertRaw(_services.CreateDbContext, category.Id, "{broken", OldProfileJson.Version0Profile);
         Guid working = StoredProfiles.InsertRaw(_services.CreateDbContext, category.Id, StoredProfiles.Version0ConfigurationWithVersion(), OldProfileJson.Version0Profile);
 
-        // Pinned as-is: the version is read from the configuration by the database query, which fails on the broken
-        // JSON before any profile is migrated. Unlike a broken profile, this isn't caught and logged.
-        Should.Throw<SqliteException>(() => _repository.MigrateProfiles()).Message.ShouldContain("malformed JSON");
-        StoredProfiles.ReadRaw(_services.CreateDbContext, working).Profile.ShouldBe(OldProfileJson.Version0Profile);
+        _repository.MigrateProfiles();
+
+        _log.Errors.ShouldHaveSingleItem().MessageTemplate.Text.ShouldBe("Failed to migrate profile container {Id}");
+        StoredProfiles.ReadRaw(_services.CreateDbContext, working).Profile.ShouldNotBe(OldProfileJson.Version0Profile);
     }
 
     [Fact]
-    public void MigrateProfiles_ProfileCreatedInArtemis_IsStoredAtVersion0AndFailsToMigrate()
+    public void MigrateProfiles_ProfileCreatedInArtemis_IsStoredAtTheCurrentVersion()
     {
         IProfileService profileService = _services.Resolve<IProfileService>();
         ProfileCategory category = profileService.CreateProfileCategory("Created");
         profileService.CreateProfileConfiguration(category, "New profile", "Keyboard");
 
-        // Pinned as-is: a new profile is stored by saving its category, which doesn't set the version like
-        // ProfileRepository.Save does. The profile is in the current format, but at version 0 M0001 runs on it and
-        // fails. The error is logged each time the profiles are migrated (when the profile service starts) until the
-        // profile is saved by itself.
+        int version;
         using (var context = _services.CreateDbContext())
-            context.ProfileContainers.Single().ProfileConfiguration.Version.ShouldBe(0);
+            version = context.ProfileContainers.Single().ProfileConfiguration.Version;
+        version.ShouldBeGreaterThan(0);
 
         _repository.MigrateProfiles();
 
-        _log.Errors.ShouldHaveSingleItem().MessageTemplate.Text.ShouldBe("Failed to migrate profile container {Id}");
-        _log.Errors.Single().Exception.ShouldBeOfType<InvalidOperationException>();
+        _log.Errors.ShouldBeEmpty();
         using (var context = _services.CreateDbContext())
-            context.ProfileContainers.Single().ProfileConfiguration.Version.ShouldBe(0);
+            context.ProfileContainers.Single().ProfileConfiguration.Version.ShouldBe(version);
     }
 
     private static ProfileContainerEntity CreateContainer(ProfileCategoryEntity category, string name = "Profile")

@@ -112,7 +112,7 @@ public class M0001NodeProvidersTests
     }
 
     [Fact]
-    public void Migrate_NodeWithoutType_GetsANullType()
+    public void Migrate_NodeWithoutType_LeavesTheTypeOut()
     {
         JsonObject profile = OldProfileJson.Parse(OldProfileJson.Version0Profile);
         JsonObject node = profile.FindNode(OldProfileJson.LayerTransformNodeId);
@@ -120,10 +120,7 @@ public class M0001NodeProvidersTests
 
         _migration.Migrate(new JsonObject(), profile);
 
-        // Pinned as-is: a missing type is written back as "Type": null rather than left out, which gives the NodeEntity
-        // a null type even though the property isn't nullable
-        node.ContainsKey("Type").ShouldBeTrue();
-        node["Type"].ShouldBeNull();
+        node.ContainsKey("Type").ShouldBeFalse();
         node["ProviderId"]!.GetValue<string>().ShouldBe(OldProfileJson.GeneralNodesProviderId);
     }
 
