@@ -67,7 +67,7 @@ public class LayerBrushAndLedCommandTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void ChangeLayerBrush_Undo_OnALayerWithoutBrush_KeepsTheNewBrush()
+    public void ChangeLayerBrush_Undo_OnALayerWithoutBrush_RemovesTheNewBrush()
     {
         Layer layer = new(Root, "Layer without brush");
         Root.AddChild(layer);
@@ -76,8 +76,8 @@ public class LayerBrushAndLedCommandTests : ProfileEditorTestBase
         command.Execute();
         command.Undo();
 
-        // Pinned as-is: with no brush to go back to, undo leaves the new brush (and the brush reference) in place
-        layer.LayerBrush.ShouldBeOfType<GradientTestBrush>();
+        layer.LayerBrush.ShouldBeNull();
+        layer.General.BrushReference.CurrentValue.ShouldBeNull();
     }
 
     [Fact]

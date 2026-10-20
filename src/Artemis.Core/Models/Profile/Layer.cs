@@ -847,6 +847,24 @@ public sealed class Layer : RenderProfileElement
         ActivateLayerBrush();
     }
 
+    /// <summary>
+    ///     Removes the current layer brush, leaving the layer without a brush
+    /// </summary>
+    public void RemoveLayerBrush()
+    {
+        if (LayerBrush == null)
+            return;
+
+        BaseLayerBrush oldLayerBrush = LayerBrush;
+        General.BrushReference.SetCurrentValue(null!);
+        LayerBrush = null;
+
+        // Don't dispose the brush, only disable it
+        // That way an undo-action does not need to worry about disposed brushes
+        oldLayerBrush.InternalDisable();
+        ActivateLayerBrush();
+    }
+
     private void ActivateLayerBrush()
     {
         try

@@ -131,7 +131,7 @@ public class ProfileEditorTimeTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public async Task ResumingEditing_TakesBackControlButLeavesTheTimelinesAtTheStart()
+    public async Task ResumingEditing_TakesBackControlAndAppliesTheTime()
     {
         Layer layer = AddLayer("Layer", null, LedId.Keyboard_A);
         await StartEditing();
@@ -142,13 +142,7 @@ public class ProfileEditorTimeTests : ProfileEditorTestBase
 
         Current(Service.SuspendedEditing).ShouldBeFalse();
         ProfileService.UpdateFocusProfile.ShouldBeFalse();
-        // Pinned as-is: resuming calls Tick to apply the editor's time again, but does so before marking editing as
-        // resumed, and Tick skips suspended editing. So the profile stays where suspending left it (at the start) until
-        // the time changes, while the editor shows 2 seconds
-        layer.Timeline.Position.ShouldBe(TimeSpan.Zero);
         Current(Service.Time).ShouldBe(TimeSpan.FromSeconds(2));
-
-        Service.ChangeTime(TimeSpan.FromSeconds(2));
         layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(2));
     }
 

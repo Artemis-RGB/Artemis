@@ -219,15 +219,15 @@ public class KeyframeCommandTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void ToggleLayerPropertyKeyframes_Undo_DoesNotRememberWhatItWasBefore()
+    public void ToggleLayerPropertyKeyframes_Undo_RestoresWhatItWasBefore()
     {
         ToggleLayerPropertyKeyframes<float> enable = new(_opacity, true, TimeSpan.Zero);
 
         enable.Execute();
         enable.Undo();
 
-        // Pinned as-is: undo sets the opposite of what the command did rather than restoring the earlier state, so
-        // "enabling" keyframes that were already enabled turns them off when undone
-        _opacity.KeyframesEnabled.ShouldBeFalse();
+        // "Enabling" keyframes that were already enabled leaves them enabled when undone
+        _opacity.KeyframesEnabled.ShouldBeTrue();
+        _opacity.Keyframes.ShouldBe([_first, _second]);
     }
 }

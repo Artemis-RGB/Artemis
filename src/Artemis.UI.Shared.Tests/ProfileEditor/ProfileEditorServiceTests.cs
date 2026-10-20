@@ -155,18 +155,14 @@ public class ProfileEditorServiceTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public async Task History_GivesNewSubscribersTheCurrentHistoryTwice()
+    public async Task History_GivesNewSubscribersTheCurrentHistoryOnce()
     {
         await StartEditing();
         List<ProfileEditorHistory?> received = [];
 
         using IDisposable _ = Service.History.Subscribe(received.Add);
 
-        // Pinned as-is: History first returns the current history and then subscribes to ProfileConfiguration, which
-        // repeats the current configuration. Harmless for the UI, but every subscriber gets the same history twice
-        received.Count.ShouldBe(2);
-        received.ShouldAllBe(h => h == received[0]);
-        received[0]!.ProfileConfiguration.ShouldBe(Configuration);
+        received.ShouldHaveSingleItem()!.ProfileConfiguration.ShouldBe(Configuration);
     }
 
     [Fact]
@@ -259,7 +255,7 @@ public class ProfileEditorServiceTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public async Task AutoSave_AfterAFailedSave_StopsSaving()
+    public async Task AutoSave_AfterAFailedSave_KeepsSaving()
     {
         Layer layer = AddLayer("Layer", null, LedId.Keyboard_A);
         await StartEditing();
@@ -271,12 +267,13 @@ public class ProfileEditorServiceTests : ProfileEditorTestBase
 
         ProfileService.SaveException = null;
         Service.ExecuteCommand(new RenameProfileElement(layer, "Second"));
-        await Task.Delay(2000, TestContext.Current.CancellationToken);
 
-        // Pinned as-is: the auto-save rethrows the exception after showing the dialog, which ends the observable that
-        // drives auto-saving. Nothing is auto-saved anymore for as long as the app runs, without telling the user
-        lock (ProfileService.SavedProfiles)
-            ProfileService.SavedProfiles.Count.ShouldBe(1);
+        await WaitUntil(() =>
+        {
+            lock (ProfileService.SavedProfiles)
+                return ProfileService.SavedProfiles.Count > 1;
+        });
+        layer.Name.ShouldBe("Second");
     }
 
     [Fact]
