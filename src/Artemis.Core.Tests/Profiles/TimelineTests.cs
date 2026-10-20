@@ -124,10 +124,12 @@ public class TimelineTests : RenderTestBase
         layer.Timeline.MainSegmentLength = TimeSpan.FromSeconds(2);
         AddKeyframes(brush.Properties.Color, (0, SKColors.Red), (2, SKColors.Blue));
 
-        // Going from 1.5s to 2.5s overshoots the 2s main segment by 0.5s, so the timeline lands on 0.5s
+        // Going from 1.5s to 2.5s overshoots the 2s main segment by 0.5s. A new timeline has no start segment, so the
+        // main segment starts at 0s and the timeline lands on 0.5s
         using RenderTimeline timeline = RenderTimeline(profile, 1.5, 2.5);
 
         layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(0.5));
+        // 0.5s is a quarter of the way from red to blue
         timeline[1].GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(191, 0, 64));
     }
 
