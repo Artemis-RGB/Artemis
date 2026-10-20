@@ -27,8 +27,7 @@ public class StringUtilitiesTests
     [Fact]
     public void UrlFriendly_CutsLongTitlesShort()
     {
-        // Pinned as-is: the limit is meant to be 80 characters, but the character at position 80 is still included
-        StringUtilities.UrlFriendly(new string('a', 100)).Length.ShouldBe(81);
+        StringUtilities.UrlFriendly(new string('a', 100)).Length.ShouldBe(80);
     }
 
     [Fact]
@@ -64,14 +63,22 @@ public class StringUtilitiesTests
     }
 
     [Theory]
-    [InlineData('Ř')]
-    [InlineData('Ł')]
-    [InlineData('Đ')]
-    [InlineData('þ')]
-    public void RemapInternationalCharToAscii_OnlyKnowsOneCaseOfSomeLetters(char c)
+    [InlineData('ř', "r")]
+    [InlineData('Ř', "r")]
+    [InlineData('ł', "l")]
+    [InlineData('Ł', "l")]
+    [InlineData('đ', "d")]
+    [InlineData('Đ', "d")]
+    [InlineData('þ', "th")]
+    [InlineData('Þ', "th")]
+    [InlineData('ĥ', "h")]
+    [InlineData('Ĥ', "h")]
+    [InlineData('ĵ', "j")]
+    [InlineData('Ĵ', "j")]
+    [InlineData('ß', "ss")]
+    [InlineData('ẞ', "ss")]
+    public void RemapInternationalCharToAscii_KnowsBothCasesOfEveryLetter(char c, string expected)
     {
-        // Pinned as-is: most letters are lowercased before they are looked up, but ř, ł, đ, þ, ß, ĥ and ĵ are compared
-        // as typed, so their other case isn't recognized. For the thorn only the uppercase Þ is known
-        StringUtilities.RemapInternationalCharToAscii(c).ShouldBe("");
+        StringUtilities.RemapInternationalCharToAscii(c).ShouldBe(expected);
     }
 }

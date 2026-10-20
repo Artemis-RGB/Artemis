@@ -21,14 +21,13 @@ public class EnumUtilitiesTests
     }
 
     [Fact]
-    public void GetAllValuesAndDescriptions_UsesDescriptionsOnlyWhenGivenTheTypeAsGenericArgument()
+    public void GetAllValuesAndDescriptions_UsesDescriptionsBothWhenGivenTheTypeAsGenericArgumentAndAsType()
     {
         (KeyboardSection, string) generic = EnumUtilities.GetAllValuesAndDescriptions<KeyboardSection>().Single(v => v.Item1 == KeyboardSection.LedStrips);
         (Enum, string) byType = EnumUtilities.GetAllValuesAndDescriptions(typeof(KeyboardSection)).Single(v => v.Item1.Equals(KeyboardSection.LedStrips));
 
-        // Pinned as-is: the generic version uses the [Description] attribute, the version taking a type ignores it
         generic.Item2.ShouldBe("LED Strips");
-        byType.Item2.ShouldBe("Led strips");
+        byType.Item2.ShouldBe("LED Strips");
     }
 
     [Fact]
