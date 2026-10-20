@@ -114,7 +114,7 @@ public class LayerPropertyCommandTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void UpdateLayerProperty_WithOriginalValue_OnAKeyframe_RemovesTheKeyframeOnUndo()
+    public void UpdateLayerProperty_WithOriginalValue_OnAKeyframe_RestoresTheKeyframeOnUndo()
     {
         AddKeyframe(0, 0);
         LayerPropertyKeyframe<float> keyframe = AddKeyframe(60, 1);
@@ -124,12 +124,10 @@ public class LayerPropertyCommandTests : ProfileEditorTestBase
         keyframe.Value.ShouldBe(40);
         command.Undo();
 
-        // Pinned as-is: this constructor never checks whether there already is a keyframe at the time. When keyframes are
-        // enabled, Execute treats the existing keyframe that SetCurrentValue updated as a new one, and Undo removes it
-        // instead of restoring its value. Changing a keyframe through a property input and undoing deletes the keyframe
-        _opacity.Keyframes.ShouldNotContain(keyframe);
-        _opacity.Keyframes.Count.ShouldBe(1);
-        command.DisplayName.ShouldBe("Add Opacity keyframe");
+        _opacity.Keyframes.ShouldContain(keyframe);
+        _opacity.Keyframes.Count.ShouldBe(2);
+        keyframe.Value.ShouldBe(60);
+        command.DisplayName.ShouldBe("Update Opacity");
     }
 
     [Fact]
@@ -142,9 +140,7 @@ public class LayerPropertyCommandTests : ProfileEditorTestBase
 
         _opacity.BaseValue.ShouldBe(40);
         _opacity.Keyframes.Count.ShouldBe(1);
-        // Pinned as-is: with keyframes enabled the command expects to add a keyframe and renames itself, even though
-        // without a time no keyframe is added
-        command.DisplayName.ShouldBe("Add Opacity keyframe");
+        command.DisplayName.ShouldBe("Update Opacity");
 
         command.Undo();
         _opacity.BaseValue.ShouldBe(0, 0.01f);

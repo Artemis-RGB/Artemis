@@ -53,7 +53,7 @@ public class ProfileElementCommandTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void AddProfileElement_Undo_LeavesTheElementEnabled()
+    public void AddProfileElement_Undo_DisablesTheElement()
     {
         Layer layer = new(_folder, "New layer");
         AddProfileElement command = new(layer, _folder, 0);
@@ -61,9 +61,8 @@ public class ProfileElementCommandTests : ProfileEditorTestBase
         command.Execute();
         command.Undo();
 
-        // Pinned as-is: Execute enables the element but Undo does not disable it again. It is no longer in the profile
-        // so it doesn't render, but its brush and effects stay enabled (unlike RemoveProfileElement, which disables)
-        layer.Enabled.ShouldBeTrue();
+        // Like RemoveProfileElement, so its brush and effects don't stay enabled
+        layer.Enabled.ShouldBeFalse();
     }
 
     [Fact]
@@ -212,12 +211,11 @@ public class ProfileElementCommandTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void MoveProfileElement_DisplayName_AlwaysSaysLayer()
+    public void MoveProfileElement_DisplayName_SaysWhatIsMoved()
     {
         Folder other = Harness.AddFolder(Root, "Other folder");
 
-        // Pinned as-is: the constructor sets "Move folder" for folders and then always overwrites it with "Move layer"
-        new MoveProfileElement(_folder, other, 0).DisplayName.ShouldBe("Move layer");
+        new MoveProfileElement(_folder, other, 0).DisplayName.ShouldBe("Move folder");
         new MoveProfileElement(Root, _first, 0).DisplayName.ShouldBe("Move layer");
     }
 
