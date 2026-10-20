@@ -92,6 +92,21 @@
                         </Grid>
                         <Border Classes="card-separator" />
                     </StackPanel>
+                    
+                    <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock>
+                                Tray icon Style
+                            </TextBlock>
+                            <TextBlock Classes="subtitle">
+                                Set the style of Artemis' icon on the system tray.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <shared:EnumComboBox Width="150" Value="{CompiledBinding UITrayIcon.Value}" />
+                        </StackPanel>
+                    </Grid>
+                    <Border Classes="card-separator" />
 
                     <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                         <StackPanel Grid.Column="0">
