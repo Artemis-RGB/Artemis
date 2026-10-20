@@ -20,7 +20,7 @@ public class KeyboardSectionAdaptionHint : CorePropertyChanged, IAdaptionHint
         {KeyboardSection.FunctionKeys, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_F1 && l <= LedId.Keyboard_F12).ToList()},
         {KeyboardSection.NumberKeys, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_1 && l <= LedId.Keyboard_0).ToList()},
         {KeyboardSection.NumPad, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_NumLock && l <= LedId.Keyboard_NumPeriodAndDelete).ToList()},
-        {KeyboardSection.ArrowKeys, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_PageDown && l <= LedId.Keyboard_ArrowRight).ToList()},
+        {KeyboardSection.ArrowKeys, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_ArrowUp && l <= LedId.Keyboard_ArrowRight).ToList()},
         {KeyboardSection.MediaKeys, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_MediaMute && l <= LedId.Keyboard_MediaNextTrack).ToList()},
     };
 
