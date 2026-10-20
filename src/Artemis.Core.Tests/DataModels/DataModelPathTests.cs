@@ -340,7 +340,7 @@ public class DataModelPathTests : IDisposable
     }
 
     [Fact]
-    public void RemovingTheDynamicChild_LeavesThePathValid()
+    public void RemovingTheDynamicChild_MakesThePathInvalid()
     {
         DataModel.AddDynamicChild("Extra", 5);
         using DataModelPath path = new(DataModel, "Extra");
@@ -349,25 +349,34 @@ public class DataModelPathTests : IDisposable
 
         DataModel.RemoveDynamicChildByKey("Extra");
 
-        // Pinned as-is: the segment only invalidates the path when the value of the removed child is the data model the
-        // segment looks in, rather than when the child it points to is removed. So the path stays valid and reads the
-        // default value instead of becoming invalid.
-        path.IsValid.ShouldBeTrue();
-        path.GetValue().ShouldBe(0);
-        invalidated.ShouldBe(0);
+        path.IsValid.ShouldBeFalse();
+        path.GetValue().ShouldBeNull();
+        invalidated.ShouldBe(1);
     }
 
     [Fact]
-    public void RemovingADynamicDataModel_LeavesThePathThroughItValid()
+    public void RemovingTheDynamicChild_AndAddingItAgain_MakesThePathValidAgain()
+    {
+        DataModel.AddDynamicChild("Extra", 5);
+        using DataModelPath path = new(DataModel, "Extra");
+        DataModel.RemoveDynamicChildByKey("Extra");
+
+        DataModel.AddDynamicChild("Extra", 6);
+
+        path.IsValid.ShouldBeTrue();
+        path.GetValue().ShouldBe(6);
+    }
+
+    [Fact]
+    public void RemovingADynamicDataModel_MakesThePathThroughItInvalid()
     {
         DataModel.AddDynamicChild("Extra", new TestChildDataModel {Integer = 4}, "Extra data");
         using DataModelPath path = new(DataModel, "Extra.Integer");
 
         DataModel.RemoveDynamicChildByKey("Extra");
 
-        // Pinned as-is, see RemovingTheDynamicChild_LeavesThePathValid
-        path.IsValid.ShouldBeTrue();
-        path.GetValue().ShouldBe(0);
+        path.IsValid.ShouldBeFalse();
+        path.GetValue().ShouldBeNull();
     }
 
     [Fact]
@@ -450,20 +459,17 @@ public class DataModelPathTests : IDisposable
     }
 
     [Fact]
-    public void NewPath_DoesNotFollowTheStoreUntilItIsSaved()
+    public void NewPath_FollowsTheStoreWithoutBeingSaved()
     {
         using DataModelPath path = new(DataModel, "Integer");
 
-        // Pinned as-is: the constructors call Save before the path is set up, while it is still invalid, so nothing is
-        // saved and the entity has no data model ID. The path only reacts to its data model leaving and returning to the
-        // store once Save is called. Looks like Save should be called after Initialize.
-        path.Entity.DataModelId.ShouldBeNull();
-        path.Entity.Path.ShouldBe("");
+        path.Entity.DataModelId.ShouldBe(_module.Id);
+        path.Entity.Path.ShouldBe("Integer");
 
         RemoveFromStore();
 
-        path.IsValid.ShouldBeTrue();
-        path.Target.ShouldBeSameAs(DataModel);
+        path.IsValid.ShouldBeFalse();
+        path.Target.ShouldBeNull();
     }
 
     [Fact]
@@ -540,7 +546,7 @@ public class DataModelPathTests : IDisposable
     }
 
     [Fact]
-    public void InvalidPath_CannotFallBackToATypeOutsideTheCoreLibraries()
+    public void InvalidPath_FallsBackToATypeOutsideTheCoreLibraries()
     {
         using DataModelPath valid = new(DataModel, "Enum");
         valid.Save();
@@ -548,9 +554,15 @@ public class DataModelPathTests : IDisposable
 
         using DataModelPath path = new(new DataModelPathEntity {Path = "Enum", DataModelId = "Missing-12345678", Type = valid.Entity.Type});
 
-        // Pinned as-is: the type is saved by its full name without the assembly, which Type.GetType can only find in
-        // Artemis.Core and the .NET libraries, so types from plugins (and SkiaSharp, like SKColor) can't be found again.
-        path.GetPropertyType().ShouldBeNull();
+        path.GetPropertyType().ShouldBe(typeof(TestEnum));
+    }
+
+    [Fact]
+    public void InvalidPath_FallsBackToASkiaSharpType()
+    {
+        using DataModelPath path = new(new DataModelPathEntity {Path = "Color", DataModelId = "Missing-12345678", Type = typeof(SKColor).FullName});
+
+        path.GetPropertyType().ShouldBe(typeof(SKColor));
     }
 
     [Fact]
