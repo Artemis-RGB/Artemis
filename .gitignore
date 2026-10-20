@@ -200,3 +200,6 @@ docfx/docfx_project/_site/
 src/.idea/
 packages.lock.json
 docfx/docfx_project/api/
+
+# Render harness output (Artemis.Core.Tests)
+render-output/

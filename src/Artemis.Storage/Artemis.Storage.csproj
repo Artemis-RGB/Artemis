@@ -11,4 +11,8 @@
         <PackageReference Include="Serilog" />
         <PackageReference Include="System.Text.Json" />
     </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Artemis.Core.Tests" />
+    </ItemGroup>
 </Project>
