@@ -79,16 +79,24 @@ public class EventConditionTests : RenderTestBase
     }
 
     [Fact]
-    public void Play_EventTriggeredBeforeTheConditionExisted_StillPlaysTheLayer()
+    public void Play_EventTriggeredBeforeTheConditionExisted_DoesNotPlayTheLayer()
     {
         DataModel.Event.Trigger();
         (Layer layer, _) = AddLayer();
 
         using RenderFrame frame = Render(layer.Profile);
 
-        // Pinned as-is: the condition starts out having seen no triggers at all, so a trigger from before it was created
-        // (for example long before the profile was activated) still counts as new and plays the layer once. Looks like
-        // the condition should only react to triggers that happen after it started watching.
+        ShouldBeOff(frame);
+    }
+
+    [Fact]
+    public void Play_EventTriggeredAfterTheConditionExisted_PlaysTheLayer_EvenBeforeTheFirstFrame()
+    {
+        (Layer layer, _) = AddLayer();
+        DataModel.Event.Trigger();
+
+        using RenderFrame frame = Render(layer.Profile);
+
         ShouldBeOn(frame);
     }
 
@@ -418,15 +426,14 @@ public class EventConditionTests : RenderTestBase
     }
 
     [Fact]
-    public void PathToAValue_PlaysOnTheFirstFrame()
+    public void PathToAValue_DoesNotPlayOnTheFirstFrame()
     {
         (Layer layer, _) = AddLayer(eventPath: "Integer");
 
         using RenderFrame frame = Render(layer.Profile);
 
-        // Pinned as-is: the last seen value starts out empty, so the first frame always sees the value as changed (0 is
-        // not empty) and plays the layer even though nothing changed.
-        ShouldBeOn(frame);
+        // The first frame only learns the starting value, nothing changed yet
+        ShouldBeOff(frame);
     }
 
     [Fact]

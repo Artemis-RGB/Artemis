@@ -17,8 +17,10 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     private NodeScript<bool> _script;
     private DefaultNode _startNode;
     private DataModelPath? _eventPath;
-    private DateTime _lastProcessedTrigger;
+    // Only what happens after the condition starts watching its path counts, see StartWatching
+    private DateTime _lastProcessedTrigger = DateTime.Now;
     private object? _lastProcessedValue;
+    private bool _hasProcessedValue;
     private EventOverlapMode _overlapMode;
     private EventToggleOffMode _toggleOffMode;
     private EventTriggerMode _triggerMode;
@@ -64,7 +66,11 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     public DataModelPath? EventPath
     {
         get => _eventPath;
-        set => SetAndNotify(ref _eventPath, value);
+        set
+        {
+            if (SetAndNotify(ref _eventPath, value))
+                StartWatching();
+        }
     }
 
     /// <summary>
@@ -243,6 +249,15 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
             Script.AddNode(newStartNode);
     }
 
+    private void StartWatching()
+    {
+        // Triggers and values from before the condition watched the path don't count, otherwise for example an event that
+        // triggered long before the profile was activated would still play the element once
+        _lastProcessedTrigger = DateTime.Now;
+        _lastProcessedValue = null;
+        _hasProcessedValue = false;
+    }
+
     private bool Evaluate()
     {
         if (EventPath == null)
@@ -258,6 +273,14 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
         }
         else if (_startNode is EventConditionValueChangedStartNode valueChangedNode)
         {
+            // The first value seen is where the value starts, not a change
+            if (!_hasProcessedValue)
+            {
+                _lastProcessedValue = value;
+                _hasProcessedValue = true;
+                return false;
+            }
+
             if (Equals(value, _lastProcessedValue))
                 return false;
 

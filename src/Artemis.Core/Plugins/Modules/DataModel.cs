@@ -289,7 +289,7 @@ public abstract class DataModel
     public void RemoveDynamicChild(DynamicChild dynamicChild)
     {
         if (dynamicChild == null) throw new ArgumentNullException(nameof(dynamicChild));
-        List<string> keys = _dynamicChildren.Where(kvp => kvp.Value.BaseValue == dynamicChild).Select(kvp => kvp.Key).ToList();
+        List<string> keys = _dynamicChildren.Where(kvp => kvp.Value == dynamicChild).Select(kvp => kvp.Key).ToList();
         foreach (string key in keys)
         {
             _dynamicChildren.Remove(key);
@@ -335,8 +335,10 @@ public abstract class DataModel
     {
         lock (_activePaths)
         {
+            // A child's path continues after a dot, matching on the text alone would also match a property that merely starts
+            // with the same name (Integer and Integers)
             return includeChildren
-                ? _activePathsHashSet.Any(p => p.StartsWith(path, PathsStringComparison))
+                ? _activePathsHashSet.Any(p => string.Equals(p, path, PathsStringComparison) || p.StartsWith(path + ".", PathsStringComparison))
                 : _activePathsHashSet.Contains(path);
         }
     }

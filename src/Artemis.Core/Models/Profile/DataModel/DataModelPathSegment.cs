@@ -286,8 +286,16 @@ public class DataModelPathSegment : IDisposable
 
     private void DynamicChildOnDynamicChildRemoved(object? sender, DynamicDataModelChildEventArgs e)
     {
-        if (e.DynamicChild.BaseValue == _dynamicDataModel)
+        // Like when a child is added, initialize the path again so it no longer points to the removed child
+        if (e.Key == Identifier)
+        {
             DataModelPath.Invalidate();
+            DataModelPath.Initialize();
+        }
+        else if (e.DynamicChild.BaseValue == _dynamicDataModel)
+        {
+            DataModelPath.Invalidate();
+        }
     }
 
     /// <inheritdoc />

@@ -184,7 +184,7 @@ public class DataModelTests : IDisposable
     }
 
     [Fact]
-    public void RemovingADynamicChild_DoesNotRemoveIt()
+    public void RemovingADynamicChild_RemovesIt()
     {
         DynamicChild<int> child = DataModel.AddDynamicChild("Extra", 5);
         int removed = 0;
@@ -192,11 +192,8 @@ public class DataModelTests : IDisposable
 
         DataModel.RemoveDynamicChild(child);
 
-        // Pinned as-is: RemoveDynamicChild compares the value of each child (BaseValue) with the child that was passed in,
-        // rather than the child itself, so it only removes a child whose value is the child object. Looks like it should
-        // compare the children themselves; RemoveDynamicChildByKey works.
-        DataModel.DynamicChildren.ShouldContainKey("Extra");
-        removed.ShouldBe(0);
+        DataModel.DynamicChildren.ShouldNotContainKey("Extra");
+        removed.ShouldBe(1);
     }
 
     [Fact]
@@ -304,14 +301,14 @@ public class DataModelTests : IDisposable
     }
 
     [Fact]
-    public void IncludingChildren_AlsoMatchesPropertiesThatStartWithTheSameName()
+    public void IncludingChildren_DoesNotMatchPropertiesThatStartWithTheSameName()
     {
         using DataModelPath path = new(DataModel, "Integers");
 
-        // Pinned as-is: children are matched by checking whether a path starts with the given text, so "Integer" counts as
-        // in use because of a path to "Integers", a different property. Looks like it should check for "Integer."
-        _module.IsPropertyInUse("Integer", true).ShouldBeTrue();
+        // Integers is a different property than Integer, not a child of it
+        _module.IsPropertyInUse("Integer", true).ShouldBeFalse();
         _module.IsPropertyInUse("Integer", false).ShouldBeFalse();
+        _module.IsPropertyInUse("Integers", true).ShouldBeTrue();
     }
 
     [Fact]
