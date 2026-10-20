@@ -16,8 +16,11 @@ public sealed class Folder : RenderProfileElement
     private bool _isExpanded;
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="Folder" /> class and adds itself to the child collection of the provided
-    ///     <paramref name="parent" />
+    ///     Creates a new instance of the <see cref="Folder" /> class with the provided <paramref name="parent" />.
+    ///     <para>
+    ///         The folder is not added to the child collection of the parent, use <see cref="ProfileElement.AddChild" /> to
+    ///         add it.
+    ///     </para>
     /// </summary>
     /// <param name="parent">The parent of the folder</param>
     /// <param name="name">The name of the folder</param>
@@ -106,7 +109,7 @@ public sealed class Folder : RenderProfileElement
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Timeline.IsFinished)
+            else if (Suspended || Timeline.IsFinished)
                 Disable();
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))

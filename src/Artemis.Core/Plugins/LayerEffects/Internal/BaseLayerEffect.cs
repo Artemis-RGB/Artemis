@@ -217,8 +217,8 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
     /// <inheritdoc />
     public void Load()
     {
-        Name = HasBeenRenamed ? LayerEffectEntity.Name : Descriptor.DisplayName;
         HasBeenRenamed = LayerEffectEntity.HasBeenRenamed;
+        Name = HasBeenRenamed ? LayerEffectEntity.Name : Descriptor.DisplayName;
         Order = LayerEffectEntity.Order;
     }
 

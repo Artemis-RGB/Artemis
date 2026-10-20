@@ -122,7 +122,7 @@ public sealed class RenderHarness : IRenderer, IDisposable
     /// <returns>The layer and its brush, the brush exposes the brush properties</returns>
     public (Layer Layer, TBrush Brush) AddLayer<TBrush>(Folder parent, IEnumerable<ArtemisLed> leds, string name = "Test layer", int? order = null) where TBrush : BaseLayerBrush
     {
-        // Note: despite its documentation the Layer constructor does not add the layer to the parent
+        // The Layer constructor does not add the layer to the parent
         Layer layer = new(parent, name);
         parent.AddChild(layer, order);
         layer.AddLeds(leds);

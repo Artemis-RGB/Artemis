@@ -239,14 +239,16 @@ public class EventConditionTests : RenderTestBase
         (Layer layer, EventCondition condition) = AddLayer(EventTriggerMode.Toggle);
 
         DataModel.Event.Trigger();
+        // Render defaults to a 0.1s frame, so the timeline starts playing and ends up at 0.1s
         using RenderFrame on = Render(layer.Profile);
+        // AddLayer gives the layer a 1 second main segment and no start or end segment. 0.1s + 1.5s = 1.6s goes 0.6s past
+        // the end, and while toggled on the timeline wraps around rather than finishing
         using RenderFrame stillOn = Render(layer.Profile, 1.5);
 
         condition.IsMet.ShouldBeTrue();
         ShouldBeOn(on);
         ShouldBeOn(stillOn);
-        // Wrapped around the main segment rather than finishing
-        layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(0.5));
+        layer.Timeline.Position.ShouldBe(TimeSpan.FromSeconds(0.6));
     }
 
     [Fact]

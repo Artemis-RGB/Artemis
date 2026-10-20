@@ -19,8 +19,10 @@ public class SolidColorTestBrush : LayerBrush<SolidColorTestBrushProperties>
 
     public override void Render(SKCanvas canvas, SKRect bounds, SKPaint paint)
     {
-        // Like the real brushes this overrides the paint color, the layer applies its opacity when compositing
-        paint.Color = Properties.Color.CurrentValue;
+        // Like the real solid brush this draws with a shader, which keeps the alpha of the paint it is given
+        using SKShader shader = SKShader.CreateColor(Properties.Color.CurrentValue);
+        paint.Shader = shader;
         canvas.DrawRect(bounds, paint);
+        paint.Shader = null;
     }
 }

@@ -177,7 +177,8 @@ public class CompositingTests : RenderTestBase
 
         using RenderFrame frame = Render(profile);
 
-        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(new SKColor(127, 0, 127));
+        // Blue plus red is magenta, the folder fades that as a whole
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Magenta.AtOpacity(50));
     }
 
     #endregion

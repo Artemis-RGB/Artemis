@@ -95,28 +95,40 @@ public class SurfaceTests : RenderTestBase
     }
 
     [Fact]
-    public void RotatingADevice_DoesNotUpdateItsLedsUntilItIsMoved()
+    public void RotatingADevice_UpdatesItsLeds()
     {
         ArtemisLed a = Led(LedId.Keyboard_A);
         SKRect beforeRotation = a.AbsoluteRectangle;
+        int updates = 0;
+        Keyboard.DeviceUpdated += (_, _) => updates++;
 
         Keyboard.Rotation = 90;
 
-        // Pinned as-is: the Rotation and Scale setters only update the RGB.NET device. The Artemis LEDs, and with them the
-        // texture, keep their old positions until X or Y is set. The device properties dialog gets away with this because
-        // it reloads the device layout after saving
-        a.AbsoluteRectangle.ShouldBe(beforeRotation);
-        Math.Abs(a.RgbLed.AbsoluteBoundary.Location.X - beforeRotation.Left).ShouldBeGreaterThan(1);
-
-        Keyboard.X = Keyboard.X;
         a.AbsoluteRectangle.ShouldNotBe(beforeRotation);
+        a.AbsoluteRectangle.Left.ShouldBe(a.RgbLed.AbsoluteBoundary.Location.X, 1);
+        a.AbsoluteRectangle.Top.ShouldBe(a.RgbLed.AbsoluteBoundary.Location.Y, 1);
+        updates.ShouldBe(1);
+    }
+
+    [Fact]
+    public void ScalingADevice_UpdatesItsLeds()
+    {
+        ArtemisLed a = Led(LedId.Keyboard_A);
+        SKRect beforeScaling = a.AbsoluteRectangle;
+        int updates = 0;
+        Keyboard.DeviceUpdated += (_, _) => updates++;
+
+        Keyboard.Scale = 2;
+
+        // Rounded outwards to the render scale, so slightly wider than twice the size
+        a.AbsoluteRectangle.Width.ShouldBeInRange(beforeScaling.Width * 2, beforeScaling.Width * 2 + 4);
+        updates.ShouldBe(1);
     }
 
     [Fact]
     public void RotatedDevice_SamplesFromItsRotatedLedPositions()
     {
         Keyboard.Rotation = 90;
-        Keyboard.X = Keyboard.X;
         SKRect rotatedA = Led(LedId.Keyboard_A).AbsoluteRectangle;
 
         using RenderFrame frame = Harness.Render(canvas => Fill(canvas, rotatedA, SKColors.Red));
@@ -130,7 +142,6 @@ public class SurfaceTests : RenderTestBase
     public void ScaledDevice_SamplesFromItsScaledLedPositions()
     {
         Keyboard.Scale = 2;
-        Keyboard.X = Keyboard.X;
         SKRect scaledA = Led(LedId.Keyboard_A).AbsoluteRectangle;
 
         using RenderFrame frame = Harness.Render(canvas => Fill(canvas, scaledA, SKColors.Red));

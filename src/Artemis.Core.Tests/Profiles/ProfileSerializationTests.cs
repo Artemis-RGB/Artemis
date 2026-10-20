@@ -124,7 +124,7 @@ public class ProfileSerializationTests : RenderTestBase
     }
 
     [Fact]
-    public void RoundTrip_LosesTheNameOfRenamedEffects()
+    public void RoundTrip_KeepsTheNameOfRenamedEffects()
     {
         Profile profile = Harness.CreateProfile();
         (Layer layer, _) = Harness.AddLayer<SolidColorTestBrush>(profile.GetRootFolder(), [Led(LedId.Keyboard_A)]);
@@ -134,10 +134,22 @@ public class ProfileSerializationTests : RenderTestBase
 
         Profile reloaded = Harness.SaveAndReload(profile);
 
-        // Pinned as-is, a bug: BaseLayerEffect.Load checks HasBeenRenamed before loading it from the entity, so it is
-        // always false at that point and the name falls back to the display name of the descriptor
         BaseLayerEffect reloadedTint = reloaded.GetAllLayers().Single().LayerEffects.Single();
         reloadedTint.HasBeenRenamed.ShouldBeTrue();
+        reloadedTint.Name.ShouldBe("Renamed tint");
+    }
+
+    [Fact]
+    public void RoundTrip_UsesTheDisplayNameOfEffectsThatWereNotRenamed()
+    {
+        Profile profile = Harness.CreateProfile();
+        (Layer layer, _) = Harness.AddLayer<SolidColorTestBrush>(profile.GetRootFolder(), [Led(LedId.Keyboard_A)]);
+        Harness.AddEffect<TintTestEffect>(layer);
+
+        Profile reloaded = Harness.SaveAndReload(profile);
+
+        BaseLayerEffect reloadedTint = reloaded.GetAllLayers().Single().LayerEffects.Single();
+        reloadedTint.HasBeenRenamed.ShouldBeFalse();
         reloadedTint.Name.ShouldBe("Tint");
     }
 

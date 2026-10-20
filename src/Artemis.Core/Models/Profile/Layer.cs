@@ -28,8 +28,11 @@ public sealed class Layer : RenderProfileElement
     private List<LedEntity> _missingLeds = [];
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="Layer" /> class and adds itself to the child collection of the provided
-    ///     <paramref name="parent" />
+    ///     Creates a new instance of the <see cref="Layer" /> class with the provided <paramref name="parent" />.
+    ///     <para>
+    ///         The layer is not added to the child collection of the parent, use <see cref="ProfileElement.AddChild" /> to
+    ///         add it.
+    ///     </para>
     /// </summary>
     /// <param name="parent">The parent of the layer</param>
     /// <param name="name">The name of the layer</param>
@@ -663,7 +666,14 @@ public sealed class Layer : RenderProfileElement
             // Restore the blend mode before doing the actual render
             layerPaint.BlendMode = SKBlendMode.SrcOver;
 
-            LayerBrush.InternalRender(canvas, bounds, layerPaint);
+            // The opacity and the filters of the effects are applied when compositing the layer, the brush gets an opaque
+            // paint without filters so they don't apply to the brush output a second time
+            using SKPaint brushPaint = layerPaint.Clone();
+            brushPaint.Color = brushPaint.Color.WithAlpha(255);
+            brushPaint.ColorFilter = null;
+            brushPaint.ImageFilter = null;
+
+            LayerBrush.InternalRender(canvas, bounds, brushPaint);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
             {
