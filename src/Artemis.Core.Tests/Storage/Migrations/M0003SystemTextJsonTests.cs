@@ -115,7 +115,7 @@ public class M0003SystemTextJsonTests
     }
 
     [Fact]
-    public void Migrate_ListDirectlyInsideAList_KeepsItsValuesWrapper()
+    public void Migrate_ListDirectlyInsideAList_LosesItsValuesWrapperToo()
     {
         JsonObject profile = OldProfileJson.Parse("""
                                                   {"Rows": {"$type": "List", "$values": [{"$type": "List", "$values": [1, 2]}]}}
@@ -123,9 +123,7 @@ public class M0003SystemTextJsonTests
 
         _migration.Migrate(new JsonObject(), profile);
 
-        // Pinned as-is: items of a list are only searched for lists in their properties, a list that is itself an item
-        // keeps its "$values" wrapper. No profile entity has a list of lists, so old profiles aren't affected.
-        profile.ShouldBeJson("""{"Rows": [{"$values": [1, 2]}]}""");
+        profile.ShouldBeJson("""{"Rows": [[1, 2]]}""");
     }
 
     [Fact]

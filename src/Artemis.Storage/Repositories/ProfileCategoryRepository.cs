@@ -69,7 +69,7 @@ internal class ProfileCategoryRepository(Func<ArtemisDbContext> getContext, IPro
 
         name = name.Trim();
         return id == null
-            ? dbContext.ProfileCategories.Any(p => p.Name == name)
-            : dbContext.ProfileCategories.Any(p => p.Name == name && p.Id != id.Value);
+            ? !dbContext.ProfileCategories.Any(p => p.Name == name)
+            : !dbContext.ProfileCategories.Any(p => p.Name == name && p.Id != id.Value);
     }
 }

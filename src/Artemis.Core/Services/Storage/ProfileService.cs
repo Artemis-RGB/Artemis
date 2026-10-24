@@ -161,7 +161,16 @@ internal class ProfileService : IProfileService
     /// <inheritdoc />
     public ProfileConfiguration CloneProfileConfiguration(ProfileConfiguration profileConfiguration)
     {
-        return new ProfileConfiguration(profileConfiguration.Category, profileConfiguration.Entity);
+        ProfileContainerEntity original = profileConfiguration.Entity;
+        ProfileContainerEntity copy = new()
+        {
+            Id = original.Id,
+            Icon = original.Icon.ToArray(),
+            ProfileCategory = original.ProfileCategory,
+            ProfileConfiguration = CopyEntity(original.ProfileConfiguration),
+            Profile = CopyEntity(original.Profile)
+        };
+        return new ProfileConfiguration(profileConfiguration.Category, copy);
     }
 
     /// <inheritdoc />
@@ -234,7 +243,7 @@ internal class ProfileService : IProfileService
         }
 
         _profileCategoryRepository.Add(profileCategory.Entity);
-        ProfileCategories = new ReadOnlyCollection<ProfileCategory>([..ProfileCategories, profileCategory]);
+        ProfileCategories = new ReadOnlyCollection<ProfileCategory>(ProfileCategories.Append(profileCategory).OrderBy(c => c.Order).ToList());
 
         OnProfileCategoryAdded(new ProfileCategoryEventArgs(profileCategory));
         return profileCategory;
@@ -259,6 +268,8 @@ internal class ProfileService : IProfileService
 
         category.AddProfileConfiguration(configuration, category.ProfileConfigurations.FirstOrDefault());
         SaveProfileCategory(category);
+        // The profile is in the current format, saving it stores the current migration version with it
+        _profileRepository.Save(configuration.Entity);
         
         OnProfileAdded(new ProfileConfigurationEventArgs(configuration));
         return configuration;
@@ -303,7 +314,18 @@ internal class ProfileService : IProfileService
         profile.IsFreshImport = false;
         profile.ProfileEntity.IsFreshImport = false;
 
-        _profileRepository.Save(profile.Configuration.Entity);
+        // A copy made by CloneProfileConfiguration has its own stored data, save it into that of the original
+        ProfileContainerEntity entity = profile.Configuration.Entity;
+        ProfileConfiguration? original = ProfileCategories
+            .SelectMany(c => c.ProfileConfigurations)
+            .FirstOrDefault(c => c.Entity != entity && c.Entity.Id == entity.Id);
+        if (original != null)
+        {
+            original.Entity.Profile = CopyEntity(entity.Profile);
+            entity = original.Entity;
+        }
+
+        _profileRepository.Save(entity);
 
         // If the provided profile is external (cloned or from the workshop?) but it is loaded locally too, reload the local instance
         // A bit dodge but it ensures local instances always represent the latest stored version
@@ -429,6 +451,7 @@ internal class ProfileService : IProfileService
         profileConfiguration.LoadModules(modules);
         SaveProfileCategory(category);
 
+        OnProfileAdded(new ProfileConfigurationEventArgs(profileConfiguration));
         return profileConfiguration;
     }
 
@@ -446,6 +469,11 @@ internal class ProfileService : IProfileService
 
         _logger.Debug("Adapt profile - Saving " + profile);
         SaveProfileCategory(profile.Configuration.Category);
+    }
+
+    private static T CopyEntity<T>(T entity)
+    {
+        return CoreJson.Deserialize<T>(CoreJson.Serialize(entity))!;
     }
 
     private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)

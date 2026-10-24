@@ -117,15 +117,13 @@ public class ProfileCategoryRepositoryTests : IDisposable
     }
 
     [Fact]
-    public void IsUnique_ReturnsWhetherTheNameIsTaken()
+    public void IsUnique_ReturnsWhetherTheNameIsFree()
     {
         ProfileCategoryEntity games = new() {Name = "Games"};
         _repository.Add(games);
 
-        // Pinned as-is: despite its name this returns true when another category already has the name, so true means
-        // the name is not unique. Nothing in Artemis calls it at the moment.
-        _repository.IsUnique("Games", null).ShouldBeTrue();
-        _repository.IsUnique("Other", null).ShouldBeFalse();
+        _repository.IsUnique("Games", null).ShouldBeFalse();
+        _repository.IsUnique("Other", null).ShouldBeTrue();
     }
 
     [Fact]
@@ -134,8 +132,8 @@ public class ProfileCategoryRepositoryTests : IDisposable
         ProfileCategoryEntity games = new() {Name = "Games"};
         _repository.Add(games);
 
-        _repository.IsUnique("Games", games.Id).ShouldBeFalse();
-        _repository.IsUnique("Games", Guid.NewGuid()).ShouldBeTrue();
+        _repository.IsUnique("Games", games.Id).ShouldBeTrue();
+        _repository.IsUnique("Games", Guid.NewGuid()).ShouldBeFalse();
     }
 
     [Fact]
@@ -143,8 +141,8 @@ public class ProfileCategoryRepositoryTests : IDisposable
     {
         _repository.Add(new ProfileCategoryEntity {Name = "Games"});
 
-        _repository.IsUnique("  Games ", null).ShouldBeTrue();
-        _repository.IsUnique("games", null).ShouldBeFalse();
+        _repository.IsUnique("  Games ", null).ShouldBeFalse();
+        _repository.IsUnique("games", null).ShouldBeTrue();
     }
 
     [Fact]

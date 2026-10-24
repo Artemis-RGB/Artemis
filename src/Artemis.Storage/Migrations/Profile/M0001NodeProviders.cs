@@ -83,7 +83,8 @@ namespace Artemis.Storage.Migrations.Profile
                 if (jsonNode == null)
                     continue;
                 JsonObject nodeObject = jsonNode.AsObject();
-                nodeObject["Type"] = nodeObject["Type"]?.GetValue<string>().Replace("Artemis.VisualScripting.Nodes", "Artemis.Plugins.Nodes.General.Nodes");
+                if (nodeObject["Type"] != null)
+                    nodeObject["Type"] = nodeObject["Type"]!.GetValue<string>().Replace("Artemis.VisualScripting.Nodes", "Artemis.Plugins.Nodes.General.Nodes");
                 nodeObject["ProviderId"] = "Artemis.Plugins.Nodes.General.GeneralNodesProvider-d9e1ee78";
             }
         }
