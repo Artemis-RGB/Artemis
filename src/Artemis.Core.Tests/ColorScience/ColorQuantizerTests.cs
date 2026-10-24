@@ -121,15 +121,17 @@ public class ColorQuantizerTests
     }
 
     [Fact]
-    public void FindColorVariation_FullySaturatedColorsAreNeverVibrant()
+    public void FindColorVariation_FullySaturatedColorsAreVibrantAndGraysAreMuted()
     {
-        // Pinned as-is: a color only counts as vibrant when its saturation is below the maximum of 100%, so pure colors like
-        // red are skipped. The same goes for grays, a color only counts as muted when it has more than 0% saturation
-        ColorQuantizer.FindColorVariation([SKColors.Red], ColorType.Vibrant).ShouldBe(SKColor.Empty);
-        ColorQuantizer.FindColorVariation([SKColors.Gray], ColorType.Muted).ShouldBe(SKColor.Empty);
+        ColorQuantizer.FindColorVariation([SKColors.Red], ColorType.Vibrant).ShouldBe(SKColors.Red);
+        ColorQuantizer.FindColorVariation([SKColors.Gray], ColorType.Muted).ShouldBe(SKColors.Gray);
+    }
 
-        ColorQuantizer.FindColorVariation([SKColors.Red], ColorType.Vibrant, true).ShouldBe(SKColors.Red);
-        ColorQuantizer.FindColorVariation([SKColors.Gray], ColorType.Muted, true).ShouldBe(SKColors.Gray);
+    [Fact]
+    public void FindColorVariation_PureBlackAndWhiteAreNeverMuted()
+    {
+        ColorQuantizer.FindColorVariation([SKColors.Black], ColorType.DarkMuted).ShouldBe(SKColor.Empty);
+        ColorQuantizer.FindColorVariation([SKColors.White], ColorType.LightMuted).ShouldBe(SKColor.Empty);
     }
 
     [Fact]

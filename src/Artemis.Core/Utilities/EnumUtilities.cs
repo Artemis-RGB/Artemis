@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using Humanizer;
 
 namespace Artemis.Core;
@@ -30,7 +32,15 @@ public static class EnumUtilities
         if (!t.IsEnum)
             throw new ArgumentException($"{t} must be an enum type");
 
-        return Enum.GetValues(t).Cast<Enum>().Select(e => (e, HumanizeValue(e))).ToList();
+        return Enum.GetValues(t).Cast<Enum>().Select(e => (e, GetDescription(e))).ToList();
+    }
+
+    private static string GetDescription(Enum value)
+    {
+        // Use the [Description] attribute like the generic version does, Humanizer can only read it when the type is known
+        string name = value.ToString();
+        DescriptionAttribute? description = value.GetType().GetField(name)?.GetCustomAttribute<DescriptionAttribute>();
+        return description?.Description ?? HumanizeValue(value);
     }
 
     /// <summary>

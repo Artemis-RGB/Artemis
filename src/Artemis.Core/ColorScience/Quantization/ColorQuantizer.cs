@@ -182,10 +182,12 @@ public static class ColorQuantizer
         saturation /= 100f;
         luma /= 100f;
 
-        if (!ignoreLimits && ((saturation <= GetMinSaturation(type)) || (saturation >= GetMaxSaturation(type)) || (luma <= GetMinLuma(type)) || (luma >= GetMaxLuma(type))))
+        if (!ignoreLimits && ((saturation < GetMinSaturation(type)) || (saturation > GetMaxSaturation(type)) || (luma <= GetMinLuma(type)) || (luma >= GetMaxLuma(type))))
         {
             //if either saturation or luma falls outside the min-max, return the
             //lowest score possible unless we're ignoring these limits.
+            //the saturation limits are inclusive so fully saturated colors can be vibrant and grays can be muted,
+            //the luma limits are not so pure black and white are left out.
             return float.MinValue;
         }
 

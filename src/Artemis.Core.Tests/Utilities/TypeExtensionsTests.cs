@@ -34,12 +34,11 @@ public class TypeExtensionsTests
     }
 
     [Fact]
-    public void IsGenericType_ThrowsWhenTheBaseTypeIsNotGeneric()
+    public void IsGenericType_IsFalseWhenTheBaseTypeIsNotGeneric()
     {
-        // Pinned as-is: asking for the generic definition of a base type that isn't generic throws instead of returning false.
-        // This includes types further down the line, only the direct base type is looked at
-        Should.Throw<InvalidOperationException>(() => typeof(string).IsGenericType(typeof(GenericBase<>)));
-        Should.Throw<InvalidOperationException>(() => typeof(DerivedTwice).IsGenericType(typeof(GenericBase<>)));
+        // Only the direct base type is looked at, so this includes types further down the line
+        typeof(string).IsGenericType(typeof(GenericBase<>)).ShouldBeFalse();
+        typeof(DerivedTwice).IsGenericType(typeof(GenericBase<>)).ShouldBeFalse();
     }
 
     [Theory]
@@ -114,12 +113,14 @@ public class TypeExtensionsTests
     }
 
     [Fact]
-    public void IsCastableFrom_OnlyFindsOperatorsDeclaredOnTheSourceType()
+    public void IsCastableFrom_FindsOperatorsDeclaredOnEitherType()
     {
+        // Celsius declares the conversion to Fahrenheit, Fahrenheit declares the conversion from Kelvin
         typeof(Fahrenheit).IsCastableFrom(typeof(Celsius)).ShouldBeTrue();
+        typeof(Fahrenheit).IsCastableFrom(typeof(Kelvin)).ShouldBeTrue();
 
-        // Pinned as-is: Fahrenheit declares a conversion from Kelvin, but only the operators of Kelvin are looked at
-        typeof(Fahrenheit).IsCastableFrom(typeof(Kelvin)).ShouldBeFalse();
+        // The operator on Fahrenheit only converts from Kelvin
+        typeof(Fahrenheit).IsCastableFrom(typeof(string)).ShouldBeFalse();
     }
 
     [Theory]
@@ -221,12 +222,11 @@ public class TypeExtensionsTests
     }
 
     [Fact]
-    public void GetDisplayName_OfAnArrayLosesItsBracketsWhenHumanized()
+    public void GetDisplayName_OfAnArrayKeepsItsBrackets()
     {
         typeof(ColorGradient[]).GetDisplayName().ShouldBe("ColorGradient[]");
-
-        // Pinned as-is: humanizing drops the brackets, so a list of gradients reads the same as a single gradient
-        typeof(ColorGradient[]).GetDisplayName(true).ShouldBe("Color gradient");
+        typeof(ColorGradient[]).GetDisplayName(true).ShouldBe("Color gradient[]");
+        typeof(int[,]).GetDisplayName().ShouldBe("int[,]");
     }
 
     #endregion
