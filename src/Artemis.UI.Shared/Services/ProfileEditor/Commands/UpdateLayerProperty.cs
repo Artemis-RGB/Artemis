@@ -39,6 +39,7 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
         _originalValue = originalValue;
         _newValue = newValue;
         _time = time;
+        _hasKeyframe = _layerProperty.Keyframes.Any(k => k.Position == time);
 
         DisplayName = $"Update {_layerProperty.PropertyDescription.Name ?? "property"}";
     }
@@ -58,8 +59,9 @@ public class UpdateLayerProperty<T> : IProfileEditorCommand
             return;
         }
 
-        // If the layer had no keyframe yet but keyframes are enabled, a new keyframe will be returned
-        if (!_hasKeyframe && _layerProperty.KeyframesEnabled)
+        // If the layer had no keyframe yet but keyframes are enabled, a new keyframe will be returned. Without a time the
+        // base value is changed instead
+        if (!_hasKeyframe && _time != null && _layerProperty.KeyframesEnabled)
         {
             _newKeyframe = _layerProperty.SetCurrentValue(_newValue, _time);
             DisplayName = $"Add {_layerProperty.PropertyDescription.Name ?? "property"} keyframe";

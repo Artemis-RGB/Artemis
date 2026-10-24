@@ -45,14 +45,12 @@ public class ProfileEditorTimelineHelperTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void SelectKeyframe_ExpandingWithAKeyframeAlreadySelected_SelectsItTwice()
+    public void SelectKeyframe_ExpandingWithAKeyframeAlreadySelected_SelectsItOnce()
     {
         Service.SelectKeyframe(_first, false, false);
         Service.SelectKeyframe(_first, true, false);
 
-        // Pinned as-is: unlike SelectKeyframes, expanding the selection does not check whether the keyframe is already
-        // selected, so it ends up in the selection twice
-        Service.SelectedKeyframes.ShouldBe([_first, _first]);
+        Service.SelectedKeyframes.ShouldBe([_first]);
     }
 
     [Fact]
@@ -153,14 +151,13 @@ public class ProfileEditorTimelineHelperTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void SnapToTimeline_NeverSnapsToASnapTimeOfZero()
+    public void SnapToTimeline_SnapsToASnapTimeOfZero()
     {
+        // A keyframe at the very start of the timeline
         List<TimeSpan> snapTimes = [TimeSpan.Zero];
 
-        // Pinned as-is: a snap time of zero can't be told apart from "no snap time found" (the default of TimeSpan), so
-        // a keyframe at the very start of the timeline is never snapped to
         Service.SnapToTimeline(TimeSpan.FromMilliseconds(30), TimeSpan.FromMilliseconds(100), false, false, snapTimes)
-            .ShouldBe(TimeSpan.FromMilliseconds(30));
+            .ShouldBe(TimeSpan.Zero);
     }
 
     [Theory]

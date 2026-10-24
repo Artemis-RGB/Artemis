@@ -56,7 +56,7 @@ internal class ProfileEditorService : IProfileEditorService
         ProfileConfiguration = _profileConfigurationSubject.AsObservable();
         ProfileElement = _profileElementSubject.AsObservable();
         LayerProperty = _layerPropertySubject.AsObservable();
-        History = Observable.Defer(() => Observable.Return(GetHistory(_profileConfigurationSubject.Value))).Concat(ProfileConfiguration.Select(GetHistory));
+        History = ProfileConfiguration.Select(GetHistory);
         Time = _timeSubject.AsObservable();
         Playing = _playingSubject.AsObservable();
         SuspendedEditing = _suspendedEditingSubject.AsObservable();
@@ -101,9 +101,9 @@ internal class ProfileEditorService : IProfileEditorService
         }
         catch (Exception e)
         {
+            // Don't rethrow, that would end the observable that drives auto-saving
             _windowService.ShowExceptionDialog("Failed to auto-save profile", e);
             _logger.Error(e, "Failed to auto-save profile");
-            throw;
         }
 
         return Unit.Default;
@@ -138,8 +138,12 @@ internal class ProfileEditorService : IProfileEditorService
 
     private void ApplyFocusMode()
     {
+        // While editing is suspended the profile plays normally, without focus
         if (_suspendedEditingSubject.Value)
+        {
             _profileService.FocusProfileElement = null;
+            return;
+        }
 
         _profileService.FocusProfileElement = _focusModeSubject.Value switch
         {
@@ -235,10 +239,12 @@ internal class ProfileEditorService : IProfileEditorService
         {
             if (_profileConfigurationSubject.Value != null)
                 _profileService.UpdateFocusProfile = false;
-            Tick(_timeSubject.Value);
         }
 
         _suspendedEditingSubject.OnNext(suspend);
+        // Apply the editor's time again, this only works once editing is no longer suspended
+        if (!suspend)
+            Tick(_timeSubject.Value);
         ApplyFocusMode();
     }
 
@@ -271,7 +277,10 @@ internal class ProfileEditorService : IProfileEditorService
         else
         {
             if (expand)
-                _selectedKeyframes.Add(keyframe);
+            {
+                if (!_selectedKeyframes.Items.Contains(keyframe))
+                    _selectedKeyframes.Add(keyframe);
+            }
             else
                 _selectedKeyframes.Edit(l =>
                 {
@@ -324,9 +333,11 @@ internal class ProfileEditorService : IProfileEditorService
         if (snapTimes != null)
         {
             // Find the closest keyframe
-            TimeSpan closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds)!;
-            if (closeSnapTime != TimeSpan.Zero)
-                return closeSnapTime;
+            TimeSpan? closeSnapTime = snapTimes.Where(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                .Cast<TimeSpan?>()
+                .FirstOrDefault();
+            if (closeSnapTime != null)
+                return closeSnapTime.Value;
         }
 
         return time;
@@ -368,7 +379,7 @@ internal class ProfileEditorService : IProfileEditorService
     {
         if (target is Layer targetLayer)
         {
-            Layer layer = new(targetLayer.Parent, targetLayer.GetNewLayerName());
+            Layer layer = new(targetLayer.Parent, targetLayer.Parent.GetNewLayerName());
             _layerBrushService.ApplyDefaultBrush(layer);
 
             layer.AddLeds(_deviceService.EnabledDevices.SelectMany(d => d.Leds));
@@ -462,6 +473,10 @@ internal class ProfileEditorService : IProfileEditorService
 
         ProfileEditorCommandScope scope = _profileEditorHistoryScope;
         _profileEditorHistoryScope = null;
+
+        // Don't add an undo step that does nothing
+        if (!scope.ProfileEditorCommands.Any())
+            return;
 
         // Executing the composite command won't do anything the first time (see last ctor variable)
         // commands were already executed each time they were added to the scope

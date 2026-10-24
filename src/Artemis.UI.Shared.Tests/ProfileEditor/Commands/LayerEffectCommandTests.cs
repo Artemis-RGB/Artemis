@@ -111,7 +111,7 @@ public class LayerEffectCommandTests : ProfileEditorTestBase
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
-    public void RemoveLayerEffect_Undo_OfAnEffectAboveAnother_MovesItDown(int index)
+    public void RemoveLayerEffect_Undo_OfAnEffectAboveAnother_PutsItBackInItsPlace(int index)
     {
         Harness.AddEffect<TintTestEffect>(_layer);
         Harness.AddEffect<OpacityTestEffect>(_layer);
@@ -124,13 +124,10 @@ public class LayerEffectCommandTests : ProfileEditorTestBase
         command.Execute();
         command.Undo();
 
-        // Pinned as-is: removing renumbers the remaining effects, so the effect below takes over the removed effect's
-        // order. Adding it back sorts it after the effect that now has the same order, swapping the two. Since effects
-        // apply in order, undo can change what the layer looks like
-        effects.RemoveAt(index);
-        effects.Insert(index + 1, removed);
+        // Effects apply in order, so this keeps the layer looking the same
         _layer.LayerEffects.ShouldBe(effects);
-        Snapshot().ShouldNotBe(before);
+        _layer.LayerEffects.Select(e => e.Order).ShouldBe([1, 2, 3]);
+        Snapshot().ShouldBe(before);
     }
 
     [Fact]

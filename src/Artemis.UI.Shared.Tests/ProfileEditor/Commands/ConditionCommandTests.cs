@@ -180,7 +180,7 @@ public class ConditionCommandTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public void UpdateEventConditionPath_Undo_ToNoPath_KeepsTheNewStartNode()
+    public void UpdateEventConditionPath_Undo_ToNoPath_GoesBackToAnEventStartNode()
     {
         TestModule module = AddTestModule();
         EventCondition condition = new(_layer);
@@ -191,11 +191,11 @@ public class ConditionCommandTests : ProfileEditorTestBase
         command.Execute();
         command.Undo();
 
-        // Pinned as-is: UpdateEventNode does nothing without a path, so undoing back to "no path" keeps the start node
-        // made for the path that was undone
+        // Like a new condition, rather than keeping the start node made for the path that was undone
         condition.EventPath.ShouldBeNull();
-        condition.GetStartNode().ShouldNotBe(originalStartNode);
-        condition.GetStartNode().GetType().Name.ShouldBe("EventConditionValueChangedStartNode");
+        condition.GetStartNode().GetType().ShouldBe(originalStartNode.GetType());
+        condition.Script.Nodes.ShouldContain(condition.GetStartNode());
+        condition.Script.Nodes.ShouldNotContain(n => n.GetType().Name == "EventConditionValueChangedStartNode");
     }
 
     [Fact]

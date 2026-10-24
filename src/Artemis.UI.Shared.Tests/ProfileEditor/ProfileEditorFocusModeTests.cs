@@ -89,7 +89,7 @@ public class ProfileEditorFocusModeTests : ProfileEditorTestBase
     }
 
     [Fact]
-    public async Task SuspendedEditing_StillFocusesTheSelection()
+    public async Task SuspendedEditing_DoesNotFocusAnything()
     {
         await StartEditing();
         Service.ChangeCurrentProfileElement(_layer);
@@ -98,10 +98,8 @@ public class ProfileEditorFocusModeTests : ProfileEditorTestBase
 
         Service.ChangeSuspendedEditing(true);
 
-        // Pinned as-is: while editing is suspended ApplyFocusMode clears the focus, but then immediately sets it again
-        // from the focus mode, so the clear has no effect. It looks like the intention was to not focus anything while
-        // the profile plays normally.
-        ProfileService.FocusProfileElementChanges.ShouldBe([null, _layer]);
-        ProfileService.FocusProfileElement.ShouldBe(_layer);
+        // The profile plays normally while editing is suspended
+        ProfileService.FocusProfileElementChanges.ShouldBe([null]);
+        ProfileService.FocusProfileElement.ShouldBeNull();
     }
 }

@@ -173,15 +173,13 @@ public class EventCondition : CorePropertyChanged, INodeScriptCondition
     /// </summary>
     public void UpdateEventNode(bool updateScript)
     {
-        if (EventPath == null)
+        Type? pathType = EventPath?.GetPropertyType();
+        if (EventPath != null && pathType == null)
             return;
 
-        Type? pathType = EventPath.GetPropertyType();
-        if (pathType == null)
-            return;
-
-        // Create an event node if the path type is a data model event
-        if (pathType.IsAssignableTo(typeof(IDataModelEvent)))
+        // Create an event node if the path type is a data model event, without a path go back to the event node a new
+        // condition starts with
+        if (pathType == null || pathType.IsAssignableTo(typeof(IDataModelEvent)))
         {
             EventConditionEventStartNode eventNode;
             // Ensure the start node is an event node
