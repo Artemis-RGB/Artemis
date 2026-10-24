@@ -267,17 +267,15 @@ public class NodeScriptTests : ScriptTestBase
     }
 
     [Fact]
-    public void RemoveNode_RaisesNodeRemoved_EvenForANodeThatIsNotInTheScript()
+    public void RemoveNode_OfANodeThatIsNotInTheScript_DoesNotRaiseNodeRemoved()
     {
-        // Pinned as-is: removing a node that was never added still tells listeners it was removed, an editor listening
-        // to the event could remove a view model that belongs to another script
         NodeScript<bool> script = CreateScript<bool>();
         int raised = 0;
         script.NodeRemoved += (_, _) => raised++;
 
         script.RemoveNode(new TestNode());
 
-        raised.ShouldBe(1);
+        raised.ShouldBe(0);
     }
 
     [Fact]
@@ -311,10 +309,8 @@ public class NodeScriptTests : ScriptTestBase
     }
 
     [Fact]
-    public void DisablingTheNodeProvider_AlsoRemovesNodesOfTheSameTypeFromAnotherProvider()
+    public void DisablingTheNodeProvider_LeavesNodesOfTheSameTypeFromAnotherProvider()
     {
-        // Pinned as-is: the script removes nodes by their type, not by the provider that created them. When two enabled
-        // providers register the same node type, disabling one also removes the nodes created by the other.
         TestPlugin otherPlugin = new();
         TestNodeProvider otherNodes = otherPlugin.AddFeature(new TestNodeProvider());
         NodeScript<bool> script = CreateScript<bool>();
@@ -324,7 +320,7 @@ public class NodeScriptTests : ScriptTestBase
         otherPlugin.Dispose();
 
         script.Nodes.ShouldNotContain(fromOtherProvider);
-        script.Nodes.ShouldNotContain(fromStillEnabledProvider);
+        script.Nodes.ShouldContain(fromStillEnabledProvider);
     }
 
     [Fact]

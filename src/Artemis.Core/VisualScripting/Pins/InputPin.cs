@@ -12,7 +12,7 @@ public sealed class InputPin<T> : Pin
     internal InputPin(INode node, string name)
         : base(node, name)
     {
-        Value = default;
+        _value = default;
         IsNumeric = typeof(T) == typeof(Numeric);
     }
 
@@ -149,15 +149,13 @@ public sealed class InputPin : Pin
 
         private set
         {
+            // We can't take null for value types so use the default value for that type
             if (Type.IsValueType && value == null)
-                // We can't take null for value types so set it to the default value for that type
-                _value = Type.GetDefault();
-            else if (value != null)
-                // If a value was given make sure it matches
-                if (!Type.IsInstanceOfType(value))
-                    throw new ArgumentException($"Value of type '{value.GetType().Name}' can't be assigned to a pin of type {Type.Name}.");
+                value = Type.GetDefault();
+            // If a value was given make sure it matches
+            else if (value != null && !Type.IsInstanceOfType(value))
+                throw new ArgumentException($"Value of type '{value.GetType().Name}' can't be assigned to a pin of type {Type.Name}.");
 
-            // Otherwise we're good and we can put a null here if it happens to be that
             _value = value;
             IsEvaluated = true;
             OnPropertyChanged(nameof(PinValue));

@@ -85,9 +85,19 @@ public abstract class Pin : CorePropertyChanged, IPin
         IsEvaluated = false;
     }
 
+    /// <summary>
+    ///     Sets the value of an output pin to the default value of its type, used when its node fails to evaluate
+    /// </summary>
+    internal virtual void SetDefaultValue()
+    {
+    }
+
     /// <inheritdoc />
     public void ConnectTo(IPin pin)
     {
+        if (_connectedTo.Contains(pin))
+            return;
+
         _connectedTo.Add(pin);
         if (!pin.ConnectedTo.Contains(this))
             pin.ConnectTo(this);
@@ -129,11 +139,15 @@ public abstract class Pin : CorePropertyChanged, IPin
     /// <inheritdoc />
     public bool IsTypeCompatible(Type type, bool forgivingEnumMatching = true)
     {
-        return Type == type
-               || (Direction == PinDirection.Input && type.IsAssignableTo(Type))
-               || (Direction == PinDirection.Output && type.IsAssignableFrom(Type))
-               || (Direction == PinDirection.Input && Type == typeof(Enum) && type.IsEnum && forgivingEnumMatching)
-               || (Direction == PinDirection.Output && type == typeof(Enum) && Type.IsEnum && forgivingEnumMatching);
+        if (Type == type)
+            return true;
+
+        // A specific enum and a pin of any enum only match when forgiving, every enum is assignable to Enum otherwise
+        if ((Direction == PinDirection.Input && Type == typeof(Enum) && type.IsEnum) || (Direction == PinDirection.Output && type == typeof(Enum) && Type.IsEnum))
+            return forgivingEnumMatching;
+
+        return (Direction == PinDirection.Input && type.IsAssignableTo(Type))
+               || (Direction == PinDirection.Output && type.IsAssignableFrom(Type));
     }
 
     /// <summary>

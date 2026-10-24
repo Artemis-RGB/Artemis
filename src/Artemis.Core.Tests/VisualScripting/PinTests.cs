@@ -105,17 +105,15 @@ public class PinTests
     }
 
     [Fact]
-    public void ConnectTo_TheSamePinTwice_AddsTheConnectionTwiceOnOneSide()
+    public void ConnectTo_TheSamePinTwice_ConnectsThemOnce()
     {
-        // Pinned as-is: connecting pins that are already connected adds a second connection to the pin it is called on,
-        // while the other pin keeps one. Disconnecting once removes both again.
         OutputPin<Numeric> output = _source.CreateOutputPin<Numeric>();
         InputPin<Numeric> input = _target.CreateInputPin<Numeric>();
 
         input.ConnectTo(output);
         input.ConnectTo(output);
 
-        input.ConnectedTo.ShouldBe([output, output]);
+        input.ConnectedTo.ShouldBe([output]);
         output.ConnectedTo.ShouldBe([input]);
 
         input.DisconnectFrom(output);
@@ -215,14 +213,15 @@ public class PinTests
     }
 
     [Fact]
-    public void IsTypeCompatible_MatchesEnums_EvenWhenNotForgiving()
+    public void IsTypeCompatible_OnlyMatchesASpecificEnumToAnyEnumWhenForgiving()
     {
-        // Pinned as-is: the forgiving enum check has no effect, a specific enum type already counts as an Enum without it
         InputPin input = _target.CreateInputPin(typeof(Enum));
         OutputPin output = _source.CreateOutputPin(typeof(TestEnum));
 
-        input.IsTypeCompatible(typeof(TestEnum), false).ShouldBeTrue();
-        output.IsTypeCompatible(typeof(Enum), false).ShouldBeTrue();
+        input.IsTypeCompatible(typeof(TestEnum), false).ShouldBeFalse();
+        output.IsTypeCompatible(typeof(Enum), false).ShouldBeFalse();
+        input.IsTypeCompatible(typeof(TestEnum), true).ShouldBeTrue();
+        output.IsTypeCompatible(typeof(Enum), true).ShouldBeTrue();
     }
 
     [Fact]
@@ -390,25 +389,19 @@ public class PinTests
     }
 
     [Fact]
-    public void UntypedOutput_ForAValueType_AcceptsNull()
+    public void UntypedOutput_ForAValueType_TurnsNullIntoTheDefaultValue()
     {
-        // Pinned as-is: the setter means to turn null into the default value for value types (see its comment), but
-        // then stores null anyway. A typed input reading the pin gets its default value, an untyped one turns the null
-        // into the default value itself.
         OutputPin output = _source.CreateOutputPin(typeof(Numeric));
         output.Value = new Numeric(3);
 
         output.Value = null;
 
-        output.Value.ShouldBeNull();
+        output.Value.ShouldBe(new Numeric(0));
     }
 
     [Fact]
-    public void NewTypedInput_IgnoresItsConnectionUntilItIsReset()
+    public void NewTypedInput_ReadsItsConnection_LikeAnUntypedInput()
     {
-        // Pinned as-is: a new InputPin<T> counts as evaluated with its default value, so it only reads the pin it is
-        // connected to after a reset. Running a script resets every pin first, so this only shows outside a script.
-        // Untyped input pins don't do this.
         OutputPin<Numeric> output = _source.CreateOutputPin<Numeric>();
         InputPin<Numeric> typed = _target.CreateInputPin<Numeric>();
         InputPin untyped = _target.CreateInputPin(typeof(Numeric));
@@ -416,12 +409,9 @@ public class PinTests
         untyped.ConnectTo(output);
         output.Value = new Numeric(5);
 
-        typed.IsEvaluated.ShouldBeTrue();
-        typed.Value.ShouldBe(new Numeric(0));
-        untyped.Value.ShouldBe(new Numeric(5));
-
-        typed.Reset();
+        typed.IsEvaluated.ShouldBeFalse();
         typed.Value.ShouldBe(new Numeric(5));
+        untyped.Value.ShouldBe(new Numeric(5));
     }
 
     [Fact]

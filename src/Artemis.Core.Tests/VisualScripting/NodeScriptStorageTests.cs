@@ -214,10 +214,9 @@ public class NodeScriptStorageTests : ScriptTestBase
     }
 
     [Fact]
-    public void NodesOfAMissingPlugin_AreLostWhenTheScriptIsSavedAgain()
+    public void NodesOfAMissingPlugin_AreKeptWhenTheScriptIsSavedAgain()
     {
-        // Pinned as-is: a script loaded while a plugin is missing forgets that plugin's nodes the next time it is saved.
-        // Saving a profile while a plugin is disabled permanently removes its nodes from the profile's scripts.
+        // So they come back once the plugin is available again
         TestPlugin missingPlugin = new();
         ScriptTestNodeProvider missingNodes = missingPlugin.AddFeature(new ScriptTestNodeProvider());
         NodeScript<string> script = CreateScript<string>();
@@ -227,11 +226,13 @@ public class NodeScriptStorageTests : ScriptTestBase
         missingPlugin.Dispose();
 
         NodeScript<string> loaded = Load<string>(script.Entity);
-        loaded.Entity.Nodes.Count.ShouldBe(2);
+        loaded.Nodes.ShouldHaveSingleItem().IsExitNode.ShouldBeTrue();
         loaded.Save();
 
-        loaded.Entity.Nodes.ShouldHaveSingleItem().IsExitNode.ShouldBeTrue();
-        loaded.Entity.Connections.ShouldBeEmpty();
+        loaded.Entity.Nodes.Count.ShouldBe(2);
+        loaded.Entity.Nodes.ShouldContain(n => n.Id == node.Id);
+        NodeConnectionEntity connection = loaded.Entity.Connections.ShouldHaveSingleItem();
+        new[] {connection.SourceNode, connection.TargetNode}.ShouldContain(node.Id);
     }
 
     [Fact]
@@ -301,10 +302,9 @@ public class NodeScriptStorageTests : ScriptTestBase
     }
 
     [Fact]
-    public void InputConnectedToTwoOutputs_KeepsOnlyTheLastConnectionWhenLoading()
+    public void InputConnectedToTwoOutputs_KeepsTheConnectionItReadsFromWhenLoading()
     {
-        // Pinned as-is: in code an input can be connected to several outputs, it then reads from the first one. Loading
-        // keeps only the last connection, so after loading the script reads from a different node than before.
+        // In code an input can be connected to several outputs, it then reads from the first one. Loading keeps that one
         NodeScript<Numeric> script = CreateScript<Numeric>();
         TestNumericNode first = Nodes.AddNode<TestNumericNode>(script);
         TestNumericNode second = Nodes.AddNode<TestNumericNode>(script);
@@ -318,8 +318,8 @@ public class NodeScriptStorageTests : ScriptTestBase
         NodeScript<Numeric> loaded = SaveAndLoad(script);
         loaded.Run();
 
-        loaded.GetExitNode().Input.ConnectedTo.ShouldHaveSingleItem().Node.Id.ShouldBe(second.Id);
-        loaded.Result.ShouldBe(new Numeric(2));
+        loaded.GetExitNode().Input.ConnectedTo.ShouldHaveSingleItem().Node.Id.ShouldBe(first.Id);
+        loaded.Result.ShouldBe(new Numeric(1));
     }
 
     [Fact]

@@ -22,7 +22,10 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
 
     private void NodeTypeStoreOnNodeTypeRemoved(object? sender, NodeTypeStoreEvent e)
     {
-        List<INode> nodes = Nodes.Where(n => n.GetType() == e.TypeRegistration.NodeData.Type).ToList();
+        // Match on the node data rather than the type, another provider may have registered the same type
+        List<INode> nodes = Nodes.Where(n => n.NodeData != null
+            ? n.NodeData == e.TypeRegistration.NodeData
+            : n.GetType() == e.TypeRegistration.NodeData.Type).ToList();
         foreach (INode node in nodes)
             RemoveNode(node);
     }
@@ -145,7 +148,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     {
         lock (_nodes)
         {
-            _nodes.Remove(node);
+            if (!_nodes.Remove(node))
+                return;
         }
 
         NodeRemoved?.Invoke(this, new SingleValueEventArgs<INode>(node));
@@ -253,6 +257,8 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     public void LoadConnections()
     {
         List<INode> nodes = Nodes.ToList();
+        // An input reads from its first connection, so when there are several the first one is kept
+        HashSet<IPin> connectedInputs = [];
         foreach (NodeConnectionEntity nodeConnectionEntity in Entity.Connections.OrderBy(p => p.SourcePinCollectionId))
         {
             INode? source = nodes.FirstOrDefault(n => n.Id == nodeConnectionEntity.SourceNode);
@@ -274,6 +280,9 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
                 continue;
             // Ensure the connection is valid
             if (sourcePin.Direction == targetPin.Direction)
+                continue;
+            IPin inputPin = targetPin.Direction == PinDirection.Input ? targetPin : sourcePin;
+            if (!connectedInputs.Add(inputPin))
                 continue;
 
             // Clear existing connections on input pins, we don't want none of that now
@@ -310,7 +319,16 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
     {
         Entity.Name = Name;
         Entity.Description = Description;
+
+        // Nodes whose type isn't registered couldn't be loaded, most likely because their plugin is missing or disabled.
+        // Keep them and their connections, so they come back once the plugin is available again
+        List<NodeEntity> unavailableNodes = Entity.Nodes.Where(e => !e.IsExitNode && Nodes.All(n => n.Id != e.Id) && NodeTypeStore.Get(e) == null).ToList();
+        List<NodeConnectionEntity> unavailableConnections = Entity.Connections
+            .Where(c => unavailableNodes.Any(n => n.Id == c.SourceNode || n.Id == c.TargetNode))
+            .ToList();
+
         Entity.Nodes.Clear();
+        Entity.Nodes.AddRange(unavailableNodes);
 
         foreach (INode node in Nodes)
         {
@@ -346,6 +364,7 @@ public abstract class NodeScript : CorePropertyChanged, INodeScript
 
         // Store connections
         Entity.Connections.Clear();
+        Entity.Connections.AddRange(unavailableConnections);
         foreach (INode node in Nodes)
         {
             SavePins(node, -1, node.Pins);
