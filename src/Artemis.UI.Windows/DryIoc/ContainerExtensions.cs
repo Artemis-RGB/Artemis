@@ -1,5 +1,6 @@
 using Artemis.Core.Providers;
 using Artemis.Core.Services;
+using Artemis.UI.Services.Tray;
 using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared.Providers;
 using Artemis.UI.Windows.Providers;
@@ -25,5 +26,6 @@ public static class UIContainerExtensions
         container.Register<InputProvider, WindowsInputProvider>(serviceKey: WindowsInputProvider.Id);
         container.Register<IUpdateNotificationProvider, WindowsUpdateNotificationProvider>();
         container.Register<IProtocolProvider, ProtocolProvider>();
+        container.Register<ITrayThemeProvider, WindowsTrayThemeProvider>(Reuse.Singleton);
     }
 }
