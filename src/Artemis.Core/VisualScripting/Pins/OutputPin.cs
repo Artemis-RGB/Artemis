@@ -29,11 +29,6 @@ public sealed class OutputPin<T> : Pin
     /// <inheritdoc />
     public override PinDirection Direction => PinDirection.Output;
 
-    internal override void SetDefaultValue()
-    {
-        Value = default;
-    }
-
     private T? _value;
 
     /// <summary>
@@ -104,11 +99,6 @@ public sealed class OutputPin : Pin
 
     /// <inheritdoc />
     public override PinDirection Direction => PinDirection.Output;
-
-    internal override void SetDefaultValue()
-    {
-        Value = Type.GetDefault();
-    }
 
     private object? _value;
     private Type _type;
