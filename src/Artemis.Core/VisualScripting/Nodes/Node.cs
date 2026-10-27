@@ -388,10 +388,10 @@ public abstract class Node : BreakableModel, INode
         if (TryOrBreak(Evaluate, "Failed to evaluate"))
             return;
 
-        // Don't let the values of the last successful run flow on, and don't try again for every pin that reads from this
-        // node. Setting a value marks the pin as evaluated until the next run
-        foreach (Pin pin in Pins.Concat(PinCollections.SelectMany(c => c)).OfType<Pin>().Where(p => p.Direction == PinDirection.Output))
-            pin.SetDefaultValue();
+        // Keep the values of the last successful run so a brief failure goes unnoticed, and don't try again for every pin
+        // that reads from this node
+        foreach (IPin pin in Pins.Concat(PinCollections.SelectMany(c => c)).Where(p => p.Direction == PinDirection.Output))
+            pin.IsEvaluated = true;
     }
 
     /// <summary>

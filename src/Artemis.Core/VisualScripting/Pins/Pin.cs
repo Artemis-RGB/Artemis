@@ -85,13 +85,6 @@ public abstract class Pin : CorePropertyChanged, IPin
         IsEvaluated = false;
     }
 
-    /// <summary>
-    ///     Sets the value of an output pin to the default value of its type, used when its node fails to evaluate
-    /// </summary>
-    internal virtual void SetDefaultValue()
-    {
-    }
-
     /// <inheritdoc />
     public void ConnectTo(IPin pin)
     {
