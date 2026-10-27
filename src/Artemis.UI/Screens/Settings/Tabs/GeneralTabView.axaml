@@ -70,6 +70,19 @@
                             </StackPanel>
                         </Grid>
                         <Border Classes="card-separator" IsVisible="{CompiledBinding IsWindows11}"/>
+
+                        <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock>Monochrome tray icon</TextBlock>
+                                <TextBlock Classes="subtitle" TextWrapping="Wrap">
+                                    Show a black or white icon in the system tray instead of the colored one, matching your light or dark mode.
+                                </TextBlock>
+                            </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                <ToggleSwitch IsChecked="{CompiledBinding UIMonochromeTrayIcon.Value}" OnContent="Yes" OffContent="No" MinWidth="0" Margin="0 -10" />
+                            </StackPanel>
+                        </Grid>
+                        <Border Classes="card-separator" />
                         
                         <Grid RowDefinitions="*,*" ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">

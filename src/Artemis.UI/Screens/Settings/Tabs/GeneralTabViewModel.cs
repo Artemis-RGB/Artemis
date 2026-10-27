@@ -159,6 +159,7 @@ public class GeneralTabViewModel : RoutableScreen
     public PluginSetting<int> UIAutoRunDelay => _settingsService.GetSetting("UI.AutoRunDelay", 15);
     public PluginSetting<bool> UIShowOnStartup => _settingsService.GetSetting("UI.ShowOnStartup", true);
     public PluginSetting<bool> EnableMica => _settingsService.GetSetting("UI.EnableMica", true);
+    public PluginSetting<bool> UIMonochromeTrayIcon => _settingsService.GetSetting("UI.MonochromeTrayIcon", false);
     public PluginSetting<bool> UICheckForUpdates => _settingsService.GetSetting("UI.Updating.AutoCheck", true);
     public PluginSetting<bool> WorkshopShowNotifications => _settingsService.GetSetting("Workshop.ShowNotifications", true);
     public PluginSetting<bool> UIAutoUpdate => _settingsService.GetSetting("UI.Updating.AutoInstall", true);
