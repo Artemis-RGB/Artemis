@@ -95,7 +95,7 @@ internal class ProfileService : IProfileService
                 {
                     // Make sure the profile is active or inactive according to the parameters above
                     if (shouldBeActive && profileConfiguration.Profile == null && profileConfiguration.BrokenState != "Failed to activate profile")
-                        profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
+                        TryActivateProfile(profileConfiguration);
                     if (shouldBeActive && profileConfiguration.Profile != null && !profileConfiguration.Profile.ShouldDisplay)
                         profileConfiguration.Profile.ShouldDisplay = true;
                     else if (!shouldBeActive && profileConfiguration.Profile != null)
@@ -119,6 +119,12 @@ internal class ProfileService : IProfileService
 
         LogProfileUpdateExceptions();
         _pendingKeyboardEvents.Clear();
+    }
+
+    // Kept out of UpdateProfiles, where a lambda capturing the loop variable allocates for every profile on every frame
+    private void TryActivateProfile(ProfileConfiguration profileConfiguration)
+    {
+        profileConfiguration.TryOrBreak(() => ActivateProfile(profileConfiguration), "Failed to activate profile");
     }
 
     /// <inheritdoc />

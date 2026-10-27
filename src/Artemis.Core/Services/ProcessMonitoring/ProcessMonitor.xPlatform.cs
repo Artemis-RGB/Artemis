@@ -14,7 +14,8 @@ public static partial class ProcessMonitor
         {
             try
             {
-                HashSet<int> processIds = new(_processes.Count);
+                HashSet<int> processIds = _scannedProcessIds;
+                processIds.Clear();
 
                 foreach (Process process in Process.GetProcesses())
                 {
@@ -29,6 +30,7 @@ public static partial class ProcessMonitor
 
                         ProcessInfo processInfo = new(processId, processName, imageName, executable);
                         _processes.Add(processId, processInfo);
+                        _processesSnapshot = default;
 
                         OnProcessStarted(processInfo);
                     }

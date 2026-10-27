@@ -61,10 +61,12 @@ public abstract class Pin : CorePropertyChanged, IPin
     }
 
     private readonly List<IPin> _connectedTo = [];
+    // A live view of the list, cached because input pins read it on every evaluation
+    private ReadOnlyCollection<IPin>? _readOnlyConnectedTo;
     private string _name;
 
     /// <inheritdoc />
-    public IReadOnlyList<IPin> ConnectedTo => new ReadOnlyCollection<IPin>(_connectedTo);
+    public IReadOnlyList<IPin> ConnectedTo => _readOnlyConnectedTo ??= new ReadOnlyCollection<IPin>(_connectedTo);
 
     /// <inheritdoc />
     public abstract PinDirection Direction { get; }

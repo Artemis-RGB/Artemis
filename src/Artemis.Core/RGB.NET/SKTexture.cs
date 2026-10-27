@@ -24,6 +24,7 @@ public sealed class SKTexture : ITexture, IDisposable
         Surface = graphicsContext == null
             ? SKSurface.Create(ImageInfo)
             : SKSurface.Create(graphicsContext.GraphicsContext, true, ImageInfo);
+        Canvas = Surface.Canvas;
         _readback = new SKBitmap(new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Unpremul));
 
         foreach (ArtemisDevice artemisDevice in devices)
@@ -155,6 +156,9 @@ public sealed class SKTexture : ITexture, IDisposable
     ///     Gets the SKBitmap backing this texture
     /// </summary>
     public SKSurface Surface { get; }
+
+    // Cached because every SKSurface.Canvas read goes through SkiaSharp's global handle lookup, which takes a lock
+    internal SKCanvas Canvas { get; }
 
     /// <summary>
     ///     Gets the image info used to create the <see cref="Surface" />
