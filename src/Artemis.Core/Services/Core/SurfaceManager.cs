@@ -161,7 +161,7 @@ internal sealed class SurfaceManager : IDisposable
             texture = CreateTexture();
 
         // Prepare a canvas
-        SKCanvas canvas = texture.Surface.Canvas;
+        SKCanvas canvas = texture.Canvas;
         canvas.Save();
 
         // Apply scaling if necessary

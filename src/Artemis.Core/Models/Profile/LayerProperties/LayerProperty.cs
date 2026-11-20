@@ -471,23 +471,19 @@ public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
         if (!KeyframesSupported || !KeyframesEnabled)
             return;
 
-        // The current keyframe is the last keyframe before the current time
-        CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= timeline.Position);
-        // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
-        if (CurrentKeyframe != null)
-        {
-            int nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
-            NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
-        }
-        else
-        {
-            NextKeyframe = null;
-        }
+        // The current keyframe is the last keyframe before the current time, keyframes are sorted so the next one follows it.
+        // A plain loop rather than LINQ, this runs for every property on every frame and a capturing lambda allocates each time
+        int currentIndex = _keyframes.Count - 1;
+        while (currentIndex >= 0 && _keyframes[currentIndex].Position > timeline.Position)
+            currentIndex--;
+
+        CurrentKeyframe = currentIndex >= 0 ? _keyframes[currentIndex] : null;
+        NextKeyframe = currentIndex >= 0 && currentIndex + 1 < _keyframes.Count ? _keyframes[currentIndex + 1] : null;
 
         // No need to update the current value if either of the keyframes are null
         if (CurrentKeyframe == null)
         {
-            CurrentValue = _keyframes.Any() ? _keyframes[0].Value : BaseValue;
+            CurrentValue = _keyframes.Count > 0 ? _keyframes[0].Value : BaseValue;
         }
         else if (NextKeyframe == null)
         {
