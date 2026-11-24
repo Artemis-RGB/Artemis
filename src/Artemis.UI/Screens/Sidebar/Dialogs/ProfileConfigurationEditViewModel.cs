@@ -36,6 +36,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
     [Notify] private Hotkey? _disableHotkey;
     [Notify] private Hotkey? _enableHotkey;
     [Notify] private bool _fadeInAndOut;
+    [Notify] private FolderBlendMode _blendMode;
     [Notify] private ProfileConfigurationHotkeyMode _hotkeyMode;
     [Notify] private ProfileConfiguration _profileConfiguration;
     [Notify] private string _profileName;
@@ -62,6 +63,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
         _iconType = _profileConfiguration.Icon.IconType;
         _hotkeyMode = _profileConfiguration.HotkeyMode;
         _fadeInAndOut = _profileConfiguration.FadeInAndOut;
+        _blendMode = _profileConfiguration.BlendMode;
         if (_profileConfiguration.EnableHotkey != null)
             _enableHotkey = new Hotkey {Key = _profileConfiguration.EnableHotkey.Key, Modifiers = _profileConfiguration.EnableHotkey.Modifiers};
         if (_profileConfiguration.DisableHotkey != null)
@@ -120,6 +122,7 @@ public partial class ProfileConfigurationEditViewModel : DialogViewModelBase<Pro
         ProfileConfiguration.EnableHotkey = EnableHotkey;
         ProfileConfiguration.DisableHotkey = DisableHotkey;
         ProfileConfiguration.FadeInAndOut = FadeInAndOut;
+        ProfileConfiguration.BlendMode = BlendMode;
 
         await SaveIcon();
         ProfileConfiguration.Save();

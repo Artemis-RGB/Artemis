@@ -93,6 +93,56 @@ public class BlendModeTests : RenderTestBase
         frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(expected);
     }
 
+    [Theory]
+    [MemberData(nameof(BlendModes))]
+    public void BlendMode_InAPassThroughFolderAboveTheDestination(SKBlendMode blendMode)
+    {
+        Profile profile = Harness.CreateProfile();
+        Folder folder = Harness.AddFolder(profile.GetRootFolder());
+        folder.General.BlendMode.SetCurrentValue(FolderBlendMode.PassThrough);
+        AddSolid(folder, Source, blendMode, 100);
+        AddSolid(profile.GetRootFolder(), Destination, SKBlendMode.SrcOver, 100);
+
+        using RenderFrame frame = Harness.Render(profile, TimeSpan.FromSeconds(0.1));
+        SaveOutput(frame, $"{TestName}_{blendMode}");
+
+        // Without a layer of its own the folder adds nothing, the blend happens against the destination like a sibling's
+        SKColor expected = ReferenceRender(canvas =>
+        {
+            using (RootFolder(canvas))
+            {
+                DrawLayer(canvas, Destination, SKBlendMode.SrcOver, 255);
+                DrawLayer(canvas, Source, blendMode, 255);
+            }
+        });
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(BlendModes))]
+    public void FolderBlendMode_CompositesTheWholeFolderOverTheDestination(SKBlendMode blendMode)
+    {
+        Profile profile = Harness.CreateProfile();
+        Folder folder = Harness.AddFolder(profile.GetRootFolder());
+        folder.General.BlendMode.SetCurrentValue((FolderBlendMode) (blendMode + 1));
+        AddSolid(folder, Source, SKBlendMode.SrcOver, 100);
+        AddSolid(profile.GetRootFolder(), Destination, SKBlendMode.SrcOver, 100);
+
+        using RenderFrame frame = Harness.Render(profile, TimeSpan.FromSeconds(0.1));
+        SaveOutput(frame, $"{TestName}_{blendMode}");
+
+        SKColor expected = ReferenceRender(canvas =>
+        {
+            using (RootFolder(canvas))
+            {
+                DrawLayer(canvas, Destination, SKBlendMode.SrcOver, 255);
+                using (Folder(canvas, blendMode))
+                    DrawLayer(canvas, Source, SKBlendMode.SrcOver, 255);
+            }
+        });
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(expected);
+    }
+
     /// <summary>
     ///     Hand calculated for an opaque source S = (200, 100, 50) and an opaque destination D = (40, 160, 220), independent
     ///     of the reference render. In a folder the blend happens against the empty folder, which is then drawn over D.
@@ -149,13 +199,13 @@ public class BlendModeTests : RenderTestBase
     }
 
     /// <summary>
-    ///     Folder.Render composites its children in a layer, using a default paint
+    ///     Folder.Render composites its children in a layer, using a paint with the folder's blend mode
     /// </summary>
-    private static SKAutoCanvasRestore Folder(SKCanvas canvas)
+    private static SKAutoCanvasRestore Folder(SKCanvas canvas, SKBlendMode blendMode = SKBlendMode.SrcOver)
     {
         // Created before saving the layer so disposing it restores the layer
         SKAutoCanvasRestore restore = new(canvas, false);
-        using SKPaint paint = new();
+        using SKPaint paint = new() {BlendMode = blendMode};
         canvas.SaveLayer(paint);
         return restore;
     }

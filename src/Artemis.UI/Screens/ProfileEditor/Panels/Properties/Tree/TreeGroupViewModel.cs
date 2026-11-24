@@ -154,7 +154,7 @@ public class TreeGroupViewModel : ActivatableViewModelBase
 
     private void DetermineGroupType()
     {
-        if (LayerPropertyGroup is LayerGeneralProperties)
+        if (LayerPropertyGroup is LayerGeneralProperties or FolderGeneralProperties)
             GroupType = LayerPropertyGroupType.General;
         else if (LayerPropertyGroup is LayerTransformProperties)
             GroupType = LayerPropertyGroupType.Transform;

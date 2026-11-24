@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Artemis.UI.Shared"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="30"
+             x:Class="Artemis.UI.Shared.BlendModePicker">
+    <UserControl.Styles>
+        <Style Selector="ComboBox#ChildComboBox ComboBoxItem" x:DataType="local:BlendModeOption">
+            <Setter Property="IsEnabled" Value="{CompiledBinding !IsHeader}" />
+        </Style>
+    </UserControl.Styles>
+
+    <ComboBox x:Name="ChildComboBox" HorizontalAlignment="Stretch" MaxDropDownHeight="500">
+        <ComboBox.ItemTemplate>
+            <DataTemplate x:DataType="local:BlendModeOption">
+                <Panel>
+                    <TextBlock Classes="subtitle"
+                               Text="{CompiledBinding Name}"
+                               FontWeight="SemiBold"
+                               Margin="0 6 0 0"
+                               IsVisible="{CompiledBinding IsHeader}" />
+                    <StackPanel IsVisible="{CompiledBinding !IsHeader}">
+                        <TextBlock Text="{CompiledBinding Name}" />
+                        <!-- Only in the open list, the closed picker shows just the name -->
+                        <TextBlock Classes="subtitle"
+                                   Text="{CompiledBinding Description}"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="350"
+                                   IsVisible="{Binding $parent[ComboBoxItem], Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}" />
+                    </StackPanel>
+                </Panel>
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+    </ComboBox>
+</UserControl>
