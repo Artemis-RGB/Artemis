@@ -168,7 +168,7 @@ internal class PluginManagementService : IPluginManagementService
         {
             try
             {
-                LoadPlugin(subDirectory);
+                LoadPlugin(subDirectory, skipDuplicate: true);
             }
             catch (Exception e)
             {
@@ -180,7 +180,7 @@ internal class PluginManagementService : IPluginManagementService
         {
             try
             {
-                LoadPlugin(directory);
+                LoadPlugin(directory, skipDuplicate: true);
             }
             catch (Exception e)
             {
@@ -249,7 +249,9 @@ internal class PluginManagementService : IPluginManagementService
         }
     }
 
-    public Plugin? LoadPlugin(DirectoryInfo directory)
+    public Plugin? LoadPlugin(DirectoryInfo directory) => LoadPlugin(directory, skipDuplicate: false);
+
+    internal Plugin? LoadPlugin(DirectoryInfo directory, bool skipDuplicate)
     {
         _logger.Verbose("Loading plugin from {directory}", directory.FullName);
 
@@ -270,8 +272,18 @@ internal class PluginManagementService : IPluginManagementService
         lock (_plugins)
         {
             // Ensure the plugin is not already loaded
-            if (_plugins.Any(p => p.Guid == pluginInfo.Guid))
+            Plugin? existingPlugin = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
+            if (existingPlugin != null)
+            {
+                if (skipDuplicate)
+                {
+                    _logger.Information("Skipping duplicate plugin {Plugin} at {Directory}; already loaded from {ExistingDirectory}",
+                        pluginInfo.Name, directory.FullName, existingPlugin.Directory.FullName);
+                    return null;
+                }
+
                 throw new ArtemisCoreException($"Cannot load plugin {pluginInfo} because it is using a GUID already used by another plugin");
+            }
         }
         
         // There may be info on a plugin that previously failed to load, remove that
