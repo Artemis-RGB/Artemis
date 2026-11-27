@@ -32,6 +32,9 @@ jobs:
     name: Publish Nuget Packages
     needs: version
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -43,5 +46,10 @@ jobs:
         run: dotnet pack -c Release -p:Version=${{ needs.version.outputs.version-number }} -p:BuildingNuget=True src/Artemis.Core/Artemis.Core.csproj
       - name: Pack Artemis.UI.Shared
         run: dotnet pack -c Release -p:Version=${{ needs.version.outputs.version-number }} src/Artemis.UI.Shared/Artemis.UI.Shared.csproj
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
       - name: Push Nugets
-        run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push **/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
