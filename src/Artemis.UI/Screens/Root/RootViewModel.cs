@@ -7,6 +7,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Models;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Tray;
 using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Routing;
@@ -16,6 +17,7 @@ using Artemis.WebClient.Workshop.Services;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using ReactiveUI;
 using Serilog;
@@ -34,6 +36,11 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     private readonly IUpdateService _updateService;
     private readonly IWindowService _windowService;
     private readonly ObservableAsPropertyHelper<ViewModelBase?> _titleBarViewModel;
+    private readonly PluginSetting<bool> _monochromeTrayIcon;
+    private readonly ITrayThemeProvider _trayThemeProvider;
+    private WindowIcon? _coloredTrayIcon;
+    private WindowIcon? _blackTrayIcon;
+    private WindowIcon? _whiteTrayIcon;
 
     public RootViewModel(ILogger logger,
         IRouter router,
@@ -45,6 +52,7 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         IDebugService debugService,
         IUpdateService updateService,
         IWorkshopService workshopService,
+        ITrayThemeProvider trayThemeProvider,
         SidebarViewModel sidebarViewModel,
         DefaultTitleBarViewModel defaultTitleBarViewModel)
     {
@@ -60,7 +68,16 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
         _debugService = debugService;
         _updateService = updateService;
         _defaultTitleBarViewModel = defaultTitleBarViewModel;
+        _trayThemeProvider = trayThemeProvider;
         _lifeTime = (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
+
+        _monochromeTrayIcon = settingsService.GetSetting("UI.MonochromeTrayIcon", false);
+        _monochromeTrayIcon.SettingChanged += (_, _) =>
+        {
+            this.RaisePropertyChanged(nameof(MonochromeTrayIcon));
+            this.RaisePropertyChanged(nameof(TrayIcon));
+        };
+        _trayThemeProvider.TrayThemeChanged += (_, _) => Dispatcher.UIThread.Post(() => this.RaisePropertyChanged(nameof(TrayIcon)));
 
         router.SetRoot(this);
         mainWindowService.ConfigureMainWindowProvider(this);
@@ -117,6 +134,26 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     public ReactiveCommand<Unit, Unit> Exit { get; }
 
     public ViewModelBase? TitleBarViewModel => _titleBarViewModel.Value;
+
+    /// <summary>
+    ///     Gets a value indicating whether the tray icon is black or white rather than colored.
+    /// </summary>
+    public bool MonochromeTrayIcon => _monochromeTrayIcon.Value;
+
+    /// <summary>
+    ///     Gets the tray icon, in black or white to match the system tray when <see cref="MonochromeTrayIcon" /> is enabled.
+    /// </summary>
+    public WindowIcon TrayIcon
+    {
+        get
+        {
+            if (!_monochromeTrayIcon.Value)
+                return _coloredTrayIcon ??= LoadTrayIcon("application");
+            return _trayThemeProvider.IsTrayDark
+                ? _whiteTrayIcon ??= LoadTrayIcon("application-monochrome-white")
+                : _blackTrayIcon ??= LoadTrayIcon("application-monochrome-black");
+        }
+    }
     public static PluginSetting<WindowSize?>? WindowSizeSetting { get; private set; }
 
     public void GoBack()
@@ -187,6 +224,11 @@ public class RootViewModel : RoutableHostScreen<RoutableScreen>, IMainWindowProv
     #endregion
 
     #region Implementation of IMainWindowProvider
+
+    private static WindowIcon LoadTrayIcon(string name)
+    {
+        return new WindowIcon(AssetLoader.Open(new Uri($"avares://Artemis.UI/Assets/Images/Logo/{name}.ico")));
+    }
 
     /// <inheritdoc />
     public bool IsMainWindowOpen => _lifeTime.MainWindow != null;

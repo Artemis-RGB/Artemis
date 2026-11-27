@@ -4,6 +4,7 @@ using Artemis.UI.DryIoc.InstanceProviders;
 using Artemis.UI.Screens.Device.Layout.LayoutProviders;
 using Artemis.UI.Screens.VisualScripting;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services.Tray;
 using Artemis.UI.Services.Updating;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services.NodeEditor;
@@ -33,6 +34,7 @@ public static class ContainerExtensions
         container.Register<NodeScriptWindowViewModelBase, NodeScriptWindowViewModel>(Reuse.Singleton);
         container.Register<IPropertyVmFactory, PropertyVmFactory>(Reuse.Singleton);
         container.Register<IUpdateNotificationProvider, BasicUpdateNotificationProvider>();
+        container.Register<ITrayThemeProvider, BasicTrayThemeProvider>(Reuse.Singleton);
         
         container.RegisterMany(thisAssembly, type => type.IsAssignableTo<IArtemisUIService>(), Reuse.Singleton);
     }
