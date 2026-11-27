@@ -20,6 +20,12 @@ public static partial class ProcessMonitor
 
     private static readonly Dictionary<int, ProcessInfo> _processes = new();
 
+    // Rebuilt only when a process starts or stops, modules read the list far more often than it changes
+    private static ImmutableArray<ProcessInfo> _processesSnapshot;
+
+    // Reused by every scan rather than allocated per scan, only touched while holding LOCK
+    private static readonly HashSet<int> _scannedProcessIds = [];
+
     /// <summary>
     /// Gets an immutable array of the current processes.
     /// </summary>
@@ -28,7 +34,11 @@ public static partial class ProcessMonitor
         get
         {
             lock (LOCK)
-                return [.._processes.Values];
+            {
+                if (_processesSnapshot.IsDefault)
+                    _processesSnapshot = [.._processes.Values];
+                return _processesSnapshot;
+            }
         }
     }
 
@@ -157,6 +167,7 @@ public static partial class ProcessMonitor
             {
                 ProcessInfo info = _processes[id];
                 _processes.Remove(id);
+                _processesSnapshot = default;
                 OnProcessStopped(info);
             }
     }

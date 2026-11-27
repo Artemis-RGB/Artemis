@@ -95,6 +95,48 @@ public class TimelineTests : RenderTestBase
         frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Red.AtOpacity(50));
     }
 
+    [Fact]
+    public void Keyframes_TrackTheCurrentAndNextKeyframe()
+    {
+        Profile profile = Harness.CreateProfile();
+        (Layer layer, _) = Harness.AddLayer<SolidColorTestBrush>(profile.GetRootFolder(), [Led(LedId.Keyboard_A)]);
+        FloatLayerProperty opacity = layer.Transform.Opacity;
+        LayerPropertyKeyframe<float> first = new(10, TimeSpan.FromSeconds(1), Easings.Functions.Linear, opacity);
+        LayerPropertyKeyframe<float> second = new(20, TimeSpan.FromSeconds(2), Easings.Functions.Linear, opacity);
+        LayerPropertyKeyframe<float> third = new(30, TimeSpan.FromSeconds(3), Easings.Functions.Linear, opacity);
+        // Added out of order, the property keeps them sorted by position
+        opacity.AddKeyframe(third);
+        opacity.AddKeyframe(first);
+        opacity.AddKeyframe(second);
+        Timeline timeline = new();
+
+        UpdateAt(0.5);
+        opacity.CurrentKeyframe.ShouldBeNull();
+        opacity.NextKeyframe.ShouldBeNull();
+        opacity.CurrentValue.ShouldBe(10);
+
+        UpdateAt(1);
+        opacity.CurrentKeyframe.ShouldBe(first);
+        opacity.NextKeyframe.ShouldBe(second);
+        opacity.CurrentValue.ShouldBe(10);
+
+        UpdateAt(2.5);
+        opacity.CurrentKeyframe.ShouldBe(second);
+        opacity.NextKeyframe.ShouldBe(third);
+        opacity.CurrentValue.ShouldBe(25);
+
+        UpdateAt(4);
+        opacity.CurrentKeyframe.ShouldBe(third);
+        opacity.NextKeyframe.ShouldBeNull();
+        opacity.CurrentValue.ShouldBe(30);
+
+        void UpdateAt(double seconds)
+        {
+            timeline.Override(TimeSpan.FromSeconds(seconds), false);
+            opacity.Update(timeline);
+        }
+    }
+
     #endregion
 
     #region Segments

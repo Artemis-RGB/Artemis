@@ -172,8 +172,11 @@ public sealed class Folder : RenderProfileElement
                 Disable();
 
             General.Update(Timeline);
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalUpdate(Timeline);
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+            {
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalUpdate(Timeline);
+            }
 
             foreach (ProfileElement child in Children)
                 child.Update(deltaTime);

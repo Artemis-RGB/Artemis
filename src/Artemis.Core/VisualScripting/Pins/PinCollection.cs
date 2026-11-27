@@ -46,11 +46,12 @@ public abstract class PinCollection : CorePropertyChanged, IPinCollection
     public abstract Type Type { get; }
 
     private readonly List<IPin> _pins = [];
+    private ReadOnlyCollection<IPin>? _readOnlyPins;
 
     /// <summary>
     ///     Gets a read only observable collection of the pins
     /// </summary>
-    public ReadOnlyCollection<IPin> Pins => new(_pins);
+    public ReadOnlyCollection<IPin> Pins => _readOnlyPins ??= new ReadOnlyCollection<IPin>(_pins);
 
     #endregion
 

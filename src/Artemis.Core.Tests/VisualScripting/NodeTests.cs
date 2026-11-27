@@ -218,9 +218,9 @@ public class NodeTests : ScriptTestBase
     }
 
     [Fact]
-    public void FailingNode_InAScript_SetsItsOutputsToTheirDefaultValues()
+    public void FailingNode_InAScript_KeepsTheOutputsOfItsLastSuccessfulRun()
     {
-        // Rather than letting the value from the last run that worked flow on
+        // So a node that fails for a few frames doesn't make the script jump to default values
         NodeScript<Numeric> script = CreateScript<Numeric>();
         TestThrowingNode node = ScriptNodes.AddNode<TestThrowingNode>(script);
         script.GetExitNode().Input.ConnectTo(node.Output);
@@ -231,7 +231,7 @@ public class NodeTests : ScriptTestBase
         node.FailsOn = TestThrowingNode.FailureMode.Evaluate;
         script.Run();
 
-        script.Result.ShouldBe(new Numeric(0));
+        script.Result.ShouldBe(new Numeric(5));
         node.BrokenState.ShouldBe("Failed to evaluate");
         script.GetExitNode().BrokenState.ShouldBeNull();
     }
@@ -239,7 +239,7 @@ public class NodeTests : ScriptTestBase
     [Fact]
     public void FailingNode_InAScript_IsEvaluatedOncePerRun()
     {
-        // A failing node sets its outputs to their default values, so the other pins reading from it don't try again
+        // A failing node still marks its outputs as evaluated, so the other pins reading from it don't try again
         NodeScript<Numeric> script = CreateScript<Numeric>();
         TestNode failing = new() {OnEvaluate = _ => throw new InvalidOperationException()};
         OutputPin<Numeric> output = failing.CreateOutputPin<Numeric>();

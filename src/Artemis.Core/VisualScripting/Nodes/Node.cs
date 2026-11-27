@@ -96,15 +96,19 @@ public abstract class Node : BreakableModel, INode
     public bool IsLoading { get; set; }
 
     private readonly List<IPin> _pins = [];
+    // The wrappers are live views of the lists, cached because pins are read for every node on every frame
+    private ReadOnlyCollection<IPin>? _readOnlyPins;
 
     /// <inheritdoc />
-    public IReadOnlyCollection<IPin> Pins => new ReadOnlyCollection<IPin>(_pins);
+    public IReadOnlyCollection<IPin> Pins => _readOnlyPins ??= new ReadOnlyCollection<IPin>(_pins);
 
     private readonly List<IPinCollection> _pinCollections = [];
+    private ReadOnlyCollection<IPinCollection>? _readOnlyPinCollections;
+    private Action? _evaluate;
     private string _helpUrl;
 
     /// <inheritdoc />
-    public IReadOnlyCollection<IPinCollection> PinCollections => new ReadOnlyCollection<IPinCollection>(_pinCollections);
+    public IReadOnlyCollection<IPinCollection> PinCollections => _readOnlyPinCollections ??= new ReadOnlyCollection<IPinCollection>(_pinCollections);
 
     /// <inheritdoc />
     public override string BrokenDisplayName => Name;
@@ -385,13 +389,14 @@ public abstract class Node : BreakableModel, INode
     /// <inheritdoc />
     public void TryEvaluate()
     {
-        if (TryOrBreak(Evaluate, "Failed to evaluate"))
+        // Cached because passing the method group allocates a new delegate on every evaluation
+        if (TryOrBreak(_evaluate ??= Evaluate, "Failed to evaluate"))
             return;
 
-        // Don't let the values of the last successful run flow on, and don't try again for every pin that reads from this
-        // node. Setting a value marks the pin as evaluated until the next run
-        foreach (Pin pin in Pins.Concat(PinCollections.SelectMany(c => c)).OfType<Pin>().Where(p => p.Direction == PinDirection.Output))
-            pin.SetDefaultValue();
+        // Keep the values of the last successful run so a brief failure goes unnoticed, and don't try again for every pin
+        // that reads from this node
+        foreach (IPin pin in Pins.Concat(PinCollections.SelectMany(c => c)).Where(p => p.Direction == PinDirection.Output))
+            pin.IsEvaluated = true;
     }
 
     /// <summary>
