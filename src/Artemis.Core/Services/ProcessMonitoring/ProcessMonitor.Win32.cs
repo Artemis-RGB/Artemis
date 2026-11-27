@@ -145,7 +145,8 @@ public static unsafe partial class ProcessMonitor
     {
         int processInformationOffset = 0;
 
-        HashSet<int> processIds = new(_processes.Count);
+        HashSet<int> processIds = _scannedProcessIds;
+        processIds.Clear();
 
         while (true)
         {
@@ -177,6 +178,7 @@ public static unsafe partial class ProcessMonitor
                 string executable = GetProcessFilename(processId);
                 ProcessInfo processInfo = new(processId, processName, imageName, executable);
                 _processes.Add(processId, processInfo);
+                _processesSnapshot = default;
 
                 OnProcessStarted(processInfo);
             }
