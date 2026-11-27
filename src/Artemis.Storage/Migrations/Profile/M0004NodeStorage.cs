@@ -97,7 +97,8 @@ namespace Artemis.Storage.Migrations.Profile
                     continue;
                 
                 JsonObject nodeObject = jsonNode.AsObject();
-                nodeObject["Storage"] = MigrateNodeStorageJson(nodeObject["Storage"]?.GetValue<string>(), _logger);
+                if (nodeObject["Storage"] != null)
+                    nodeObject["Storage"] = MigrateNodeStorageJson(nodeObject["Storage"]!.GetValue<string>(), _logger);
             }
         }
         

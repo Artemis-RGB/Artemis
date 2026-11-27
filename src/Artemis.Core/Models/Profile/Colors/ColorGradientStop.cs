@@ -9,6 +9,9 @@ namespace Artemis.Core;
 /// </summary>
 public class ColorGradientStop : CorePropertyChanged
 {
+    // The smallest distance kept between two stops in the same gradient
+    private const float MINIMUM_DISTANCE = 0.001f;
+
     private SKColor _color;
     private float _position;
 
@@ -75,23 +78,31 @@ public class ColorGradientStop : CorePropertyChanged
     {
         if (ColorGradient == null)
             return stopPosition;
+
         // Find the first available spot going down
-        while (ColorGradient.Any(s => !ReferenceEquals(s, this) && Math.Abs(s.Position - stopPosition) < 0.001f))
-            stopPosition -= 0.001f;
+        float position = stopPosition;
+        for (int step = 1; IsOccupied(position); step++)
+            position = stopPosition - step * MINIMUM_DISTANCE;
 
         // If we ran out of space, try going up
-        if (stopPosition < 0)
+        if (position < 0)
         {
-            stopPosition = 0;
-            while (ColorGradient.Any(s => !ReferenceEquals(s, this) && Math.Abs(s.Position - stopPosition) < 0.001f))
-                stopPosition += 0.001f;
+            position = 0;
+            for (int step = 1; IsOccupied(position); step++)
+                position = step * MINIMUM_DISTANCE;
         }
 
         // If we ran out of space there too, movement isn't possible
-        if (stopPosition > 1)
-            stopPosition = Position;
+        if (position > 1)
+            position = Position;
 
-        return stopPosition;
+        return position;
+    }
+
+    private bool IsOccupied(float position)
+    {
+        // Allow for a little rounding error, 0.5 - 0.499 comes out a hair under 0.001 in floating point
+        return ColorGradient != null && ColorGradient.Any(s => !ReferenceEquals(s, this) && Math.Abs(s.Position - position) < MINIMUM_DISTANCE - 0.00001f);
     }
 
     /// <summary>

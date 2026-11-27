@@ -1,5 +1,5 @@
 <Project>
-    <ItemGroup>
+    <ItemGroup Condition="'$(IsTestProject)' != 'true'">
         <PackageReference Include="HotAvalonia" PrivateAssets="All" />
     </ItemGroup>
 </Project>

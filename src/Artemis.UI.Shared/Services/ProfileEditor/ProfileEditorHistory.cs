@@ -14,8 +14,8 @@ namespace Artemis.UI.Shared.Services.ProfileEditor;
 /// </summary>
 public class ProfileEditorHistory
 {
-    private readonly Subject<bool> _canRedo = new();
-    private readonly Subject<bool> _canUndo = new();
+    private readonly BehaviorSubject<bool> _canRedo = new(false);
+    private readonly BehaviorSubject<bool> _canUndo = new(false);
     private readonly Stack<IProfileEditorCommand> _redoCommands = new();
     private readonly Stack<IProfileEditorCommand> _undoCommands = new();
 
@@ -28,6 +28,9 @@ public class ProfileEditorHistory
         ProfileConfiguration = profileConfiguration;
 
         Execute = ReactiveCommand.Create<IProfileEditorCommand>(ExecuteEditorCommand);
+        // Whoever executes a command reports its failure (the profile editor service shows a dialog), without this
+        // ReactiveUI would also treat it as unhandled
+        Execute.ThrownExceptions.Subscribe(_ => { });
         Undo = ReactiveCommand.Create(ExecuteUndo, CanUndo);
         Redo = ReactiveCommand.Create(ExecuteRedo, CanRedo);
     }

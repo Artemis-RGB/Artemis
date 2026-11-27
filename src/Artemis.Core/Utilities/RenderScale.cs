@@ -28,8 +28,15 @@ internal static class RenderScale
         return SKRectI.Create(
             roundX - roundX % RenderScaleMultiplier,
             roundY - roundY % RenderScaleMultiplier,
-            roundWidth - roundWidth % RenderScaleMultiplier,
-            roundHeight - roundHeight % RenderScaleMultiplier
+            SnapSize(roundWidth),
+            SnapSize(roundHeight)
         );
+    }
+
+    private static int SnapSize(int size)
+    {
+        // Keep at least one render pixel so LEDs smaller than a pixel don't collapse and remain addressable
+        int snapped = size - size % RenderScaleMultiplier;
+        return snapped == 0 && size > 0 ? RenderScaleMultiplier : snapped;
     }
 }

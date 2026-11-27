@@ -85,6 +85,8 @@ public class RegistrationService : IRegistrationService
         _propertyInputService.RegisterPropertyInput<SKPointPropertyInputViewModel>(Constants.CorePlugin);
         _propertyInputService.RegisterPropertyInput<SKSizePropertyInputViewModel>(Constants.CorePlugin);
         _propertyInputService.RegisterPropertyInput(typeof(EnumPropertyInputViewModel<>), Constants.CorePlugin);
+        _propertyInputService.RegisterPropertyInput<SKBlendModePropertyInputViewModel>(Constants.CorePlugin);
+        _propertyInputService.RegisterPropertyInput<FolderBlendModePropertyInputViewModel>(Constants.CorePlugin);
         _propertyInputService.RegisterPropertyInput<BoolPropertyInputViewModel>(Constants.CorePlugin);
         _propertyInputService.RegisterPropertyInput<FloatRangePropertyInputViewModel>(Constants.CorePlugin);
         _propertyInputService.RegisterPropertyInput<IntRangePropertyInputViewModel>(Constants.CorePlugin);

@@ -56,6 +56,8 @@ public class ChangeLayerBrush : IProfileEditorCommand, IDisposable
     {
         if (_previousBrush != null)
             _layer.ChangeLayerBrush(_previousBrush);
+        else
+            _layer.RemoveLayerBrush();
         _executed = false;
     }
 

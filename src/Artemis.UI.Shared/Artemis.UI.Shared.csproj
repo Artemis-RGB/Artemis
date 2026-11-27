@@ -26,4 +26,8 @@
     <ItemGroup>
         <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Artemis.UI.Shared.Tests" />
+    </ItemGroup>
 </Project>

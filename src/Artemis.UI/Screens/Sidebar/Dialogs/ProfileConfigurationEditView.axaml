@@ -120,6 +120,14 @@
                         <CheckBox VerticalAlignment="Bottom" IsChecked="{CompiledBinding FadeInAndOut}" ToolTip.Tip="Smoothly animates in and out when the profile activation conditions change.">
                             Fade when enabling and disabling
                         </CheckBox>
+
+                        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0 10 0 0">
+                            <TextBlock VerticalAlignment="Center">Blend mode</TextBlock>
+                            <shared:BlendModePicker Width="250"
+                                                    ShowPassThrough="True"
+                                                    Value="{CompiledBinding BlendMode}"
+                                                    ToolTip.Tip="How the profile blends into the profiles below it. Pass through lets each layer and folder blend on its own. Not applied while the profile fades in or out." />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 

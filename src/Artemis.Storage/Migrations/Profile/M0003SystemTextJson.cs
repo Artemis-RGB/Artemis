@@ -36,11 +36,7 @@ internal class M0003SystemTextJson : IProfileMigration
                 {
                     obj.Remove("$values");
                     jsonObject[key] = values;
-                    foreach (JsonNode? jsonNode in values.ToList())
-                    {
-                        if (jsonNode is JsonObject childObject)
-                            ConvertToSystemTextJson(childObject);
-                    }
+                    ConvertListItems(values);
                 }
 
                 obj.Remove("$type");
@@ -48,6 +44,27 @@ internal class M0003SystemTextJson : IProfileMigration
             else
             {
                 ConvertToSystemTextJson(obj);
+            }
+        }
+    }
+
+    private static void ConvertListItems(JsonArray values)
+    {
+        for (int i = 0; i < values.Count; i++)
+        {
+            if (values[i] is not JsonObject childObject)
+                continue;
+
+            // A list that is itself an item of a list is wrapped too
+            if (childObject["$type"] != null && childObject["$values"] is JsonArray childValues)
+            {
+                childObject.Remove("$values");
+                values[i] = childValues;
+                ConvertListItems(childValues);
+            }
+            else
+            {
+                ConvertToSystemTextJson(childObject);
             }
         }
     }

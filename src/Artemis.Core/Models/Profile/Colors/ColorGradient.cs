@@ -87,6 +87,9 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             stop.ColorGradient = this;
             _stops.Add(stop);
         }
+
+        // The list may not be in order, the rest of the gradient expects the stops to be sorted by position
+        Update();
     }
 
     /// <summary>
@@ -129,7 +132,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     [Obsolete("Use the Positions property instead", true)]
     public float[] GetPositionsArray(int timesToRepeat = 0, bool seamless = false)
     {
-        if (timesToRepeat == 0 && seamless)
+        if (timesToRepeat == 0 && !seamless)
             return Positions;
 
         List<float> result = [];
@@ -190,31 +193,34 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
 
         // Walk through the stops until we find the one at or after the requested position, that becomes the right stop
         // The left stop is the previous stop before the right one was found.
-        float left = stops[0];
-        float? right = null;
-        foreach (float stop in stops)
+        // Keep track of indexes rather than positions, repeats share positions where one ends and the next begins
+        int leftIndex = 0;
+        int rightIndex = -1;
+        for (int i = 0; i < stops.Length; i++)
         {
-            if (stop >= position)
+            if (stops[i] >= position)
             {
-                right = stop;
+                rightIndex = i;
                 break;
             }
 
-            left = stop;
+            leftIndex = i;
         }
 
         // Get the left stop's color
-        SKColor leftColor = colors[Array.IndexOf(stops, left)];
+        float left = stops[leftIndex];
+        SKColor leftColor = colors[leftIndex];
 
         // If no right stop was found or the left and right stops are on the same spot, return the left stop's color
-        if (right == null || left == right)
+        if (rightIndex == -1 || left == stops[rightIndex])
             return leftColor;
 
         // Get the right stop's color
-        SKColor rightColor = colors[Array.IndexOf(stops, right)];
+        float right = stops[rightIndex];
+        SKColor rightColor = colors[rightIndex];
 
         // Interpolate the position between the left and right color
-        position = MathF.Round((position - left) / (right.Value - left), 2);
+        position = MathF.Round((position - left) / (right - left), 2);
         byte a = (byte) ((rightColor.Alpha - leftColor.Alpha) * position + leftColor.Alpha);
         byte r = (byte) ((rightColor.Red - leftColor.Red) * position + leftColor.Red);
         byte g = (byte) ((rightColor.Green - leftColor.Green) * position + leftColor.Green);
@@ -284,17 +290,12 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// </summary>
     public void SpreadStops()
     {
-        try
+        MoveStops(() =>
         {
-            _updating = true;
+            // A single stop has nothing to spread across and stays at the start
             for (int i = 0; i < Count; i++)
-                this[i].Position = MathF.Round(i / ((float) Count - 1), 3, MidpointRounding.AwayFromZero);
-        }
-        finally
-        {
-            _updating = false;
-            Update();
-        }
+                this[i].Position = Count > 1 ? MathF.Round(i / ((float) Count - 1), 3, MidpointRounding.AwayFromZero) : 0;
+        });
     }
 
     /// <summary>
@@ -307,6 +308,10 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// </summary>
     public void ToggleSeamless()
     {
+        // An empty gradient has no stops to repeat or remove
+        if (Count == 0)
+            return;
+
         try
         {
             _updating = true;
@@ -321,7 +326,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
                 {
                     float multiplier = Count / (Count - 1f);
                     foreach (ColorGradientStop stop in this)
-                        stop.Position = MathF.Round(Math.Min(stop.Position * multiplier, 100f), 3, MidpointRounding.AwayFromZero);
+                        stop.Position = MathF.Round(Math.Min(stop.Position * multiplier, 1f), 3, MidpointRounding.AwayFromZero);
                 }
             }
             else
@@ -348,17 +353,11 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// </summary>
     public void FlipStops()
     {
-        try
+        MoveStops(() =>
         {
-            _updating = true;
             foreach (ColorGradientStop stop in this)
                 stop.Position = 1 - stop.Position;
-        }
-        finally
-        {
-            _updating = false;
-            Update();
-        }
+        });
     }
 
     /// <summary>
@@ -368,9 +367,8 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// <param name="inverse">A boolean indicating whether or not the invert the rotation.</param>
     public void RotateStops(bool inverse)
     {
-        try
+        MoveStops(() =>
         {
-            _updating = true;
             List<ColorGradientStop> stops = inverse
                 ? this.OrderBy(s => s.Position).ToList()
                 : this.OrderByDescending(s => s.Position).ToList();
@@ -378,12 +376,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             float lastStopPosition = stops.Last().Position;
             foreach (ColorGradientStop stop in stops)
                 (stop.Position, lastStopPosition) = (lastStopPosition, stop.Position);
-        }
-        finally
-        {
-            _updating = false;
-            Update();
-        }
+        });
     }
 
     /// <summary>
@@ -401,7 +394,7 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
             for (int index = 0; index < stops; index++)
             {
                 SKColor skColor = SKColor.FromHsv(random.NextSingle() * 360, 100, 100);
-                float position = 1f / (stops - 1f) * index;
+                float position = stops > 1 ? 1f / (stops - 1f) * index : 0;
                 Add(new ColorGradientStop(skColor, position));
             }
         }
@@ -431,22 +424,25 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         }
 
         // Interpolate stops
-        int index = 0;
-        foreach (ColorGradientStop stop in interpolated.ToList())
+        interpolated.MoveStops(() =>
         {
-            if (index < targetValue.Count)
+            int index = 0;
+            foreach (ColorGradientStop stop in interpolated)
             {
-                ColorGradientStop targetStop = targetValue[index];
-                stop.Interpolate(targetStop, progress);
-            }
-            // Interpolate stops not on the target gradient
-            else
-            {
-                stop.Color = stop.Color.Interpolate(targetValue.GetColor(stop.Position), progress);
-            }
+                if (index < targetValue.Count)
+                {
+                    ColorGradientStop targetStop = targetValue[index];
+                    stop.Interpolate(targetStop, progress);
+                }
+                // Interpolate stops not on the target gradient
+                else
+                {
+                    stop.Color = stop.Color.Interpolate(targetValue.GetColor(stop.Position), progress);
+                }
 
-            index++;
-        }
+                index++;
+            }
+        });
 
         return interpolated;
     }
@@ -492,6 +488,28 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     private void OnStopChanged()
     {
         StopChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void MoveStops(Action move)
+    {
+        // Unlink the stops while they move so a stop can take a position another stop is about to leave,
+        // otherwise it would avoid that stop and land next to it
+        try
+        {
+            _updating = true;
+            foreach (ColorGradientStop stop in _stops)
+                stop.ColorGradient = null;
+
+            move();
+        }
+        finally
+        {
+            foreach (ColorGradientStop stop in _stops)
+                stop.ColorGradient = this;
+
+            _updating = false;
+            Update();
+        }
     }
 
     private void Update()
@@ -627,7 +645,11 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     public void Clear()
     {
         foreach (ColorGradientStop item in _stops)
+        {
             item.PropertyChanged -= ItemOnPropertyChanged;
+            item.ColorGradient = null;
+        }
+
         _stops.Clear();
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
     }
@@ -673,13 +695,13 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     /// <inheritdoc />
     public bool Remove(ColorGradientStop item)
     {
-        item.PropertyChanged -= ItemOnPropertyChanged;
+        // Stops are compared by color and position, so this may find a different stop that looks the same
         int index = _stops.IndexOf(item);
-        bool removed = _stops.Remove(item);
-        if (removed)
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+        if (index == -1)
+            return false;
 
-        return removed;
+        RemoveAt(index);
+        return true;
     }
 
     /// <inheritdoc />
@@ -720,17 +742,23 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
     public void Insert(int index, ColorGradientStop item)
     {
         _stops.Insert(index, item);
+        item.ColorGradient = this;
+        // Update the position, reapplying the overlap-check in Position's setter
+        item.Position = item.Position;
         item.PropertyChanged += ItemOnPropertyChanged;
+
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
         Update();
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _stops.IndexOf(item)));
     }
 
     /// <inheritdoc cref="IList{T}.RemoveAt" />
     public void RemoveAt(int index)
     {
-        _stops[index].PropertyChanged -= ItemOnPropertyChanged;
+        ColorGradientStop item = _stops[index];
+        item.PropertyChanged -= ItemOnPropertyChanged;
+        item.ColorGradient = null;
         _stops.RemoveAt(index);
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, index));
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
     }
 
     /// <inheritdoc />
@@ -744,8 +772,12 @@ public class ColorGradient : IList<ColorGradientStop>, IList, INotifyCollectionC
         {
             ColorGradientStop? oldValue = _stops[index];
             oldValue.PropertyChanged -= ItemOnPropertyChanged;
+            oldValue.ColorGradient = null;
             _stops[index] = value;
-            _stops[index].PropertyChanged += ItemOnPropertyChanged;
+            value.ColorGradient = this;
+            // Update the position, reapplying the overlap-check in Position's setter
+            value.Position = value.Position;
+            value.PropertyChanged += ItemOnPropertyChanged;
             Update();
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldValue));
         }

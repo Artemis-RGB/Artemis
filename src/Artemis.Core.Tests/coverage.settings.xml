@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Code coverage settings for Artemis.Core.Tests, see the coverage command in CLAUDE.md -->
+<Configuration>
+    <CodeCoverage>
+        <Attributes>
+            <Exclude>
+                <!-- The database migrations and model snapshot Entity Framework generates in Artemis.Storage/Migrations -->
+                <Attribute>^Microsoft\.EntityFrameworkCore\.Infrastructure\.DbContextAttribute$</Attribute>
+            </Exclude>
+        </Attributes>
+    </CodeCoverage>
+</Configuration>

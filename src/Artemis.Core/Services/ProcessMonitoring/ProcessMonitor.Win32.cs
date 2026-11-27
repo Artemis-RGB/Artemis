@@ -69,6 +69,10 @@ public static unsafe partial class ProcessMonitor
     [LibraryImport("kernel32.dll")]
     private static partial nint OpenProcess(ProcessAccessFlags processAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int processId);
 
+    [LibraryImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool CloseHandle(nint hObject);
+
     [Flags]
     private enum ProcessAccessFlags : uint
     {
@@ -141,7 +145,8 @@ public static unsafe partial class ProcessMonitor
     {
         int processInformationOffset = 0;
 
-        HashSet<int> processIds = new(_processes.Count);
+        HashSet<int> processIds = _scannedProcessIds;
+        processIds.Clear();
 
         while (true)
         {
@@ -173,6 +178,7 @@ public static unsafe partial class ProcessMonitor
                 string executable = GetProcessFilename(processId);
                 ProcessInfo processInfo = new(processId, processName, imageName, executable);
                 _processes.Add(processId, processInfo);
+                _processesSnapshot = default;
 
                 OnProcessStarted(processInfo);
             }
@@ -190,11 +196,20 @@ public static unsafe partial class ProcessMonitor
     {
         int capacity = byte.MaxValue;
         char[] buffer = new char[capacity];
-        nint ptr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, processId);
+        nint processHandle = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, processId);
+        if (processHandle == nint.Zero)
+            return string.Empty;
 
-        return QueryFullProcessImageName(ptr, 0, buffer, ref capacity)
-                   ? new string(buffer, 0, capacity)
-                   : string.Empty;
+        try
+        {
+            return QueryFullProcessImageName(processHandle, 0, buffer, ref capacity)
+                ? new string(buffer, 0, capacity)
+                : string.Empty;
+        }
+        finally
+        {
+            CloseHandle(processHandle);
+        }
     }
 
     // This function generates the short form of process name.

@@ -108,6 +108,16 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
     /// </summary>
     public bool Suspended => BaseProperties is not {PropertiesInitialized: true} || !BaseProperties.IsEnabled;
 
+    /// <summary>
+    ///     Gets a value indicating whether the effect only draws around what it is applied to, such as a glow or a shadow,
+    ///     which lets it run on a pass-through <see cref="Folder" />.
+    /// </summary>
+    /// <remarks>
+    ///     On a pass-through folder anything the effect draws on top of the folder's children is discarded. Any effect that
+    ///     returns <see langword="false" /> makes the folder render isolated instead, even while that effect is disabled.
+    /// </remarks>
+    public virtual bool DrawsOnlyAroundContent => false;
+
     #region Overrides of BreakableModel
 
     /// <inheritdoc />
@@ -217,8 +227,8 @@ public abstract class BaseLayerEffect : BreakableModel, IDisposable, IStorageMod
     /// <inheritdoc />
     public void Load()
     {
-        Name = HasBeenRenamed ? LayerEffectEntity.Name : Descriptor.DisplayName;
         HasBeenRenamed = LayerEffectEntity.HasBeenRenamed;
+        Name = HasBeenRenamed ? LayerEffectEntity.Name : Descriptor.DisplayName;
         Order = LayerEffectEntity.Order;
     }
 

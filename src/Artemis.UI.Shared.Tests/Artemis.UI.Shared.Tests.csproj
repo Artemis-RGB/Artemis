@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Platforms>x64</Platforms>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="Shouldly" />
+        <Using Include="Xunit" />
+        <Using Include="Artemis.Core" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
+        <!-- Reuses the render harness, test plugins and fake devices -->
+        <ProjectReference Include="..\Artemis.Core.Tests\Artemis.Core.Tests.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+        <PackageReference Include="Shouldly" />
+        <PackageReference Include="SkiaSharp" />
+        <!-- SkiaSharp only ships native libraries for Windows and macOS, this adds the Linux ones so the tests run on Linux -->
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
+        <PackageReference Include="xunit.v3" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+</Project>

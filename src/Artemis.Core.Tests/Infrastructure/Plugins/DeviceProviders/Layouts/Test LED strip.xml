@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Test LED strip</Name>
+  <Description>A strip of 20 small 3x3 LEDs, 4 units apart, smaller than a canvas pixel at low render scales</Description>
+  <Type>LedStripe</Type>
+  <Vendor>Artemis</Vendor>
+  <Model>Test LED strip</Model>
+  <Width>82</Width>
+  <Height>7</Height>
+  <LedUnitWidth>1</LedUnitWidth>
+  <LedUnitHeight>1</LedUnitHeight>
+  <Leds>
+    <Led Id="LedStripe1">
+      <X>2</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe2">
+      <X>6</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe3">
+      <X>10</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe4">
+      <X>14</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe5">
+      <X>18</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe6">
+      <X>22</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe7">
+      <X>26</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe8">
+      <X>30</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe9">
+      <X>34</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe10">
+      <X>38</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe11">
+      <X>42</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe12">
+      <X>46</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe13">
+      <X>50</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe14">
+      <X>54</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe15">
+      <X>58</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe16">
+      <X>62</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe17">
+      <X>66</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe18">
+      <X>70</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe19">
+      <X>74</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+    <Led Id="LedStripe20">
+      <X>78</X>
+      <Y>2</Y>
+      <Width>3</Width>
+      <Height>3</Height>
+    </Led>
+  </Leds>
+</Device>

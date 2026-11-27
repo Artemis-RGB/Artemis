@@ -29,9 +29,7 @@ public class MoveProfileElement : IProfileEditorCommand
             _originalIndex = _subject.Parent.Children.IndexOf(_subject);
         }
 
-        if (subject is Folder)
-            DisplayName = "Move folder";
-        DisplayName = "Move layer";
+        DisplayName = subject is Folder ? "Move folder" : "Move layer";
     }
 
     #region Implementation of IProfileEditorCommand

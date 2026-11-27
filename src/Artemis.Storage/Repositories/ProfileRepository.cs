@@ -51,9 +51,13 @@ public class ProfileRepository(ILogger logger, Func<ArtemisDbContext> getContext
         using ArtemisDbContext dbContext = getContext();
         int max = profileMigrators.Max(m => m.Version);
 
-        // Query the ProfileContainerEntity table directly, grabbing the ID, profile, and configuration
+        // Query the ProfileContainerEntity table directly, grabbing the ID, profile, and configuration.
+        // A missing version counts as version 0, and configurations that aren't valid JSON are included so that they fail
+        // and get logged below rather than failing the query
         List<RawProfileContainer> containers = dbContext.Database
-            .SqlQueryRaw<RawProfileContainer>("SELECT Id, Profile, ProfileConfiguration FROM ProfileContainers WHERE json_extract(ProfileConfiguration, '$.Version') < {0}", max)
+            .SqlQueryRaw<RawProfileContainer>(
+                "SELECT Id, Profile, ProfileConfiguration FROM ProfileContainers WHERE CASE WHEN json_valid(ProfileConfiguration) THEN COALESCE(json_extract(ProfileConfiguration, '$.Version'), 0) < {0} ELSE 1 END",
+                max)
             .ToList();
 
         foreach (RawProfileContainer rawProfileContainer in containers)

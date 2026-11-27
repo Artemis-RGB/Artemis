@@ -61,10 +61,12 @@ public abstract class Pin : CorePropertyChanged, IPin
     }
 
     private readonly List<IPin> _connectedTo = [];
+    // A live view of the list, cached because input pins read it on every evaluation
+    private ReadOnlyCollection<IPin>? _readOnlyConnectedTo;
     private string _name;
 
     /// <inheritdoc />
-    public IReadOnlyList<IPin> ConnectedTo => new ReadOnlyCollection<IPin>(_connectedTo);
+    public IReadOnlyList<IPin> ConnectedTo => _readOnlyConnectedTo ??= new ReadOnlyCollection<IPin>(_connectedTo);
 
     /// <inheritdoc />
     public abstract PinDirection Direction { get; }
@@ -88,6 +90,9 @@ public abstract class Pin : CorePropertyChanged, IPin
     /// <inheritdoc />
     public void ConnectTo(IPin pin)
     {
+        if (_connectedTo.Contains(pin))
+            return;
+
         _connectedTo.Add(pin);
         if (!pin.ConnectedTo.Contains(this))
             pin.ConnectTo(this);
@@ -129,11 +134,15 @@ public abstract class Pin : CorePropertyChanged, IPin
     /// <inheritdoc />
     public bool IsTypeCompatible(Type type, bool forgivingEnumMatching = true)
     {
-        return Type == type
-               || (Direction == PinDirection.Input && type.IsAssignableTo(Type))
-               || (Direction == PinDirection.Output && type.IsAssignableFrom(Type))
-               || (Direction == PinDirection.Input && Type == typeof(Enum) && type.IsEnum && forgivingEnumMatching)
-               || (Direction == PinDirection.Output && type == typeof(Enum) && Type.IsEnum && forgivingEnumMatching);
+        if (Type == type)
+            return true;
+
+        // A specific enum and a pin of any enum only match when forgiving, every enum is assignable to Enum otherwise
+        if ((Direction == PinDirection.Input && Type == typeof(Enum) && type.IsEnum) || (Direction == PinDirection.Output && type == typeof(Enum) && Type.IsEnum))
+            return forgivingEnumMatching;
+
+        return (Direction == PinDirection.Input && type.IsAssignableTo(Type))
+               || (Direction == PinDirection.Output && type.IsAssignableFrom(Type));
     }
 
     /// <summary>

@@ -14,6 +14,8 @@ public class ToggleLayerPropertyKeyframes<T> : IProfileEditorCommand
     private readonly LayerProperty<T> _layerProperty;
     private readonly TimeSpan _time;
     private LayerPropertyKeyframe<T>? _keyframe;
+    private bool _addedKeyframe;
+    private bool _wasEnabled;
 
     /// <summary>
     ///     Creates a new instance of the <see cref="ToggleLayerPropertyKeyframes{T}" /> class.
@@ -33,37 +35,26 @@ public class ToggleLayerPropertyKeyframes<T> : IProfileEditorCommand
     /// <inheritdoc />
     public void Execute()
     {
-        if (_enable)
-        {
-            _layerProperty.KeyframesEnabled = true;
+        _wasEnabled = _layerProperty.KeyframesEnabled;
+        _addedKeyframe = false;
+        _layerProperty.KeyframesEnabled = _enable;
 
-            // If there weren't any keyframes yet, add one with the current value at the current time
-            if (!_layerProperty.Keyframes.Any())
-            {
-                // If executed before, reuse the previous keyframe
-                _keyframe ??= new LayerPropertyKeyframe<T>(_layerProperty.CurrentValue, _time, Easings.Functions.Linear, _layerProperty);
-                _layerProperty.AddKeyframe(_keyframe);
-            }
-        }
-        else
+        // If there weren't any keyframes yet, add one with the current value at the current time
+        if (_enable && !_layerProperty.Keyframes.Any())
         {
-            _layerProperty.KeyframesEnabled = false;
+            // If executed before, reuse the previous keyframe
+            _keyframe ??= new LayerPropertyKeyframe<T>(_layerProperty.CurrentValue, _time, Easings.Functions.Linear, _layerProperty);
+            _layerProperty.AddKeyframe(_keyframe);
+            _addedKeyframe = true;
         }
     }
 
     /// <inheritdoc />
     public void Undo()
     {
-        if (_enable)
-        {
-            if (_keyframe != null)
-                _layerProperty.RemoveKeyframe(_keyframe);
-            _layerProperty.KeyframesEnabled = false;
-        }
-        else
-        {
-            _layerProperty.KeyframesEnabled = true;
-        }
+        if (_addedKeyframe && _keyframe != null)
+            _layerProperty.RemoveKeyframe(_keyframe);
+        _layerProperty.KeyframesEnabled = _wasEnabled;
     }
 
     #endregion

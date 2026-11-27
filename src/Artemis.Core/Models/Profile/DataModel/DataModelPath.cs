@@ -29,8 +29,8 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
 
         _segments = [];
 
-        Save();
         Initialize();
+        Save();
         SubscribeToDataModelStore();
     }
 
@@ -47,8 +47,8 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
 
         _segments = [];
 
-        Save();
         Initialize();
+        Save();
         SubscribeToDataModelStore();
     }
 
@@ -67,8 +67,8 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
 
         _segments = [];
 
-        Save();
         Initialize();
+        Save();
         SubscribeToDataModelStore();
     }
 
@@ -165,9 +165,18 @@ public class DataModelPath : IStorageModel, IDisposable, IPluginFeatureDependent
         
         // Fall back to stored type
         if (!string.IsNullOrWhiteSpace(Entity.Type))
-            return Type.GetType(Entity.Type);
+            return FindType(Entity.Type);
 
         return null;
+    }
+
+    private static Type? FindType(string fullName)
+    {
+        // The type is stored without its assembly, Type.GetType only finds it in Artemis.Core and the .NET libraries. Types
+        // of plugins and other libraries (like SKColor) are found by looking through the loaded assemblies
+        return Type.GetType(fullName) ?? AppDomain.CurrentDomain.GetAssemblies()
+            .Select(assembly => assembly.GetType(fullName))
+            .FirstOrDefault(type => type != null);
     }
 
     /// <summary>

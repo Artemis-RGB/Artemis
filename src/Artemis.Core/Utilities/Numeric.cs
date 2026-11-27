@@ -184,7 +184,7 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible, IEquatable<
 
     public static implicit operator long(Numeric p)
     {
-        return (long) p._value;
+        return (long) MathF.Round(p._value, MidpointRounding.AwayFromZero);
     }
 
     public static bool operator >(Numeric a, Numeric b)
@@ -369,7 +369,7 @@ public readonly struct Numeric : IComparable<Numeric>, IConvertible, IEquatable<
     /// <inheritdoc />
     public sbyte ToSByte(IFormatProvider? provider)
     {
-        return (sbyte) Math.Clamp(_value, 0, 255);
+        return (sbyte) Math.Clamp(_value, sbyte.MinValue, sbyte.MaxValue);
     }
 
     /// <inheritdoc />

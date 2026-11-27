@@ -13,11 +13,23 @@ namespace Artemis.Core;
 /// </summary>
 public sealed class Folder : RenderProfileElement
 {
+    // Turns any alpha above zero into full alpha
+    private static readonly SKImageFilter ContentCoverage = SKImageFilter.CreateColorFilter(SKColorFilter.CreateColorMatrix([
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0,
+        0, 0, 0, 255, 0
+    ]));
+
     private bool _isExpanded;
+    private FolderGeneralProperties _general = new();
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="Folder" /> class and adds itself to the child collection of the provided
-    ///     <paramref name="parent" />
+    ///     Creates a new instance of the <see cref="Folder" /> class with the provided <paramref name="parent" />.
+    ///     <para>
+    ///         The folder is not added to the child collection of the parent, use <see cref="ProfileElement.AddChild" /> to
+    ///         add it.
+    ///     </para>
     /// </summary>
     /// <param name="parent">The parent of the folder</param>
     /// <param name="name">The name of the folder</param>
@@ -28,6 +40,8 @@ public sealed class Folder : RenderProfileElement
 
         Profile = Parent.Profile;
         Name = name;
+
+        InitializeGeneral();
     }
 
     /// <summary>
@@ -48,6 +62,7 @@ public sealed class Folder : RenderProfileElement
         Order = folderEntity.Order;
 
         Load();
+        InitializeGeneral();
     }
 
     /// <summary>
@@ -65,6 +80,53 @@ public sealed class Folder : RenderProfileElement
     }
 
     /// <summary>
+    ///     Gets the general properties of the folder.
+    /// </summary>
+    [PropertyGroupDescription(Identifier = "General", Name = "General", Description = "A collection of general properties")]
+    public FolderGeneralProperties General
+    {
+        get => _general;
+        private set => SetAndNotify(ref _general, value);
+    }
+
+    /// <summary>
+    ///     Gets a value indicating whether this folder currently renders its children straight onto what is below it.
+    /// </summary>
+    /// <remarks>
+    ///     Only when the blend mode is <see cref="FolderBlendMode.PassThrough" /> and every effect on the folder, including
+    ///     disabled ones, draws only around its content.
+    /// </remarks>
+    public bool RendersPassThrough
+    {
+        get
+        {
+            if (BlendMode != FolderBlendMode.PassThrough)
+                return false;
+            foreach (BaseLayerEffect layerEffect in LayerEffects)
+            {
+                // Suspended effects count too, their enabled state can be animated and isolation must not flip with it
+                if (!layerEffect.DrawsOnlyAroundContent)
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
+    /// <summary>
+    ///     Gets how this folder blends into what is below it, which for the root folder is the blend mode of the profile.
+    /// </summary>
+    public FolderBlendMode BlendMode
+    {
+        get
+        {
+            if (IsRootFolder)
+                return Profile.Configuration.BlendMode;
+            return General.PropertiesInitialized ? General.BlendMode.CurrentValue : FolderBlendMode.SrcOver;
+        }
+    }
+
+    /// <summary>
     ///     Gets the folder entity this folder uses for persistent storage
     /// </summary>
     public FolderEntity FolderEntity { get; internal set; }
@@ -77,7 +139,7 @@ public sealed class Folder : RenderProfileElement
     /// <inheritdoc />
     public override List<ILayerProperty> GetAllLayerProperties()
     {
-        List<ILayerProperty> result = [];
+        List<ILayerProperty> result = [..General.GetAllLayerProperties()];
         foreach (BaseLayerEffect layerEffect in LayerEffects)
         {
             if (layerEffect.BaseProperties != null)
@@ -106,11 +168,15 @@ public sealed class Folder : RenderProfileElement
 
             if (ShouldBeEnabled)
                 Enable();
-            else if (Timeline.IsFinished)
+            else if (Suspended || Timeline.IsFinished)
                 Disable();
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.InternalUpdate(Timeline);
+            General.Update(Timeline);
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+            {
+                if (!baseLayerEffect.Suspended)
+                    baseLayerEffect.InternalUpdate(Timeline);
+            }
 
             foreach (ProfileElement child in Children)
                 child.Update(deltaTime);
@@ -182,7 +248,8 @@ public sealed class Folder : RenderProfileElement
     /// <inheritdoc />
     public override IEnumerable<PluginFeature> GetFeatureDependencies()
     {
-        return LayerEffects.SelectMany(e => e.GetFeatureDependencies())
+        return General.GetFeatureDependencies()
+            .Concat(LayerEffects.SelectMany(e => e.GetFeatureDependencies()))
             .Concat(Children.SelectMany(c => c.GetFeatureDependencies()))
             .Concat(DisplayCondition.GetFeatureDependencies());
     }
@@ -207,7 +274,38 @@ public sealed class Folder : RenderProfileElement
         if (editorFocus == this)
             editorFocus = null;
 
+        if (!RendersPassThrough)
+        {
+            RenderInLayer(canvas, basePosition, editorFocus, false);
+            return;
+        }
+
+        // Effects only draw around the children here, so they get a pass of their own that leaves the children out
+        foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+        {
+            if (baseLayerEffect.Suspended)
+                continue;
+            RenderInLayer(canvas, basePosition, editorFocus, true);
+            break;
+        }
+
+        canvas.Save();
+        try
+        {
+            RenderChildren(canvas, basePosition, editorFocus);
+        }
+        finally
+        {
+            canvas.Restore();
+        }
+    }
+
+    private void RenderInLayer(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus, bool onlyAroundContent)
+    {
         SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
+        if (!onlyAroundContent)
+            layerPaint.BlendMode = FolderGeneralProperties.ToSKBlendMode(BlendMode);
+        SKImageFilter? effectFilter = null;
         try
         {
             SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
@@ -221,24 +319,43 @@ public sealed class Folder : RenderProfileElement
             if (layerPaint.Color.Alpha == 0)
                 return;
 
-            canvas.SaveLayer(layerPaint);
-            canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
-
-            // Iterate the children in reverse because the first layer must be rendered last to end up on top
-            for (int index = Children.Count - 1; index > -1; index--)
-                Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top), editorFocus);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+            // Cut everything the children cover out of what the effects drew, translucent parts included
+            if (onlyAroundContent)
             {
-                if (!baseLayerEffect.Suspended)
-                    baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
+                effectFilter = layerPaint.ImageFilter;
+                layerPaint.ImageFilter = SKImageFilter.CreateBlendMode(SKBlendMode.DstOut, effectFilter, ContentCoverage);
+            }
+
+            canvas.SaveLayer(layerPaint);
+            try
+            {
+                RenderChildren(canvas, basePosition, editorFocus);
+
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                {
+                    if (!baseLayerEffect.Suspended)
+                        baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
+                }
+            }
+            finally
+            {
+                canvas.Restore();
             }
         }
         finally
         {
-            canvas.Restore();
+            effectFilter?.Dispose();
             layerPaint.DisposeSelfAndProperties();
         }
+    }
+
+    private void RenderChildren(SKCanvas canvas, SKPointI basePosition, ProfileElement? editorFocus)
+    {
+        canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
+
+        // Iterate the children in reverse because the first layer must be rendered last to end up on top
+        for (int index = Children.Count - 1; index > -1; index--)
+            Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top), editorFocus);
     }
 
     #endregion
@@ -279,9 +396,9 @@ public sealed class Folder : RenderProfileElement
     public override void OverrideTimelineAndApply(TimeSpan position)
     {
         DisplayCondition.OverrideTimeline(position);
+        General.Update(Timeline);
         foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
             baseLayerEffect.InternalUpdate(Timeline);
-        ;
     }
 
     /// <summary>
@@ -307,8 +424,20 @@ public sealed class Folder : RenderProfileElement
         Disable();
         foreach (ProfileElement profileElement in Children)
             profileElement.Dispose();
+        _general.Dispose();
 
         base.Dispose(disposing);
+    }
+
+    private void InitializeGeneral()
+    {
+        PropertyGroupDescriptionAttribute generalAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(
+            GetType().GetProperty(nameof(General))!,
+            typeof(PropertyGroupDescriptionAttribute)
+        )!;
+
+        FolderEntity.GeneralPropertyGroup ??= new PropertyGroupEntity {Identifier = generalAttribute.Identifier!};
+        General.Initialize(this, null, generalAttribute, FolderEntity.GeneralPropertyGroup);
     }
 
     internal void CalculateRenderProperties()
@@ -363,7 +492,8 @@ public sealed class Folder : RenderProfileElement
         FolderEntity.Name = Name;
         FolderEntity.IsExpanded = IsExpanded;
         FolderEntity.Suspended = Suspended;
-        
+        General.ApplyToEntity();
+
         SaveRenderElement();
     }
 

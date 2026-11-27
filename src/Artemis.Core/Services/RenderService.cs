@@ -47,6 +47,7 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
         _preferredGraphicsContext.SettingChanged += PreferredGraphicsContextOnSettingChanged;
 
         Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
+        ApplyRenderScaleMultiplier();
         _surfaceManager = new SurfaceManager(this, GraphicsContext, _targetFrameRateSetting.Value, (float) _renderScaleSetting.Value);
     }
 
@@ -189,9 +190,14 @@ internal class RenderService : IRenderService, IRenderer, IDisposable
         _surfaceManager.UpdateTargetFrameRate(_targetFrameRateSetting.Value);
     }
 
-    private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
+    private void ApplyRenderScaleMultiplier()
     {
         RenderScale.SetRenderScaleMultiplier((int) (1 / _renderScaleSetting.Value));
+    }
+
+    private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
+    {
+        ApplyRenderScaleMultiplier();
         _surfaceManager.UpdateRenderScale((float) _renderScaleSetting.Value);
     }
 

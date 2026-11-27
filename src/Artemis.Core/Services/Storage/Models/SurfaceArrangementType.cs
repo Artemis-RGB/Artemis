@@ -54,6 +54,8 @@ internal class SurfaceArrangementType
         ) {SurfaceArrangement = SurfaceArrangement};
         fallback.Apply(devicesToArrange, devices);
         AppliedConfiguration = fallback;
+        foreach (ArtemisDevice artemisDevice in devicesToArrange)
+            artemisDevice.ZIndex = ZIndex;
     }
 
     public Point GetEdge(HorizontalArrangementPosition horizontalPosition, VerticalArrangementPosition verticalPosition)

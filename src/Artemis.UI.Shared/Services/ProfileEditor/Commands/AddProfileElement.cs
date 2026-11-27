@@ -55,6 +55,7 @@ public class AddProfileElement : IProfileEditorCommand, IDisposable
     public void Undo()
     {
         _isAdded = false;
+        _subject.Disable();
         _target.RemoveChild(_subject);
     }
 
