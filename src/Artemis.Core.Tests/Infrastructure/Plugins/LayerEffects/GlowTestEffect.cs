@@ -9,6 +9,8 @@ namespace Artemis.Core.Tests.Infrastructure.Plugins.LayerEffects;
 /// </summary>
 public class GlowTestEffect : LayerEffect<GlowTestEffectProperties>
 {
+    public override bool DrawsOnlyAroundContent => true;
+
     public override void EnableLayerEffect()
     {
     }

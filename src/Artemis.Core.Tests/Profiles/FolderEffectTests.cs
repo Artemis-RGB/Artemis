@@ -142,6 +142,24 @@ public class FolderEffectTests : RenderTestBase
     }
 
     [Fact]
+    public void NestedFolderOpacityEffectAtZero_LeavesTheOuterFolderIntact()
+    {
+        Profile profile = Harness.CreateProfile();
+        Folder outer = Harness.AddFolder(profile.GetRootFolder(), "Outer");
+        Harness.AddEffect<ChannelSwapTestEffect>(outer);
+        Harness.AddLayer<SolidColorTestBrush>(outer, [Led(LedId.Keyboard_S)], "Rendered after the nested folder");
+        Folder nested = Harness.AddFolder(outer, "Nested");
+        Harness.AddLayer<SolidColorTestBrush>(nested, [Led(LedId.Keyboard_A)]);
+        Harness.AddEffect<OpacityTestEffect>(nested).Properties.Opacity.SetCurrentValue(0);
+
+        using RenderFrame frame = Render(profile);
+
+        // The layer on S still renders inside the outer folder, so its red is swapped to blue
+        frame.GetColor(Keyboard, LedId.Keyboard_A).ShouldBeColor(SKColors.Black);
+        frame.GetColor(Keyboard, LedId.Keyboard_S).ShouldBeColor(SKColors.Blue);
+    }
+
+    [Fact]
     public void FolderPostProcessEffect_LeavesTheGapsBetweenChildrenUntouched()
     {
         Profile profile = Harness.CreateProfile();

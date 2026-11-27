@@ -26,6 +26,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     private bool _isMissingModule;
     private bool _isSuspended;
     private bool _fadeInAndOut;
+    private FolderBlendMode _blendMode = FolderBlendMode.SrcOver;
     private Module? _module;
 
     private string _name;
@@ -169,6 +170,18 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
     }
 
     /// <summary>
+    ///     Gets or sets how the profile blends into the profiles below it.
+    /// </summary>
+    /// <remarks>
+    ///     Not applied while the profile fades in or out.
+    /// </remarks>
+    public FolderBlendMode BlendMode
+    {
+        get => _blendMode;
+        set => SetAndNotify(ref _blendMode, value);
+    }
+
+    /// <summary>
     ///     Gets or sets the module this profile uses
     /// </summary>
     public Module? Module
@@ -292,6 +305,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         ActivationBehaviour = (ActivationBehaviour) Entity.ProfileConfiguration.ActivationBehaviour;
         HotkeyMode = (ProfileConfigurationHotkeyMode) Entity.ProfileConfiguration.HotkeyMode;
         FadeInAndOut = Entity.ProfileConfiguration.FadeInAndOut;
+        BlendMode = (FolderBlendMode?) Entity.ProfileConfiguration.BlendMode ?? FolderBlendMode.SrcOver;
         Order = Entity.ProfileConfiguration.Order;
 
         Icon.Load();
@@ -315,6 +329,7 @@ public class ProfileConfiguration : BreakableModel, IStorageModel, IDisposable, 
         Entity.ProfileConfiguration.HotkeyMode = (int) HotkeyMode;
         Entity.ProfileConfiguration.ProfileCategoryId = Category.Entity.Id;
         Entity.ProfileConfiguration.FadeInAndOut = FadeInAndOut;
+        Entity.ProfileConfiguration.BlendMode = (int) BlendMode;
         Entity.ProfileConfiguration.Order = Order;
 
         Icon.Save();

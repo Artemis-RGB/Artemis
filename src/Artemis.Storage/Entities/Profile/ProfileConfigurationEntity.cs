@@ -25,5 +25,6 @@ public class ProfileConfigurationEntity
     public Guid ProfileId { get; set; }
 
     public bool FadeInAndOut { get; set; }
+    public int? BlendMode { get; set; }
     public int Version { get; set; }
 }

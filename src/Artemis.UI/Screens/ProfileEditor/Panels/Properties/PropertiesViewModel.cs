@@ -146,6 +146,10 @@ public partial class PropertiesViewModel : ActivatableViewModelBase
             if (layer.LayerBrush?.BaseProperties != null)
                 viewModels.Add(GetOrCreatePropertyViewModel(layer.LayerBrush.BaseProperties, layer.LayerBrush, null));
         }
+        else if (profileElement is Folder folder)
+        {
+            viewModels.Add(GetOrCreatePropertyViewModel(folder.General, null, null));
+        }
 
         // Add effect VMs
         foreach (BaseLayerEffect layerEffect in profileElement.LayerEffects.OrderBy(e => e.Order))
