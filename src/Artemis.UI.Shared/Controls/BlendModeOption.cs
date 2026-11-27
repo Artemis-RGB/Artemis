@@ -51,13 +51,13 @@ public class BlendModeOption
 
         Header("Masking"),
         Mode(FolderBlendMode.SrcIn, "Src in", "Shows this element only where something is below, replacing it"),
-        Mode(FolderBlendMode.DstIn, "Dst in", "Keeps what's below only where this element is"),
+        Mode(FolderBlendMode.DstIn, "Dst in", "Hides this element, its transparent parts erase what's below"),
         Mode(FolderBlendMode.SrcOut, "Src out", "Shows this element only where nothing is below"),
         Mode(FolderBlendMode.DstOut, "Dst out", "Cuts this element's shape out of what's below"),
         Mode(FolderBlendMode.SrcATop, "Src atop", "Draws on top, but only where something is below"),
-        Mode(FolderBlendMode.DstATop, "Dst atop", "Keeps what's below only where this element is, with this element behind it"),
+        Mode(FolderBlendMode.DstATop, "Dst atop", "Draws behind what's below, its transparent parts erase what's below"),
         Mode(FolderBlendMode.Xor, "Xor", "Shows both, except where they overlap"),
-        Mode(FolderBlendMode.Modulate, "Modulate", "Like multiply, but transparent parts of this element also erase what's below"),
+        Mode(FolderBlendMode.Modulate, "Modulate", "Like multiply, but only where something is below"),
 
         Header("Other"),
         Mode(FolderBlendMode.Clear, "Clear", "Erases what's below where this element is"),
